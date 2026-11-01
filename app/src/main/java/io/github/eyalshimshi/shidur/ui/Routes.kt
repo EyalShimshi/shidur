@@ -15,9 +15,6 @@ object FavoritesRoute
 object SearchRoute
 
 @Serializable
-object PlayerRoute
-
-@Serializable
 object SettingsRoute
 
 @Serializable

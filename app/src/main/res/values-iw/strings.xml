@@ -140,4 +140,30 @@
     <!-- Widget -->
     <string name="widget_description">ניגון התחנות האהובות ממסך הבית</string>
     <string name="widget_nothing_playing">הקשה לבחירת תחנה</string>
+
+    <!-- Performance -->
+    <string name="settings_performance">ביצועים</string>
+    <string name="perf_empty">אחרי שינגנו כמה תחנות יופיע כאן כמה מהר הן מתחילות.</string>
+    <string name="perf_average">זמן התחלה ממוצע: %1$s</string>
+    <string name="perf_average_summary">%1$d ההתחלות האחרונות · מההקשה ועד הצליל</string>
+    <string name="perf_warmed">חיבור מוכן מראש</string>
+    <string name="perf_skipped_redirect">חיבור מוכן מראש, בלי הפניה</string>
+    <string name="perf_attempts">נוסו %1$d כתובות</string>
+    <string name="seconds_value">%1$s שנ׳</string>
+    <string name="player_started_in">התחיל תוך %1$s</string>
+    <string name="perf_instant">הפעלה מיידית</string>
+
+    <!-- Look and feel -->
+    <string name="settings_colors">צבעים</string>
+    <string name="settings_interface">ממשק</string>
+    <string name="settings_accent">צבע הדגשה</string>
+    <string name="settings_accent_summary">בחירת צבע מכבה את צבעי הטפט</string>
+    <string name="accent_option">צבע %1$d</string>
+    <string name="settings_background_gradient">מעבר צבע ברקע</string>
+    <string name="settings_background_gradient_summary">גוון צבע עדין בראש המסכים</string>
+    <string name="settings_animations">אנימציות</string>
+    <string name="settings_animations_summary">תנועה של תמונות וכפתורים</string>
+    <string name="settings_instant_start">הפעלה מיידית (ניסיוני)</string>
+    <string name="settings_instant_start_summary">כשהאפליקציה פתוחה ושום דבר לא מתנגן, התחנה האחרונה נטענת בשקט עד 2 דקות כדי שתתחיל לנגן מיד. צורך כ-1MB לדקה, גם בגלישה סלולרית.</string>
+    <string name="action_open_player">פתיחת הנגן</string>
 </resources>

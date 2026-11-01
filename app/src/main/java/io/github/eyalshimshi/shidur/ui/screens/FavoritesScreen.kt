@@ -30,6 +30,7 @@ import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -51,6 +52,7 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationTile
 import sh.calvin.reorderable.ReorderableItem
 import sh.calvin.reorderable.rememberReorderableLazyGridState
@@ -82,6 +84,10 @@ fun FavoritesScreen(
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent,
+            ),
         )
         if (library.favorites.isEmpty()) {
             EmptyFavorites(onBrowse = onBrowse)
@@ -129,7 +135,12 @@ private fun ReorderableFavoritesGrid(
     LazyVerticalGrid(
         columns = GridCells.Adaptive(minSize = 96.dp),
         state = gridState,
-        contentPadding = PaddingValues(12.dp),
+        contentPadding = PaddingValues(
+            start = 12.dp,
+            top = 12.dp,
+            end = 12.dp,
+            bottom = 12.dp + LocalBottomContentPadding.current,
+        ),
         modifier = Modifier.fillMaxSize(),
     ) {
         items(ordered, key = { it.id }) { station ->

@@ -24,13 +24,18 @@ data class PlayerUiState(
     val isBuffering: Boolean = false,
     val hasError: Boolean = false,
     val queueIds: List<String> = emptyList(),
+    /** Position of the current station in [queueIds], or -1. */
+    val currentIndex: Int = -1,
     /** SystemClock.elapsedRealtime() when the sleep timer fires, or null. */
     val sleepTimerEnd: Long? = null,
     val isCasting: Boolean = false,
 )
 
 /** The UI's connection to [PlaybackService], exposed as a [StateFlow]. Use from the main thread. */
-class PlaybackConnection(context: Context) {
+class PlaybackConnection(
+    context: Context,
+    private val diagnostics: PlaybackDiagnostics,
+) {
 
     private val appContext = context.applicationContext
     private var controllerFuture: ListenableFuture<MediaController>? = null
@@ -92,11 +97,14 @@ class PlaybackConnection(context: Context) {
         _state.value = PlayerUiState()
     }
 
-    fun play(stationId: String, queue: List<String>) = withController { c ->
-        val ids = if (stationId in queue) queue.distinct() else listOf(stationId)
-        c.setMediaItems(ids.map(MediaItemFactory::request), ids.indexOf(stationId), C.TIME_UNSET)
-        c.prepare()
-        c.play()
+    fun play(stationId: String, queue: List<String>) {
+        diagnostics.markRequested(stationId)
+        withController { c ->
+            val ids = if (stationId in queue) queue.distinct() else listOf(stationId)
+            c.setMediaItems(ids.map(MediaItemFactory::request), ids.indexOf(stationId), C.TIME_UNSET)
+            c.prepare()
+            c.play()
+        }
     }
 
     /** Loads a station without starting playback (used for shared links). */
@@ -107,21 +115,43 @@ class PlaybackConnection(context: Context) {
 
     fun togglePlayPause() = withController { c ->
         when {
-            c.playerError != null -> c.sendCustomCommand(ShidurCommands.command(ShidurCommands.RETRY), Bundle.EMPTY)
+            c.playerError != null -> {
+                c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+                c.sendCustomCommand(ShidurCommands.command(ShidurCommands.RETRY), Bundle.EMPTY)
+            }
             c.playWhenReady -> c.pause()
             else -> {
-                if (c.playbackState == Player.STATE_IDLE) c.prepare()
+                if (c.playbackState == Player.STATE_IDLE) {
+                    c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+                    c.prepare()
+                }
                 c.play()
             }
         }
     }
 
-    fun next() = withController { it.seekToNextMediaItem() }
+    fun next() = withController { c ->
+        c.seekToNextMediaItem()
+        c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+    }
 
-    fun previous() = withController { it.seekToPreviousMediaItem() }
+    fun previous() = withController { c ->
+        c.seekToPreviousMediaItem()
+        c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+    }
 
-    fun retry() = withController {
-        it.sendCustomCommand(ShidurCommands.command(ShidurCommands.RETRY), Bundle.EMPTY)
+    /** Plays the station at [index] in the queue (used when swiping between stations). */
+    fun seekToIndex(index: Int) = withController { c ->
+        if (index < 0 || index >= c.mediaItemCount || index == c.currentMediaItemIndex) return@withController
+        c.seekTo(index, C.TIME_UNSET)
+        c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+        if (c.playbackState == Player.STATE_IDLE) c.prepare()
+        c.play()
+    }
+
+    fun retry() = withController { c ->
+        c.currentMediaItem?.mediaId?.let(diagnostics::markRequested)
+        c.sendCustomCommand(ShidurCommands.command(ShidurCommands.RETRY), Bundle.EMPTY)
     }
 
     fun setSleepTimer(durationMs: Long, fadeOut: Boolean) = withController {
@@ -181,6 +211,7 @@ class PlaybackConnection(context: Context) {
             isBuffering = c.playbackState == Player.STATE_BUFFERING,
             hasError = c.playerError != null,
             queueIds = (0 until c.mediaItemCount).map { c.getMediaItemAt(it).mediaId },
+            currentIndex = if (c.mediaItemCount > 0) c.currentMediaItemIndex else -1,
             sleepTimerEnd = sleepEnd.takeIf { it > 0L },
             isCasting = c.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE,
         )

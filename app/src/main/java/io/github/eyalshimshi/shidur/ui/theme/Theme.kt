@@ -8,9 +8,10 @@ import androidx.compose.material3.dynamicDarkColorScheme
 import androidx.compose.material3.dynamicLightColorScheme
 import androidx.compose.material3.lightColorScheme
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.CompositionLocalProvider
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.lerp
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalContext
 import io.github.eyalshimshi.shidur.data.AppSettings
 import io.github.eyalshimshi.shidur.data.ThemeMode
@@ -22,22 +23,43 @@ fun isDarkTheme(settings: AppSettings): Boolean = when (settings.themeMode) {
     ThemeMode.DARK -> true
 }
 
+/** Whether decorative motion (springs, pulses) is enabled in Settings. */
+val LocalAnimationsEnabled = staticCompositionLocalOf { true }
+
+/** Accent colors offered in Settings. The first one is Material's baseline purple (the default). */
+val ACCENT_PRESETS: List<Int> = listOf(
+    0xFF6750A4.toInt(),
+    0xFF0061A4.toInt(),
+    0xFF006A6A.toInt(),
+    0xFF386A20.toInt(),
+    0xFF8B5000.toInt(),
+    0xFF9C4146.toInt(),
+    0xFFB4236C.toInt(),
+    0xFF0038B8.toInt(),
+)
+
 /**
- * Dynamic color from the wallpaper when enabled, otherwise the Material 3 baseline scheme
- * (seed #6750A4). Pure black replaces dark surfaces with black for OLED screens.
+ * Wallpaper colors when dynamic color is on; otherwise a scheme generated from the chosen accent
+ * (the Material 3 baseline scheme by default). Pure black keeps backgrounds black on OLED screens
+ * while accents stay colored.
  */
 @Composable
 fun ShidurTheme(settings: AppSettings, content: @Composable () -> Unit) {
     val dark = isDarkTheme(settings)
     val context = LocalContext.current
+    val accent = settings.accentColor
     val base = when {
         settings.dynamicColor && dark -> dynamicDarkColorScheme(context)
         settings.dynamicColor -> dynamicLightColorScheme(context)
+        accent != null && accent != ACCENT_PRESETS.first() ->
+            remember(accent, dark) { SeedScheme.colorScheme(Color(accent), dark) }
         dark -> darkColorScheme()
         else -> lightColorScheme()
     }
     val scheme = if (dark && settings.pureBlack) base.withPureBlack() else base
-    MaterialTheme(colorScheme = scheme, content = content)
+    CompositionLocalProvider(LocalAnimationsEnabled provides settings.animations) {
+        MaterialTheme(colorScheme = scheme, content = content)
+    }
 }
 
 fun ColorScheme.withPureBlack(): ColorScheme = copy(
@@ -51,23 +73,11 @@ fun ColorScheme.withPureBlack(): ColorScheme = copy(
     surfaceContainerHighest = Color(0xFF1F1F23),
 )
 
-/** Tints a scheme toward a station's color for the full-screen player. */
-fun ColorScheme.tintedWith(seed: Color, dark: Boolean, keepBlackBackground: Boolean): ColorScheme {
-    val tintedPrimary = if (dark) lerp(seed, Color.White, 0.35f) else lerp(seed, Color.Black, 0.2f)
-    val tintedContainer = if (dark) lerp(seed, Color.Black, 0.45f) else lerp(seed, Color.White, 0.7f)
-    val tintedBackground = if (keepBlackBackground) background else lerp(background, seed, if (dark) 0.16f else 0.1f)
-    return copy(
-        primary = tintedPrimary,
-        onPrimary = readableOn(tintedPrimary),
-        primaryContainer = tintedContainer,
-        onPrimaryContainer = readableOn(tintedContainer),
-        secondaryContainer = tintedContainer,
-        onSecondaryContainer = readableOn(tintedContainer),
-        background = tintedBackground,
-        surface = tintedBackground,
-        surfaceContainer = lerp(surfaceContainer, seed, 0.12f),
-        surfaceContainerHigh = lerp(surfaceContainerHigh, seed, 0.14f),
-    )
+/**
+ * The player's colors, generated from the station's brand color with the same tones (and
+ * therefore the same contrast) as the app's own scheme.
+ */
+fun stationColorScheme(stationColor: Int, dark: Boolean, pureBlack: Boolean): ColorScheme {
+    val scheme = SeedScheme.colorScheme(Color(stationColor), dark)
+    return if (dark && pureBlack) scheme.withPureBlack() else scheme
 }
-
-fun readableOn(color: Color): Color = if (color.luminance() > 0.45f) Color(0xFF1C1B1F) else Color.White

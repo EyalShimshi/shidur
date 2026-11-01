@@ -26,6 +26,7 @@ import androidx.compose.material3.OutlinedButton
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -35,11 +36,13 @@ import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.playback.StreamProbe
+import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
 
@@ -67,6 +70,10 @@ fun AddStationScreen(
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent,
+            ),
         )
         Column(
             modifier = Modifier
@@ -150,6 +157,7 @@ fun AddStationScreen(
             ) {
                 Text(stringResource(if (failed) R.string.add_station_save_anyway else R.string.add_station_save))
             }
+            Spacer(Modifier.height(LocalBottomContentPadding.current))
         }
     }
 }

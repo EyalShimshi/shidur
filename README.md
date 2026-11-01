@@ -86,14 +86,16 @@ Shidur then appears in the car's app list.
 
 ---
 
-## What works in this first build (v0.1)
+## What works (v0.2)
 
 - About 27 Israeli stations, with automatic fallback between each station's stream addresses.
 - **Home** (favorites, recently played, categories), **Browse** (categories, sorting), **Favorites** (drag to reorder, edit), and **Search** (Hebrew/English, nicknames, frequencies such as "88").
-- **Player:** background playback with the media notification, lock screen, Bluetooth and steering-wheel controls, previous/next station, and song titles when the station sends them (Hebrew encodings handled).
+- **Player:** one sheet that drags (or taps) open from the mini player into the full player and back; swipe sideways on the mini player or the artwork to change station; the back gesture closes it. Background playback with the media notification, lock screen, Bluetooth and steering-wheel controls, and song titles when the station sends them (Hebrew encodings handled).
+- **Fast starts:** stations are pre-connected when the app opens and the moment you touch one, so most start in well under a second. **Settings → Performance** shows how long each start took.
+- **Instant start (experimental, off by default):** keeps your last station loading silently for up to 2 minutes while the app is open and nothing plays, so it starts at once. It works on Wi-Fi and mobile data and uses about 1 MB per minute while it waits, so leave it off if your data plan is limited.
 - **Sleep timer** with fade-out; **custom stations** by URL (including `.pls`/`.m3u` playlists); **share**.
 - **Android Auto** (Favorites / Recent / Categories / All stations, plus voice search), **home-screen widget**, **Google Cast**, and **Wear OS** controls (automatic, through the media session).
-- **Settings:** light/dark/system theme, pure black, dynamic color, station colors in the player, language (Hebrew/English), data saver, headphones auto-play.
+- **Settings:** light/dark/system theme, wallpaper colors or an accent color of your choice, pure black (the player keeps a black background and colors only its accents), station colors in the player, background gradient, animations, language (Hebrew/English), data saver, headphones auto-play.
 
 **Not in this build yet** (see [SPEC-06](SPEC-06-roadmap-risks.md)):
 - automated station health checks and program schedules;
@@ -105,7 +107,7 @@ Shidur then appears in the car's app list.
 
 ## Building
 
-- **Cloud:** [`.github/workflows/build.yml`](.github/workflows/build.yml) builds a debug APK on every push to `main`/`master` and publishes it as a pre-release.
+- **Cloud:** [`.github/workflows/build.yml`](.github/workflows/build.yml) builds a release APK (signed with the workflow's own key, so each build installs over the previous one) on every push to `main`/`master` and publishes it as a pre-release.
 - **Locally (optional):** install Android Studio, open this folder, and press **Run**.
 - **Toolchain:** AGP 9.2, Gradle 9.5, Kotlin 2.3, Jetpack Compose (BOM 2026.09), Media3 1.11.
 

@@ -1,9 +1,12 @@
 package io.github.eyalshimshi.shidur.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.combinedClickable
+import androidx.compose.foundation.interaction.MutableInteractionSource
+import androidx.compose.foundation.interaction.PressInteraction
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.Column
@@ -34,6 +37,11 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
+import androidx.compose.runtime.LaunchedEffect
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.rememberUpdatedState
+import androidx.compose.runtime.staticCompositionLocalOf
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
@@ -52,6 +60,7 @@ import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.model.formatFrequency
 import io.github.eyalshimshi.shidur.playback.MonogramRenderer
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
+import java.util.Locale
 
 /** The station's "logo": its short name on its brand color. */
 @Composable
@@ -92,6 +101,28 @@ fun stationSubtitle(station: Station): String = when {
     else -> stringResource(R.string.digital_station)
 }
 
+/** A duration such as "0.62 s", with a localized unit. */
+@Composable
+fun secondsText(millis: Long): String =
+    stringResource(R.string.seconds_value, String.format(Locale.US, "%.2f", millis / 1000.0))
+
+/** Called when a station is pressed, before the tap completes (used to warm up its stream). */
+val LocalStationPress = staticCompositionLocalOf<(Station) -> Unit> { {} }
+
+/** An interaction source that reports presses on [station] to [LocalStationPress]. */
+@Composable
+fun rememberStationPressSource(station: Station): MutableInteractionSource {
+    val source = remember { MutableInteractionSource() }
+    val onPress by rememberUpdatedState(LocalStationPress.current)
+    val currentStation by rememberUpdatedState(station)
+    LaunchedEffect(source) {
+        source.interactions.collect { interaction ->
+            if (interaction is PressInteraction.Press) onPress(currentStation)
+        }
+    }
+    return source
+}
+
 @OptIn(ExperimentalFoundationApi::class)
 @Composable
 fun StationRow(
@@ -105,8 +136,14 @@ fun StationRow(
     modifier: Modifier = Modifier,
     onLongClick: (() -> Unit)? = null,
 ) {
+    val pressSource = rememberStationPressSource(station)
     ListItem(
-        modifier = modifier.combinedClickable(onClick = onClick, onLongClick = onLongClick),
+        modifier = modifier.combinedClickable(
+            interactionSource = pressSource,
+            indication = LocalIndication.current,
+            onLongClick = onLongClick,
+            onClick = onClick,
+        ),
         headlineContent = {
             Text(station.name(hebrew), maxLines = 1, overflow = TextOverflow.Ellipsis)
         },
@@ -126,11 +163,9 @@ fun StationRow(
                 FavoriteButton(isFavorite = isFavorite, onToggle = onToggleFavorite)
             }
         },
-        colors = if (isCurrent) {
-            ListItemDefaults.colors(containerColor = MaterialTheme.colorScheme.secondaryContainer)
-        } else {
-            ListItemDefaults.colors()
-        },
+        colors = ListItemDefaults.colors(
+            containerColor = if (isCurrent) MaterialTheme.colorScheme.secondaryContainer else Color.Transparent,
+        ),
     )
 }
 
@@ -154,10 +189,15 @@ fun StationTile(
     modifier: Modifier = Modifier,
     artworkSize: Dp = 72.dp,
 ) {
+    val pressSource = rememberStationPressSource(station)
     Column(
         modifier = modifier
             .clip(RoundedCornerShape(20.dp))
-            .clickable(onClick = onClick)
+            .clickable(
+                interactionSource = pressSource,
+                indication = LocalIndication.current,
+                onClick = onClick,
+            )
             .padding(6.dp),
         horizontalAlignment = Alignment.CenterHorizontally,
     ) {
@@ -205,54 +245,6 @@ fun PlayPauseButton(player: PlayerUiState, onClick: () -> Unit, modifier: Modifi
             )
             player.playWhenReady -> Icon(Icons.Rounded.Pause, contentDescription = stringResource(R.string.action_pause))
             else -> Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.action_play))
-        }
-    }
-}
-
-@OptIn(ExperimentalMaterial3Api::class)
-@Composable
-fun MiniPlayer(
-    station: Station,
-    hebrew: Boolean,
-    player: PlayerUiState,
-    onOpen: () -> Unit,
-    onTogglePlay: () -> Unit,
-    modifier: Modifier = Modifier,
-) {
-    Surface(
-        onClick = onOpen,
-        modifier = modifier
-            .fillMaxWidth()
-            .padding(horizontal = 8.dp, vertical = 4.dp),
-        shape = RoundedCornerShape(20.dp),
-        color = MaterialTheme.colorScheme.secondaryContainer,
-        contentColor = MaterialTheme.colorScheme.onSecondaryContainer,
-        tonalElevation = 2.dp,
-    ) {
-        Row(
-            modifier = Modifier.padding(8.dp),
-            verticalAlignment = Alignment.CenterVertically,
-        ) {
-            StationArtwork(station, 44.dp)
-            Column(
-                modifier = Modifier
-                    .weight(1f)
-                    .padding(horizontal = 12.dp),
-            ) {
-                Text(
-                    text = station.name(hebrew),
-                    style = MaterialTheme.typography.titleSmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-                Text(
-                    text = playerStatusText(player) ?: stationSubtitle(station),
-                    style = MaterialTheme.typography.bodySmall,
-                    maxLines = 1,
-                    overflow = TextOverflow.Ellipsis,
-                )
-            }
-            PlayPauseButton(player = player, onClick = onTogglePlay)
         }
     }
 }

@@ -21,3 +21,6 @@ keystore.properties
 
 # One-time local helper used to create the folder structure
 make-folders.cmd
+
+# Scratch copies left by editing tools
+*.new

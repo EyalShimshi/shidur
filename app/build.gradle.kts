@@ -14,18 +14,27 @@ android {
         applicationId = "io.github.eyalshimshi.shidur"
         minSdk = libs.versions.minSdk.get().toInt()
         targetSdk = libs.versions.targetSdk.get().toInt()
-        versionCode = 1
-        versionName = "0.1.0"
+        // CI builds count up, so each new APK installs as an update of the previous one.
+        val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
+        versionCode = buildNumber
+        versionName = "0.2.$buildNumber"
     }
 
     buildTypes {
         getByName("release") {
+            // Signed with the same key as earlier builds so it installs over them. Release builds
+            // are not debuggable, which makes Compose UI noticeably smoother.
+            signingConfig = signingConfigs.getByName("debug")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",
             )
         }
+    }
+
+    lint {
+        checkReleaseBuilds = false
     }
 
     kotlin {
@@ -71,6 +80,7 @@ dependencies {
     implementation(libs.androidx.media3.exoplayer.hls)
     implementation(libs.androidx.media3.session)
     implementation(libs.androidx.media3.cast)
+    implementation(libs.androidx.media3.datasource.okhttp)
 
     implementation(libs.androidx.glance.appwidget)
     implementation(libs.androidx.glance.material3)

@@ -38,16 +38,72 @@ object MediaItemFactory {
         streamIndex: Int = 0,
         nowPlaying: String? = null,
         mediaId: String = station.id,
+        resolvedUrl: String? = null,
     ): MediaItem {
         val index = streamIndex.coerceIn(0, station.streams.lastIndex)
         val stream = station.streams[index]
+        val uri = resolvedUrl ?: stream.url
+        val isHls = stream.format.equals("hls", ignoreCase = true) ||
+            stream.url.contains(".m3u8", ignoreCase = true) ||
+            uri.contains(".m3u8", ignoreCase = true)
+        val metadata = metadata(
+            context = context,
+            station = station,
+            hebrew = hebrew,
+            streamIndex = index,
+            nowPlaying = nowPlaying,
+            warmed = resolvedUrl != null,
+            skippedRedirect = resolvedUrl != null && resolvedUrl != stream.url,
+        )
+        return MediaItem.Builder()
+            .setMediaId(mediaId)
+            .setUri(uri)
+            .setMimeType(if (isHls) MimeTypes.APPLICATION_M3U8 else null)
+            // Lets Instant start recognize the station whichever of its addresses the item uses.
+            .setCustomCacheKey(if (isHls) null else HotStandby.stationKey(station.id))
+            .setMediaMetadata(metadata)
+            .build()
+    }
+
+    /** The same item with new now-playing text. The URI is kept, so playback isn't interrupted. */
+    fun withNowPlaying(
+        context: Context,
+        item: MediaItem,
+        station: Station,
+        hebrew: Boolean,
+        nowPlaying: String?,
+    ): MediaItem {
+        val extras = item.mediaMetadata.extras
+        val metadata = metadata(
+            context = context,
+            station = station,
+            hebrew = hebrew,
+            streamIndex = extras?.getInt(ShidurCommands.EXTRA_STREAM_INDEX) ?: 0,
+            nowPlaying = nowPlaying,
+            warmed = extras?.getBoolean(ShidurCommands.EXTRA_WARMED) ?: false,
+            skippedRedirect = extras?.getBoolean(ShidurCommands.EXTRA_SKIPPED_REDIRECT) ?: false,
+        )
+        return item.buildUpon().setMediaMetadata(metadata).build()
+    }
+
+    private fun metadata(
+        context: Context,
+        station: Station,
+        hebrew: Boolean,
+        streamIndex: Int,
+        nowPlaying: String?,
+        warmed: Boolean,
+        skippedRedirect: Boolean,
+    ): MediaMetadata {
         val name = station.name(hebrew)
         val frequency = station.primaryFrequency?.let { formatFrequency(it) } ?: ""
         val extras = Bundle().apply {
-            putInt(ShidurCommands.EXTRA_STREAM_INDEX, index)
+            putInt(ShidurCommands.EXTRA_STREAM_INDEX, streamIndex)
+            putBoolean(ShidurCommands.EXTRA_WARMED, warmed)
+            putBoolean(ShidurCommands.EXTRA_SKIPPED_REDIRECT, skippedRedirect)
             if (nowPlaying != null) putString(ShidurCommands.EXTRA_NOW_PLAYING, nowPlaying)
         }
-        val metadata = MediaMetadata.Builder()
+        return MediaMetadata.Builder()
             .setTitle(nowPlaying ?: name)
             .setArtist(if (nowPlaying != null) name else frequency)
             .setDisplayTitle(name)
@@ -58,14 +114,6 @@ object MediaItemFactory {
             .setIsBrowsable(false)
             .setMediaType(MediaMetadata.MEDIA_TYPE_RADIO_STATION)
             .setExtras(extras)
-            .build()
-        val isHls = stream.format.equals("hls", ignoreCase = true) ||
-            stream.url.contains(".m3u8", ignoreCase = true)
-        return MediaItem.Builder()
-            .setMediaId(mediaId)
-            .setUri(stream.url)
-            .setMimeType(if (isHls) MimeTypes.APPLICATION_M3U8 else null)
-            .setMediaMetadata(metadata)
             .build()
     }
 

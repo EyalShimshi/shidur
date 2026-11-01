@@ -2,13 +2,14 @@ package io.github.eyalshimshi.shidur.ui.screens
 
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Column
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.imePadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.ArrowBack
@@ -18,6 +19,7 @@ import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
 import androidx.compose.material3.ListItem
+import androidx.compose.material3.ListItemDefaults
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextField
@@ -43,7 +45,10 @@ import io.github.eyalshimshi.shidur.data.SearchEngine
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.GroupShapes
+import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationRow
+import io.github.eyalshimshi.shidur.ui.components.groupItem
 
 @Composable
 fun SearchScreen(
@@ -103,12 +108,14 @@ fun SearchScreen(
             modifier = Modifier
                 .fillMaxSize()
                 .imePadding(),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp + LocalBottomContentPadding.current),
         ) {
             if (isUrl) {
                 item {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.search_add_url, trimmed)) },
                         leadingContent = { Icon(Icons.Rounded.AddLink, contentDescription = null) },
+                        colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier = Modifier.clickable {
                             keyboard?.hide()
                             onAddUrl(trimmed)
@@ -116,7 +123,7 @@ fun SearchScreen(
                     )
                 }
             }
-            items(results, key = { it.id }) { station ->
+            itemsIndexed(results, key = { _, station -> station.id }) { index, station ->
                 StationRow(
                     station = station,
                     hebrew = hebrew,
@@ -128,6 +135,9 @@ fun SearchScreen(
                         onPlay(station, results)
                     },
                     onToggleFavorite = { onToggleFavorite(station.id) },
+                    modifier = Modifier
+                        .padding(bottom = if (index < results.lastIndex) GroupShapes.Gap else 0.dp)
+                        .groupItem(index, results.size, MaterialTheme.colorScheme.surfaceContainer),
                 )
             }
             if (results.isEmpty() && trimmed.isNotEmpty() && !isUrl) {

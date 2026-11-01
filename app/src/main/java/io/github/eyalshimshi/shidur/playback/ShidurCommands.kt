@@ -20,5 +20,11 @@ object ShidurCommands {
     const val EXTRA_STREAM_INDEX = "stream_index"
     const val EXTRA_NOW_PLAYING = "now_playing"
 
+    /** The stream address came from a warm-up (DNS, TLS and redirects already done). */
+    const val EXTRA_WARMED = "warmed"
+
+    /** The URI is a redirect target resolved ahead of time, not the catalog address itself. */
+    const val EXTRA_SKIPPED_REDIRECT = "skipped_redirect"
+
     fun command(action: String) = SessionCommand(action, Bundle.EMPTY)
 }

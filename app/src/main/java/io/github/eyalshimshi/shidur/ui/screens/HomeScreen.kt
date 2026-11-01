@@ -3,6 +3,7 @@ package io.github.eyalshimshi.shidur.ui.screens
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
+import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
 import androidx.compose.foundation.layout.fillMaxSize
@@ -10,7 +11,7 @@ import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.lazy.LazyColumn
-import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.rounded.Search
@@ -35,9 +36,12 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.GroupShapes
+import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.SectionHeader
 import io.github.eyalshimshi.shidur.ui.components.StationRow
 import io.github.eyalshimshi.shidur.ui.components.StationTile
+import io.github.eyalshimshi.shidur.ui.components.groupItem
 
 @OptIn(ExperimentalLayoutApi::class, ExperimentalMaterial3Api::class)
 @Composable
@@ -52,7 +56,10 @@ fun HomeScreen(
     onOpenCollection: (String?) -> Unit,
     onOpenFavorites: () -> Unit,
 ) {
-    LazyColumn(modifier = Modifier.fillMaxSize()) {
+    LazyColumn(
+        modifier = Modifier.fillMaxSize(),
+        contentPadding = PaddingValues(bottom = 24.dp + LocalBottomContentPadding.current),
+    ) {
         item {
             Row(
                 modifier = Modifier
@@ -138,7 +145,8 @@ fun HomeScreen(
 
         if (library.recents.isNotEmpty()) {
             item { SectionHeader(title = stringResource(R.string.section_recent)) }
-            items(library.recents.take(HOME_RECENTS), key = { "recent-" + it.id }) { station ->
+            val recents = library.recents.take(HOME_RECENTS)
+            itemsIndexed(recents, key = { _, station -> "recent-" + station.id }) { index, station ->
                 StationRow(
                     station = station,
                     hebrew = hebrew,
@@ -147,6 +155,9 @@ fun HomeScreen(
                     isPlaying = player.isPlaying,
                     onClick = { onPlay(station, library.recents) },
                     onToggleFavorite = { onToggleFavorite(station.id) },
+                    modifier = Modifier
+                        .padding(bottom = if (index < recents.lastIndex) GroupShapes.Gap else 0.dp)
+                        .groupItem(index, recents.size, MaterialTheme.colorScheme.surfaceContainer),
                 )
             }
         }
@@ -171,7 +182,6 @@ fun HomeScreen(
                 }
             }
         }
-        item { Spacer(Modifier.padding(bottom = 24.dp)) }
     }
 }
 

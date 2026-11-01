@@ -140,4 +140,30 @@
     <!-- Widget -->
     <string name="widget_description">Play your favorite stations from the home screen</string>
     <string name="widget_nothing_playing">Tap to choose a station</string>
+
+    <!-- Performance -->
+    <string name="settings_performance">Performance</string>
+    <string name="perf_empty">Play a few stations to see how quickly they start.</string>
+    <string name="perf_average">Average start: %1$s</string>
+    <string name="perf_average_summary">Last %1$d starts · from tap to sound</string>
+    <string name="perf_warmed">pre-connected</string>
+    <string name="perf_skipped_redirect">pre-connected, redirect skipped</string>
+    <string name="perf_attempts">%1$d addresses tried</string>
+    <string name="seconds_value">%1$s s</string>
+    <string name="player_started_in">Started in %1$s</string>
+    <string name="perf_instant">instant start</string>
+
+    <!-- Look and feel -->
+    <string name="settings_colors">Colors</string>
+    <string name="settings_interface">Interface</string>
+    <string name="settings_accent">Accent color</string>
+    <string name="settings_accent_summary">Picking a color turns off wallpaper colors</string>
+    <string name="accent_option">Color %1$d</string>
+    <string name="settings_background_gradient">Background gradient</string>
+    <string name="settings_background_gradient_summary">A soft wash of color at the top of screens</string>
+    <string name="settings_animations">Animations</string>
+    <string name="settings_animations_summary">Artwork and button motion</string>
+    <string name="settings_instant_start">Instant start (experimental)</string>
+    <string name="settings_instant_start_summary">While Shidur is open and nothing is playing, keeps your last station loading silently for up to 2 minutes so it plays at once. Uses about 1 MB a minute, also on mobile data.</string>
+    <string name="action_open_player">Open player</string>
 </resources>

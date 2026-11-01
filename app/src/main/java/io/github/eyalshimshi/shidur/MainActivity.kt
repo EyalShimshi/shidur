@@ -77,9 +77,13 @@ class MainActivity : AppCompatActivity() {
     override fun onStart() {
         super.onStart()
         viewModel.playback.onScreenStarted()
+        viewModel.warmUpLikelyStations()
+        viewModel.startInstantStart()
     }
 
     override fun onStop() {
+        // A rotation recreates the screen right away; keep the standby stream through it.
+        if (!isChangingConfigurations) viewModel.stopInstantStart()
         viewModel.playback.onScreenStopped()
         super.onStop()
     }

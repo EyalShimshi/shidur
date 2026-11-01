@@ -138,6 +138,8 @@ class LibrarySessionCallback(
         startIndex: Int,
         startPositionMs: Long,
     ): ListenableFuture<MediaSession.MediaItemsWithStartPosition> = scope.future {
+        val requested = mediaItems.getOrNull(if (startIndex == C.INDEX_UNSET) 0 else startIndex) ?: mediaItems.firstOrNull()
+        requested?.let { service.awaitWarmUp(MediaItemFactory.parseId(it.mediaId).second) }
         if (mediaItems.size == 1) {
             expandSingleItem(mediaItems[0])?.let { return@future it }
         }

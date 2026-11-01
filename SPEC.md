@@ -89,6 +89,19 @@ The first installable build intentionally simplifies parts of the plan. It was w
 | Bluetooth auto-start via CDM ([03 §9](SPEC-03-architecture.md#9-auto-resume-bluetooth--headphones)) | Not yet. Playback resumption (car/headset PLAY) and wired-headphone auto-play while the app is running are implemented | Needs spike S-3 on real devices |
 | Distribution | Debug APK built by GitHub Actions and published as a GitHub pre-release per push | Signing key ceremony and release builds come at M5 |
 
+## Implementation notes — second build (v0.2)
+
+Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on how fast stations start.
+
+| Spec says | v0.2 does | Why / next step |
+|---|---|---|
+| Full-screen player as its own screen ([02](SPEC-02-design.md)) | One draggable **player sheet**: the mini player above the navigation bar drags (or taps) open into the full player; swipe sideways between stations; predictive back shrinks it closed; the navigation bar slides away as it opens | Fewer jumps between screens; same pattern as Echo |
+| Seed colors through Material Color Utilities | Own CIELAB tonal-palette generator (`ui/theme/SeedScheme.kt`) for the accent color picker and the station-colored player, unit-tested for contrast | Avoids adding a library built for a newer Kotlin and Compose Multiplatform |
+| Settings as a plain list | Grouped cards (Colors, Interface, Language, Playback, Stations, Performance, About), accent swatches, background gradient and animations switches | Echo-style "Look & feel" |
+| Media3's default HTTP stack | OkHttp shared by playback and warm-ups: cached DNS, stations warmed when the app opens and the moment a station is touched, redirectors resolved ahead of time, 0.75 s start buffer, the last working address remembered. **Settings → Performance** shows measured start times | Faster starts, measured on the user's own phone |
+| — | **Instant start** (experimental, off by default): on any network, while the app is open and nothing plays, keeps the last station's stream open for up to 2 minutes and hands the open connection to the player | Near-zero start for the most likely station; costs about 1 MB per minute (also on mobile data, which the setting states), so it is opt-in |
+| Debug APK per push | Release build (not debuggable, so Compose runs much faster), signed with the same CI key, `versionCode` = CI run number | Installs over earlier builds; minification stays off until keep rules are tested |
+
 ## Glossary
 
 | Term | Meaning |

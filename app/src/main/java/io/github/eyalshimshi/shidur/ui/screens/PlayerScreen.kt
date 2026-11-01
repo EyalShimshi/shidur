@@ -2,8 +2,12 @@ package io.github.eyalshimshi.shidur.ui.screens
 
 import android.os.SystemClock
 import androidx.annotation.OptIn
+import androidx.compose.animation.core.AnimationSpec
 import androidx.compose.animation.core.animateDpAsState
 import androidx.compose.animation.core.animateFloatAsState
+import androidx.compose.animation.core.snap
+import androidx.compose.animation.core.spring
+import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
 import androidx.compose.foundation.layout.Box
@@ -12,12 +16,14 @@ import androidx.compose.foundation.layout.ExperimentalLayoutApi
 import androidx.compose.foundation.layout.FlowRow
 import androidx.compose.foundation.layout.Row
 import androidx.compose.foundation.layout.Spacer
+import androidx.compose.foundation.layout.fillMaxHeight
 import androidx.compose.foundation.layout.fillMaxSize
 import androidx.compose.foundation.layout.fillMaxWidth
 import androidx.compose.foundation.layout.height
 import androidx.compose.foundation.layout.navigationBarsPadding
 import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
+import androidx.compose.foundation.layout.statusBarsPadding
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
@@ -47,7 +53,6 @@ import androidx.compose.material3.LocalContentColor
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.ModalBottomSheet
 import androidx.compose.material3.OutlinedButton
-import androidx.compose.material3.Surface
 import androidx.compose.material3.Text
 import androidx.compose.material3.TextButton
 import androidx.compose.runtime.Composable
@@ -59,9 +64,9 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Brush
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.graphics.graphicsLayer
-import androidx.compose.ui.graphics.luminance
 import androidx.compose.ui.platform.LocalConfiguration
 import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.platform.LocalUriHandler
@@ -69,151 +74,175 @@ import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.text.style.TextOverflow
+import androidx.compose.ui.unit.Dp
 import androidx.compose.ui.unit.dp
 import androidx.media3.cast.MediaRouteButton
 import androidx.media3.common.util.UnstableApi
 import io.github.eyalshimshi.shidur.R
-import io.github.eyalshimshi.shidur.data.AppSettings
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.model.formatFrequency
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
+import io.github.eyalshimshi.shidur.playback.StartRecord
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
 import io.github.eyalshimshi.shidur.ui.components.FavoriteButton
+import io.github.eyalshimshi.shidur.ui.components.PlayerQueue
 import io.github.eyalshimshi.shidur.ui.components.StationArtwork
+import io.github.eyalshimshi.shidur.ui.components.StationPager
 import io.github.eyalshimshi.shidur.ui.components.playerStatusText
+import io.github.eyalshimshi.shidur.ui.components.secondsText
 import io.github.eyalshimshi.shidur.ui.components.stationSubtitle
 import io.github.eyalshimshi.shidur.ui.copyToClipboard
 import io.github.eyalshimshi.shidur.ui.reportProblemUrl
 import io.github.eyalshimshi.shidur.ui.searchSong
 import io.github.eyalshimshi.shidur.ui.shareStation
-import io.github.eyalshimshi.shidur.ui.theme.tintedWith
+import io.github.eyalshimshi.shidur.ui.theme.LocalAnimationsEnabled
 import java.util.Locale
 import kotlinx.coroutines.delay
 
+/**
+ * The full-screen player, shown inside the player sheet. Colors come from the sheet's theme (the
+ * station's colors when enabled).
+ */
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
-fun PlayerScreen(
-    station: Station?,
+fun FullPlayer(
+    station: Station,
+    queue: PlayerQueue,
     library: LibraryUiState,
     player: PlayerUiState,
-    settings: AppSettings,
+    lastStart: StartRecord?,
+    backgroundGradient: Boolean,
     hebrew: Boolean,
     castAvailable: Boolean,
-    onClose: () -> Unit,
+    onCollapse: () -> Unit,
     onTogglePlay: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
+    onSelectStation: (Int) -> Unit,
     onToggleFavorite: (String) -> Unit,
     onSetSleepTimer: (Int) -> Unit,
     onExtendSleepTimer: (Long) -> Unit,
     onCancelSleepTimer: () -> Unit,
 ) {
-    val baseScheme = MaterialTheme.colorScheme
-    val dark = baseScheme.background.luminance() < 0.5f
-    val scheme = if (station != null && settings.stationTint) {
-        remember(baseScheme, station.color) {
-            baseScheme.tintedWith(Color(station.color), dark, keepBlackBackground = settings.pureBlack && dark)
-        }
-    } else {
-        baseScheme
-    }
     var showSleepTimer by remember { mutableStateOf(false) }
     var showInfo by remember { mutableStateOf(false) }
+    val scheme = MaterialTheme.colorScheme
 
-    MaterialTheme(colorScheme = scheme) {
-        Surface(modifier = Modifier.fillMaxSize(), color = MaterialTheme.colorScheme.background) {
-            Column(
+    Box(modifier = Modifier.fillMaxSize()) {
+        // A glow of the station's color behind the artwork. Pure black backgrounds stay black.
+        if (backgroundGradient && scheme.background != Color.Black) {
+            Box(
                 modifier = Modifier
-                    .fillMaxSize()
-                    .verticalScroll(rememberScrollState())
-                    .padding(horizontal = 24.dp, vertical = 8.dp),
-                horizontalAlignment = Alignment.CenterHorizontally,
-            ) {
-                Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
-                    IconButton(onClick = onClose) {
-                        Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = stringResource(R.string.action_close_player))
-                    }
-                    Spacer(Modifier.weight(1f))
-                    if (castAvailable) CastButton()
-                    if (station != null) {
-                        IconButton(onClick = { showInfo = true }) {
-                            Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.action_station_info))
-                        }
-                    }
-                }
-                if (station == null) {
-                    Spacer(Modifier.height(120.dp))
-                    Text(
-                        text = stringResource(R.string.player_nothing_playing),
-                        style = MaterialTheme.typography.titleMedium,
-                        textAlign = TextAlign.Center,
-                    )
-                } else {
-                    PlayerContent(
-                        station = station,
-                        library = library,
-                        player = player,
-                        hebrew = hebrew,
-                        onTogglePlay = onTogglePlay,
-                        onNext = onNext,
-                        onPrevious = onPrevious,
-                        onToggleFavorite = onToggleFavorite,
-                        onOpenSleepTimer = { showSleepTimer = true },
-                    )
-                }
-            }
-        }
-
-        if (showSleepTimer) {
-            SleepTimerSheet(
-                endElapsedRealtime = player.sleepTimerEnd,
-                onDismiss = { showSleepTimer = false },
-                onSet = { minutes ->
-                    onSetSleepTimer(minutes)
-                    showSleepTimer = false
-                },
-                onExtend = { player.sleepTimerEnd?.let(onExtendSleepTimer) },
-                onCancel = {
-                    onCancelSleepTimer()
-                    showSleepTimer = false
-                },
+                    .fillMaxWidth()
+                    .fillMaxHeight(0.6f)
+                    .background(
+                        Brush.verticalGradient(listOf(scheme.primaryContainer.copy(alpha = 0.85f), Color.Transparent)),
+                    ),
             )
         }
-        if (showInfo && station != null) {
-            StationInfoSheet(station = station, hebrew = hebrew, onDismiss = { showInfo = false })
+        Column(
+            modifier = Modifier
+                .fillMaxSize()
+                .statusBarsPadding()
+                .navigationBarsPadding()
+                .verticalScroll(rememberScrollState())
+                .padding(horizontal = 24.dp, vertical = 8.dp),
+            horizontalAlignment = Alignment.CenterHorizontally,
+        ) {
+            Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
+                IconButton(onClick = onCollapse) {
+                    Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = stringResource(R.string.action_close_player))
+                }
+                Spacer(Modifier.weight(1f))
+                if (castAvailable) CastButton()
+                IconButton(onClick = { showInfo = true }) {
+                    Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.action_station_info))
+                }
+            }
+            PlayerContent(
+                station = station,
+                queue = queue,
+                library = library,
+                player = player,
+                lastStart = lastStart,
+                hebrew = hebrew,
+                onTogglePlay = onTogglePlay,
+                onNext = onNext,
+                onPrevious = onPrevious,
+                onSelectStation = onSelectStation,
+                onToggleFavorite = onToggleFavorite,
+                onOpenSleepTimer = { showSleepTimer = true },
+            )
         }
+    }
+
+    if (showSleepTimer) {
+        SleepTimerSheet(
+            endElapsedRealtime = player.sleepTimerEnd,
+            onDismiss = { showSleepTimer = false },
+            onSet = { minutes ->
+                onSetSleepTimer(minutes)
+                showSleepTimer = false
+            },
+            onExtend = { player.sleepTimerEnd?.let(onExtendSleepTimer) },
+            onCancel = {
+                onCancelSleepTimer()
+                showSleepTimer = false
+            },
+        )
+    }
+    if (showInfo) {
+        StationInfoSheet(station = station, hebrew = hebrew, onDismiss = { showInfo = false })
     }
 }
 
 @Composable
 private fun PlayerContent(
     station: Station,
+    queue: PlayerQueue,
     library: LibraryUiState,
     player: PlayerUiState,
+    lastStart: StartRecord?,
     hebrew: Boolean,
     onTogglePlay: () -> Unit,
     onNext: () -> Unit,
     onPrevious: () -> Unit,
+    onSelectStation: (Int) -> Unit,
     onToggleFavorite: (String) -> Unit,
     onOpenSleepTimer: () -> Unit,
 ) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     val configuration = LocalConfiguration.current
+    val animations = LocalAnimationsEnabled.current
     val artworkSize = minOf(configuration.screenWidthDp * 0.7f, configuration.screenHeightDp * 0.38f, 300f).dp
-    val artworkScale by animateFloatAsState(if (player.isPlaying) 1f else 0.92f, label = "artwork-scale")
+    val artworkScale by animateFloatAsState(
+        targetValue = if (player.isPlaying || !animations) 1f else 0.92f,
+        label = "artwork-scale",
+    )
     var songMenu by remember { mutableStateOf(false) }
 
     Spacer(Modifier.height(16.dp))
-    StationArtwork(
-        station = station,
-        size = artworkSize,
-        shape = RoundedCornerShape(artworkSize * 0.22f),
-        modifier = Modifier.graphicsLayer {
-            scaleX = artworkScale
-            scaleY = artworkScale
-        },
-    )
+    // Swipe the artwork to change station.
+    StationPager(
+        queue = queue,
+        onSelect = onSelectStation,
+        modifier = Modifier
+            .fillMaxWidth()
+            .height(artworkSize),
+    ) { pageStation ->
+        Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.Center) {
+            StationArtwork(
+                station = pageStation,
+                size = artworkSize,
+                shape = RoundedCornerShape(artworkSize * 0.22f),
+                modifier = Modifier.graphicsLayer {
+                    scaleX = artworkScale
+                    scaleY = artworkScale
+                },
+            )
+        }
+    }
     Spacer(Modifier.height(24.dp))
     Text(
         text = station.name(hebrew),
@@ -276,9 +305,22 @@ private fun PlayerContent(
             )
         }
     }
+    if (lastStart != null) {
+        val startedIn = stringResource(R.string.player_started_in, secondsText(lastStart.millis))
+        Text(
+            text = if (lastStart.instant) startedIn + " · " + stringResource(R.string.perf_instant) else startedIn,
+            style = MaterialTheme.typography.labelMedium,
+            color = MaterialTheme.colorScheme.onSurfaceVariant,
+        )
+    }
     Spacer(Modifier.height(24.dp))
 
-    val playCorner by animateDpAsState(if (player.playWhenReady) 28.dp else 44.dp, label = "play-shape")
+    val playShapeSpec: AnimationSpec<Dp> = if (animations) spring() else snap()
+    val playCorner by animateDpAsState(
+        targetValue = if (player.playWhenReady) 28.dp else 44.dp,
+        animationSpec = playShapeSpec,
+        label = "play-shape",
+    )
     Row(
         verticalAlignment = Alignment.CenterVertically,
         horizontalArrangement = Arrangement.spacedBy(20.dp),

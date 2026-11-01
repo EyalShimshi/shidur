@@ -6,9 +6,11 @@ import androidx.compose.foundation.layout.Column
 import androidx.compose.foundation.layout.PaddingValues
 import androidx.compose.foundation.layout.WindowInsets
 import androidx.compose.foundation.layout.fillMaxSize
+import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
+import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.material.icons.Icons
 import androidx.compose.material.icons.automirrored.rounded.Sort
 import androidx.compose.material.icons.rounded.Search
@@ -18,8 +20,10 @@ import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilterChip
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
+import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.material3.TopAppBar
+import androidx.compose.material3.TopAppBarDefaults
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.getValue
 import androidx.compose.runtime.mutableStateOf
@@ -27,13 +31,17 @@ import androidx.compose.runtime.remember
 import androidx.compose.runtime.saveable.rememberSaveable
 import androidx.compose.runtime.setValue
 import androidx.compose.ui.Modifier
+import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.unit.dp
 import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.GroupShapes
+import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationRow
+import io.github.eyalshimshi.shidur.ui.components.groupItem
 import java.text.Collator
 import java.util.Locale
 
@@ -97,6 +105,10 @@ fun BrowseScreen(
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
+            colors = TopAppBarDefaults.topAppBarColors(
+                containerColor = Color.Transparent,
+                scrolledContainerColor = Color.Transparent,
+            ),
         )
         LazyRow(
             contentPadding = PaddingValues(horizontal = 16.dp, vertical = 4.dp),
@@ -117,8 +129,11 @@ fun BrowseScreen(
                 )
             }
         }
-        LazyColumn(modifier = Modifier.fillMaxSize()) {
-            items(stations, key = { it.id }) { station ->
+        LazyColumn(
+            modifier = Modifier.fillMaxSize(),
+            contentPadding = PaddingValues(top = 8.dp, bottom = 16.dp + LocalBottomContentPadding.current),
+        ) {
+            itemsIndexed(stations, key = { _, station -> station.id }) { index, station ->
                 StationRow(
                     station = station,
                     hebrew = hebrew,
@@ -127,6 +142,9 @@ fun BrowseScreen(
                     isPlaying = player.isPlaying,
                     onClick = { onPlay(station, stations) },
                     onToggleFavorite = { onToggleFavorite(station.id) },
+                    modifier = Modifier
+                        .padding(bottom = if (index < stations.lastIndex) GroupShapes.Gap else 0.dp)
+                        .groupItem(index, stations.size, MaterialTheme.colorScheme.surfaceContainer),
                 )
             }
         }

@@ -12,8 +12,14 @@ data class AppSettings(
     val themeMode: ThemeMode = ThemeMode.SYSTEM,
     val pureBlack: Boolean = false,
     val dynamicColor: Boolean = true,
+    /** Seed of the app's colors when [dynamicColor] is off; null is the Material baseline purple. */
+    val accentColor: Int? = null,
     val stationTint: Boolean = true,
+    val backgroundGradient: Boolean = true,
+    val animations: Boolean = true,
     val dataSaver: DataSaverMode = DataSaverMode.MOBILE,
+    /** Keeps the last station's stream open while the app is open, so it starts instantly. */
+    val instantStart: Boolean = false,
     val sleepFadeOut: Boolean = true,
     val resumeOnHeadphones: Boolean = false,
     val onboardingDone: Boolean = false,
@@ -25,8 +31,12 @@ class SettingsRepository(private val prefs: SharedPreferences) {
         const val THEME = "theme_mode"
         const val PURE_BLACK = "pure_black"
         const val DYNAMIC_COLOR = "dynamic_color"
+        const val ACCENT_COLOR = "accent_color"
         const val STATION_TINT = "station_tint"
+        const val BACKGROUND_GRADIENT = "background_gradient"
+        const val ANIMATIONS = "animations"
         const val DATA_SAVER = "data_saver"
+        const val INSTANT_START = "instant_start"
         const val SLEEP_FADE = "sleep_fade"
         const val RESUME_HEADPHONES = "resume_headphones"
         const val ONBOARDING_DONE = "onboarding_done"
@@ -38,8 +48,12 @@ class SettingsRepository(private val prefs: SharedPreferences) {
                 themeMode = p.getString(Keys.THEME, null).toEnum(ThemeMode.SYSTEM),
                 pureBlack = p.getBoolean(Keys.PURE_BLACK, false),
                 dynamicColor = p.getBoolean(Keys.DYNAMIC_COLOR, true),
+                accentColor = if (p.contains(Keys.ACCENT_COLOR)) p.getInt(Keys.ACCENT_COLOR, 0) else null,
                 stationTint = p.getBoolean(Keys.STATION_TINT, true),
+                backgroundGradient = p.getBoolean(Keys.BACKGROUND_GRADIENT, true),
+                animations = p.getBoolean(Keys.ANIMATIONS, true),
                 dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
+                instantStart = p.getBoolean(Keys.INSTANT_START, false),
                 sleepFadeOut = p.getBoolean(Keys.SLEEP_FADE, true),
                 resumeOnHeadphones = p.getBoolean(Keys.RESUME_HEADPHONES, false),
                 onboardingDone = p.getBoolean(Keys.ONBOARDING_DONE, false),
@@ -53,9 +67,22 @@ class SettingsRepository(private val prefs: SharedPreferences) {
 
     fun setDynamicColor(value: Boolean) = putBoolean(Keys.DYNAMIC_COLOR, value)
 
+    /** Picks the app's accent color (null for the default one); this turns wallpaper colors off. */
+    fun setAccentColor(value: Int?) {
+        val editor = prefs.edit()
+        if (value == null) editor.remove(Keys.ACCENT_COLOR) else editor.putInt(Keys.ACCENT_COLOR, value)
+        editor.putBoolean(Keys.DYNAMIC_COLOR, false).apply()
+    }
+
     fun setStationTint(value: Boolean) = putBoolean(Keys.STATION_TINT, value)
 
+    fun setBackgroundGradient(value: Boolean) = putBoolean(Keys.BACKGROUND_GRADIENT, value)
+
+    fun setAnimations(value: Boolean) = putBoolean(Keys.ANIMATIONS, value)
+
     fun setDataSaver(value: DataSaverMode) = putString(Keys.DATA_SAVER, value.name)
+
+    fun setInstantStart(value: Boolean) = putBoolean(Keys.INSTANT_START, value)
 
     fun setSleepFadeOut(value: Boolean) = putBoolean(Keys.SLEEP_FADE, value)
 

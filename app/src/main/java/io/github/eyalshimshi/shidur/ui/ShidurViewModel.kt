@@ -10,14 +10,20 @@ import io.github.eyalshimshi.shidur.data.DataSaverMode
 import io.github.eyalshimshi.shidur.data.ThemeMode
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.model.StationCollection
+import io.github.eyalshimshi.shidur.playback.HotStandby
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
+import io.github.eyalshimshi.shidur.playback.StartRecord
 import io.github.eyalshimshi.shidur.playback.StreamProbe
+import kotlinx.coroutines.Job
+import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.flow.stateIn
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withTimeoutOrNull
 
 data class LibraryUiState(
     val loaded: Boolean = false,
@@ -38,6 +44,8 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     private val settingsRepository = container.settingsRepository
 
     val playback = container.playbackConnection
+
+    private var instantStartJob: Job? = null
 
     val settings: StateFlow<AppSettings?> = settingsRepository.settings
         .stateIn(viewModelScope, SharingStarted.Eagerly, null)
@@ -63,6 +71,9 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
 
     val player: StateFlow<PlayerUiState> = playback.state
 
+    /** Measured stream starts, most recent first. */
+    val starts: StateFlow<List<StartRecord>> = container.diagnostics.starts
+
     // Playback
 
     fun play(station: Station, queue: List<Station>) = playback.play(station.id, queue.map { it.id })
@@ -75,7 +86,62 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
 
     fun previous() = playback.previous()
 
+    /** Switches to the station at [index] in the current queue (swiping in the player). */
+    fun selectStationAt(index: Int) = playback.seekToIndex(index)
+
     fun retry() = playback.retry()
+
+    /** Prepares a station's connection the moment the user touches it (before the tap completes). */
+    fun warmUp(station: Station) {
+        container.streamWarmer.warm(container.streamSelector.preferredUrl(station))
+    }
+
+    /**
+     * Prepares the stations the user is most likely to play next (last played, top favorites,
+     * recents). Costs a few kilobytes per station: no audio is downloaded.
+     */
+    fun warmUpLikelyStations() {
+        viewModelScope.launch {
+            val state = library.first { it.loaded }
+            delay(WARM_UP_DELAY_MS)
+            val lastPlayed = libraryRepository.lastPlayed()?.stationId?.let { state.stationsById[it] }
+            val likely = (listOfNotNull(lastPlayed) + state.favorites.take(4) + state.recents.take(2))
+                .distinctBy { it.id }
+                .take(MAX_WARM_STATIONS)
+            container.streamWarmer.warm(likely.map { container.streamSelector.preferredUrl(it) })
+        }
+    }
+
+    fun clearDiagnostics() = container.diagnostics.clear()
+
+    /**
+     * Instant start (opt-in): when the app opens with nothing playing (on any network), keeps the
+     * last station's stream open so that playing it starts at once. Stopped when the app leaves
+     * the screen, after two minutes, or when another station plays.
+     */
+    fun startInstantStart() {
+        instantStartJob?.cancel()
+        instantStartJob = viewModelScope.launch {
+            if (!settingsRepository.settings.first().instantStart) return@launch
+            val state = library.first { it.loaded }
+            val playerState = withTimeoutOrNull(CONNECT_TIMEOUT_MS) { player.first { it.connected } } ?: return@launch
+            if (playerState.playWhenReady || playerState.isCasting) return@launch
+            val station = libraryRepository.lastPlayed()?.stationId?.let { state.stationsById[it] } ?: return@launch
+            val url = container.streamSelector.preferredUrl(station)
+            val format = station.streams.firstOrNull { it.url == url }?.format
+            if (!HotStandby.canHold(url, format)) return@launch
+            val resolved = container.streamWarmer.resolve(url)
+            // The user may have started playing while the address was being resolved.
+            if (player.value.playWhenReady) return@launch
+            container.hotStandby.start(station.id, resolved ?: url, setOfNotNull(url, resolved), station.icyCharset)
+        }
+    }
+
+    fun stopInstantStart() {
+        instantStartJob?.cancel()
+        instantStartJob = null
+        container.hotStandby.stop()
+    }
 
     fun setSleepTimer(minutes: Int) {
         val fadeOut = settings.value?.sleepFadeOut ?: true
@@ -139,12 +205,29 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { settingsRepository.setDynamicColor(value) }
     }
 
+    fun setAccentColor(value: Int?) {
+        viewModelScope.launch { settingsRepository.setAccentColor(value) }
+    }
+
     fun setStationTint(value: Boolean) {
         viewModelScope.launch { settingsRepository.setStationTint(value) }
     }
 
+    fun setBackgroundGradient(value: Boolean) {
+        viewModelScope.launch { settingsRepository.setBackgroundGradient(value) }
+    }
+
+    fun setAnimations(value: Boolean) {
+        viewModelScope.launch { settingsRepository.setAnimations(value) }
+    }
+
     fun setDataSaver(value: DataSaverMode) {
         viewModelScope.launch { settingsRepository.setDataSaver(value) }
+    }
+
+    fun setInstantStart(value: Boolean) {
+        settingsRepository.setInstantStart(value)
+        if (value) startInstantStart() else stopInstantStart()
     }
 
     fun setSleepFadeOut(value: Boolean) {
@@ -153,5 +236,14 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setResumeOnHeadphones(value: Boolean) {
         viewModelScope.launch { settingsRepository.setResumeOnHeadphones(value) }
+    }
+
+    private companion object {
+        /** Lets the first frame render before warm-ups use the network. */
+        const val WARM_UP_DELAY_MS = 400L
+        const val MAX_WARM_STATIONS = 6
+
+        /** How long Instant start waits for the playback service to report what's playing. */
+        const val CONNECT_TIMEOUT_MS = 3_000L
     }
 }
