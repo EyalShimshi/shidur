@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">Shidur</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">Home</string>
+    <string name="nav_browse">Browse</string>
+    <string name="nav_favorites">Favorites</string>
+
+    <!-- Home, browse, favorites, search -->
+    <string name="search_hint">Search stations or frequency</string>
+    <string name="section_favorites">Favorites</string>
+    <string name="section_recent">Recently played</string>
+    <string name="section_browse">Browse by category</string>
+    <string name="see_all">See all</string>
+    <string name="collection_all">All</string>
+    <string name="favorites_empty_title">No favorites yet</string>
+    <string name="favorites_empty_body">Add the stations you love and they\'ll appear here for one-tap listening.</string>
+    <string name="action_browse_stations">Browse stations</string>
+    <string name="action_sort">Sort</string>
+    <string name="sort_recommended">Recommended</string>
+    <string name="sort_name">Name</string>
+    <string name="sort_frequency">Frequency</string>
+    <string name="action_done">Done</string>
+    <string name="action_edit">Edit</string>
+    <string name="action_add_station">Add a station by URL</string>
+    <string name="action_move_up">Move up</string>
+    <string name="action_move_down">Move down</string>
+    <string name="action_remove">Remove</string>
+    <string name="action_back">Back</string>
+    <string name="action_clear">Clear</string>
+    <string name="search_add_url">Add \"%1$s\" as a custom station</string>
+    <string name="search_no_results">No stations found</string>
+
+    <!-- Stations -->
+    <string name="favorite_add">Add to favorites</string>
+    <string name="favorite_remove">Remove from favorites</string>
+    <string name="now_playing_indicator">Now playing</string>
+    <string name="custom_station">Custom station</string>
+    <string name="fm_varies">FM · varies by region</string>
+    <string name="digital_station">Online only</string>
+
+    <!-- Player -->
+    <string name="action_retry">Retry</string>
+    <string name="action_play">Play</string>
+    <string name="action_pause">Pause</string>
+    <string name="action_previous_station">Previous station</string>
+    <string name="action_next_station">Next station</string>
+    <string name="action_close_player">Close player</string>
+    <string name="action_station_info">Station info</string>
+    <string name="action_share">Share</string>
+    <string name="action_report">Report a problem</string>
+    <string name="player_connecting">Connecting…</string>
+    <string name="player_error_short">Can\'t play right now</string>
+    <string name="player_error">Can\'t reach this station right now. Check your connection and retry, or report the problem.</string>
+    <string name="player_nothing_playing">Nothing is playing. Pick a station to start listening.</string>
+    <string name="player_live">LIVE</string>
+    <string name="song_copy">Copy song name</string>
+    <string name="song_search">Search this song</string>
+    <string name="copied">Copied</string>
+    <string name="share_text">Listening to %1$s on Shidur 📻</string>
+
+    <!-- Sleep timer -->
+    <string name="sleep_timer_title">Sleep timer</string>
+    <string name="sleep_minutes">%1$d min</string>
+    <string name="sleep_stops_in">Stops in %1$s</string>
+    <string name="sleep_extend">+10 min</string>
+    <string name="sleep_cancel">Cancel timer</string>
+
+    <!-- Station info -->
+    <string name="info_frequencies">FM frequencies</string>
+    <string name="info_website">Open the station\'s website</string>
+    <string name="info_copy_stream">Copy stream address</string>
+    <string name="info_disclaimer">Shidur is an independent app and is not affiliated with this station.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">Settings</string>
+    <string name="settings_appearance">Appearance</string>
+    <string name="settings_theme">Theme</string>
+    <string name="theme_system">System</string>
+    <string name="theme_light">Light</string>
+    <string name="theme_dark">Dark</string>
+    <string name="settings_pure_black">Pure black dark theme</string>
+    <string name="settings_pure_black_summary">Saves battery on OLED screens</string>
+    <string name="settings_dynamic_color">Dynamic color</string>
+    <string name="settings_dynamic_color_summary">Use colors from your wallpaper</string>
+    <string name="settings_station_tint">Station colors in the player</string>
+    <string name="settings_language">Language</string>
+    <string name="language_system">System default</string>
+    <string name="language_hebrew">עברית</string>
+    <string name="language_english">English</string>
+    <string name="settings_playback">Playback</string>
+    <string name="settings_data_saver">Data saver</string>
+    <string name="data_saver_off">Off</string>
+    <string name="data_saver_mobile">On mobile data</string>
+    <string name="data_saver_always">Always</string>
+    <string name="settings_sleep_fade">Fade out when the sleep timer ends</string>
+    <string name="settings_resume_headphones">Play when headphones are plugged in</string>
+    <string name="settings_resume_headphones_summary">Works while Shidur is open</string>
+    <string name="settings_stations">Stations</string>
+    <string name="settings_check_updates">Check for station list updates</string>
+    <string name="settings_catalog_version">Station list version %1$s</string>
+    <string name="catalog_updated">Station list updated</string>
+    <string name="catalog_up_to_date">Station list is up to date</string>
+    <string name="catalog_update_failed">Couldn\'t check for updates right now</string>
+    <string name="settings_suggest_station">Suggest a station</string>
+    <string name="settings_clear_recents">Clear recently played</string>
+    <string name="recents_cleared">Recently played cleared</string>
+    <string name="settings_about">About</string>
+    <string name="about_version">Shidur %1$s</string>
+    <string name="about_license">Open source · GPL-3.0 · Tap to view the code</string>
+    <string name="about_disclaimer">Shidur is an independent, open-source app. It is not affiliated with or endorsed by any broadcaster. Station names belong to their respective owners.</string>
+
+    <!-- First run -->
+    <string name="welcome_title">All Israeli radio. One simple app.</string>
+    <string name="action_get_started">Get started</string>
+    <string name="pick_stations_title">Pick your stations</string>
+    <string name="pick_stations_body">Tap the stations you listen to most. You can change this anytime.</string>
+    <string name="action_skip">Skip</string>
+    <string name="action_continue">Continue</string>
+    <string name="action_continue_count">Continue (%1$d)</string>
+
+    <!-- Custom station -->
+    <string name="add_station_title">Add a station</string>
+    <string name="add_station_url">Stream URL</string>
+    <string name="add_station_name">Name</string>
+    <string name="add_station_test">Test</string>
+    <string name="add_station_testing">Testing…</string>
+    <string name="add_station_ok">Works! %1$s</string>
+    <string name="add_station_failed">Couldn\'t play this address. Check it and try again.</string>
+    <string name="add_station_save">Save</string>
+    <string name="add_station_save_anyway">Save anyway</string>
+
+    <!-- Android Auto -->
+    <string name="auto_favorites">Favorites</string>
+    <string name="auto_recent">Recent</string>
+    <string name="auto_categories">Categories</string>
+    <string name="auto_all">All stations</string>
+
+    <!-- Widget -->
+    <string name="widget_description">Play your favorite stations from the home screen</string>
+    <string name="widget_nothing_playing">Tap to choose a station</string>
+</resources>

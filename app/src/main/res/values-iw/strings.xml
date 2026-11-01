@@ -1,0 +1,143 @@
+<?xml version="1.0" encoding="utf-8"?>
+<resources>
+    <string name="app_name">שידור</string>
+
+    <!-- Navigation -->
+    <string name="nav_home">בית</string>
+    <string name="nav_browse">תחנות</string>
+    <string name="nav_favorites">מועדפים</string>
+
+    <!-- Home, browse, favorites, search -->
+    <string name="search_hint">חיפוש תחנה או תדר</string>
+    <string name="section_favorites">מועדפים</string>
+    <string name="section_recent">הושמעו לאחרונה</string>
+    <string name="section_browse">לפי קטגוריה</string>
+    <string name="see_all">הכול</string>
+    <string name="collection_all">הכול</string>
+    <string name="favorites_empty_title">עדיין אין מועדפים</string>
+    <string name="favorites_empty_body">תחנות שיתווספו למועדפים יופיעו כאן להאזנה בהקשה אחת.</string>
+    <string name="action_browse_stations">מעבר לתחנות</string>
+    <string name="action_sort">מיון</string>
+    <string name="sort_recommended">מומלץ</string>
+    <string name="sort_name">שם</string>
+    <string name="sort_frequency">תדר</string>
+    <string name="action_done">סיום</string>
+    <string name="action_edit">עריכה</string>
+    <string name="action_add_station">הוספת תחנה לפי כתובת</string>
+    <string name="action_move_up">הזזה קדימה</string>
+    <string name="action_move_down">הזזה אחורה</string>
+    <string name="action_remove">הסרה</string>
+    <string name="action_back">חזרה</string>
+    <string name="action_clear">ניקוי</string>
+    <string name="search_add_url">הוספת ״%1$s״ כתחנה מותאמת</string>
+    <string name="search_no_results">לא נמצאו תחנות</string>
+
+    <!-- Stations -->
+    <string name="favorite_add">הוספה למועדפים</string>
+    <string name="favorite_remove">הסרה מהמועדפים</string>
+    <string name="now_playing_indicator">מתנגן עכשיו</string>
+    <string name="custom_station">תחנה מותאמת</string>
+    <string name="fm_varies">FM · משתנה לפי אזור</string>
+    <string name="digital_station">אינטרנט בלבד</string>
+
+    <!-- Player -->
+    <string name="action_retry">ניסיון חוזר</string>
+    <string name="action_play">ניגון</string>
+    <string name="action_pause">השהיה</string>
+    <string name="action_previous_station">התחנה הקודמת</string>
+    <string name="action_next_station">התחנה הבאה</string>
+    <string name="action_close_player">סגירת הנגן</string>
+    <string name="action_station_info">פרטי התחנה</string>
+    <string name="action_share">שיתוף</string>
+    <string name="action_report">דיווח על בעיה</string>
+    <string name="player_connecting">מתחבר…</string>
+    <string name="player_error_short">אין אפשרות לנגן כרגע</string>
+    <string name="player_error">אין חיבור לתחנה כרגע. כדאי לבדוק את החיבור לאינטרנט ולנסות שוב, או לדווח על הבעיה.</string>
+    <string name="player_nothing_playing">שום דבר לא מתנגן. אפשר לבחור תחנה כדי להתחיל להאזין.</string>
+    <string name="player_live">שידור חי</string>
+    <string name="song_copy">העתקת שם השיר</string>
+    <string name="song_search">חיפוש השיר</string>
+    <string name="copied">הועתק</string>
+    <string name="share_text">מאזינים ל%1$s באפליקציית שידור 📻</string>
+
+    <!-- Sleep timer -->
+    <string name="sleep_timer_title">טיימר שינה</string>
+    <string name="sleep_minutes">%1$d דק׳</string>
+    <string name="sleep_stops_in">עצירה בעוד %1$s</string>
+    <string name="sleep_extend">עוד 10 דק׳</string>
+    <string name="sleep_cancel">ביטול הטיימר</string>
+
+    <!-- Station info -->
+    <string name="info_frequencies">תדרי FM</string>
+    <string name="info_website">לאתר התחנה</string>
+    <string name="info_copy_stream">העתקת כתובת השידור</string>
+    <string name="info_disclaimer">שידור היא אפליקציה עצמאית ואינה קשורה לתחנה זו.</string>
+
+    <!-- Settings -->
+    <string name="settings_title">הגדרות</string>
+    <string name="settings_appearance">מראה</string>
+    <string name="settings_theme">ערכת נושא</string>
+    <string name="theme_system">מערכת</string>
+    <string name="theme_light">בהירה</string>
+    <string name="theme_dark">כהה</string>
+    <string name="settings_pure_black">רקע שחור מלא במצב כהה</string>
+    <string name="settings_pure_black_summary">חוסך סוללה במסכי OLED</string>
+    <string name="settings_dynamic_color">צבעים דינמיים</string>
+    <string name="settings_dynamic_color_summary">שימוש בצבעים מהטפט</string>
+    <string name="settings_station_tint">צבעי התחנה בנגן</string>
+    <string name="settings_language">שפה</string>
+    <string name="language_system">שפת המערכת</string>
+    <string name="language_hebrew">עברית</string>
+    <string name="language_english">English</string>
+    <string name="settings_playback">ניגון</string>
+    <string name="settings_data_saver">חיסכון בנתונים</string>
+    <string name="data_saver_off">כבוי</string>
+    <string name="data_saver_mobile">בגלישה סלולרית</string>
+    <string name="data_saver_always">תמיד</string>
+    <string name="settings_sleep_fade">עמעום הדרגתי בסיום טיימר השינה</string>
+    <string name="settings_resume_headphones">ניגון בחיבור אוזניות</string>
+    <string name="settings_resume_headphones_summary">פועל כשהאפליקציה פתוחה</string>
+    <string name="settings_stations">תחנות</string>
+    <string name="settings_check_updates">בדיקת עדכונים לרשימת התחנות</string>
+    <string name="settings_catalog_version">גרסת רשימת התחנות %1$s</string>
+    <string name="catalog_updated">רשימת התחנות עודכנה</string>
+    <string name="catalog_up_to_date">רשימת התחנות מעודכנת</string>
+    <string name="catalog_update_failed">לא ניתן לבדוק עדכונים כרגע</string>
+    <string name="settings_suggest_station">הצעת תחנה</string>
+    <string name="settings_clear_recents">ניקוי היסטוריית ההאזנה</string>
+    <string name="recents_cleared">ההיסטוריה נוקתה</string>
+    <string name="settings_about">אודות</string>
+    <string name="about_version">שידור %1$s</string>
+    <string name="about_license">קוד פתוח · GPL-3.0 · הקשה לצפייה בקוד</string>
+    <string name="about_disclaimer">שידור היא אפליקציה עצמאית בקוד פתוח, שאינה קשורה לגופי השידור ואינה מטעמם. שמות התחנות שייכים לבעליהם.</string>
+
+    <!-- First run -->
+    <string name="welcome_title">כל הרדיו הישראלי. אפליקציה אחת פשוטה.</string>
+    <string name="action_get_started">בואו נתחיל</string>
+    <string name="pick_stations_title">בחירת תחנות אהובות</string>
+    <string name="pick_stations_body">אפשר לבחור את התחנות שמאזינים להן הכי הרבה. תמיד אפשר לשנות.</string>
+    <string name="action_skip">דילוג</string>
+    <string name="action_continue">המשך</string>
+    <string name="action_continue_count">המשך (%1$d)</string>
+
+    <!-- Custom station -->
+    <string name="add_station_title">הוספת תחנה</string>
+    <string name="add_station_url">כתובת השידור</string>
+    <string name="add_station_name">שם</string>
+    <string name="add_station_test">בדיקה</string>
+    <string name="add_station_testing">בבדיקה…</string>
+    <string name="add_station_ok">עובד! %1$s</string>
+    <string name="add_station_failed">לא ניתן לנגן את הכתובת. כדאי לבדוק אותה ולנסות שוב.</string>
+    <string name="add_station_save">שמירה</string>
+    <string name="add_station_save_anyway">שמירה בכל זאת</string>
+
+    <!-- Android Auto -->
+    <string name="auto_favorites">מועדפים</string>
+    <string name="auto_recent">אחרונות</string>
+    <string name="auto_categories">קטגוריות</string>
+    <string name="auto_all">כל התחנות</string>
+
+    <!-- Widget -->
+    <string name="widget_description">ניגון התחנות האהובות ממסך הבית</string>
+    <string name="widget_nothing_playing">הקשה לבחירת תחנה</string>
+</resources>

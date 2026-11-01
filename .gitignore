@@ -1,0 +1,23 @@
+# Gradle / Android build output
+.gradle/
+.kotlin/
+build/
+app/build/
+captures/
+*.apk
+*.aab
+
+# Local machine configuration
+local.properties
+.idea/
+*.iml
+.DS_Store
+Thumbs.db
+
+# Signing material must never be committed
+*.jks
+*.keystore
+keystore.properties
+
+# One-time local helper used to create the folder structure
+make-folders.cmd

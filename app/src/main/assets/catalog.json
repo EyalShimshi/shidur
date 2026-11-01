@@ -1,0 +1,315 @@
+{
+  "schemaVersion": 1,
+  "catalogVersion": 2026102601,
+  "collections": [
+    { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
+    { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
+    { "id": "news", "nameHe": "חדשות ושיחה", "nameEn": "News & Talk", "order": 30 },
+    { "id": "music", "nameHe": "מוזיקה", "nameEn": "Music", "order": 40 },
+    { "id": "regional", "nameHe": "אזורי", "nameEn": "Regional", "order": 50 },
+    { "id": "religious", "nameHe": "דת ומורשת", "nameEn": "Religious & Heritage", "order": 60 },
+    { "id": "arabic", "nameHe": "ערבית", "nameEn": "Arabic", "order": 70 }
+  ],
+  "stations": [
+    {
+      "id": "kan-bet", "nameHe": "כאן ב׳", "nameEn": "Kan Bet", "shortName": "ב׳", "color": "#1E88E5",
+      "network": "kan", "collections": ["kan", "news"], "rank": 10,
+      "fm": [95.5, 95.6, 100.5, 92.0, 90.7, 89.5, 103.7],
+      "aliases": ["רשת ב", "רשת ב׳", "כאן ב", "reshet bet", "kan b", "kan bet", "bet"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_BET.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://28563.live.streamtheworld.com/KAN_BET.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy.media.kan.org.il/icy/kanbet_mp3", "format": "mp3" },
+        { "url": "https://kanbet.media.kan.org.il/hls/live/2024811/2024811/playlist.m3u8", "format": "hls" }
+      ]
+    },
+    {
+      "id": "glglz", "nameHe": "גלגלצ", "nameEn": "Galgalatz", "shortName": "גלגלצ", "color": "#F9A825",
+      "network": "idf", "collections": ["idf", "music"], "rank": 20,
+      "fm": [91.8, 93.5], "primaryFm": 91.8,
+      "aliases": ["גלגל״צ", "גלגלצ", "galgalatz", "glglz", "galgalaz"],
+      "website": "https://glz.co.il/",
+      "streams": [
+        { "url": "https://api.bynetcdn.com/Redirector/glz/glglz/ICE-LIVE", "format": "mp3" },
+        { "url": "https://glzwizzlv.bynetcdn.com/glglz_mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://glzicylv01.bynetcdn.com/glglz_mp3", "format": "mp3", "bitrate": 128 }
+      ]
+    },
+    {
+      "id": "glz", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "shortName": "גל״צ", "color": "#2E7D32",
+      "network": "idf", "collections": ["idf", "news"], "rank": 30,
+      "fm": [104.0],
+      "aliases": ["גלצ", "גל״צ", "גלי צהל", "galatz", "galei tzahal", "glz", "army radio"],
+      "website": "https://glz.co.il/",
+      "streams": [
+        { "url": "https://glzwizzlv.bynetcdn.com/glz_mp3", "format": "mp3", "bitrate": 128 }
+      ]
+    },
+    {
+      "id": "kan-gimel", "nameHe": "כאן גימל", "nameEn": "Kan Gimel", "shortName": "ג׳", "color": "#F4511E",
+      "network": "kan", "collections": ["kan", "music"], "rank": 40,
+      "fm": [97.8, 88.1, 105.5, 89.5, 90.5, 100.5], "primaryFm": 97.8,
+      "aliases": ["רשת ג", "רשת ג׳", "גימל", "reshet gimel", "kan gimmel", "gimel"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_GIMMEL.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy01.bynetcdn.com/icy/kangimmel_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kan-88", "nameHe": "כאן 88", "nameEn": "Kan 88", "shortName": "88", "color": "#8E24AA",
+      "network": "kan", "collections": ["kan", "music"], "rank": 50,
+      "fm": [88.0], "primaryFm": 88.0,
+      "aliases": ["88fm", "kan88", "כאן88", "רשת 88"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_88.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy.media.kan.org.il/icy/kan88_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "103fm", "nameHe": "103FM", "nameEn": "103FM", "shortName": "103", "color": "#E53935",
+      "network": "regional", "collections": ["regional", "news"], "rank": 60,
+      "fm": [103.0], "primaryFm": 103.0,
+      "aliases": ["103", "רדיו ללא הפסקה", "radio lelo hafsaka", "מאה ושלוש"],
+      "website": "https://103fm.maariv.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "eco99", "nameHe": "אקו 99FM", "nameEn": "Eco99FM", "shortName": "99", "color": "#7CB342",
+      "network": "regional", "collections": ["regional", "music"], "rank": 70,
+      "fm": [99.0], "primaryFm": 99.0,
+      "aliases": ["אקו", "eco", "eco 99", "99fm", "99"],
+      "website": "https://eco99fm.maariv.co.il/",
+      "streams": [
+        { "url": "https://eco-live.mediacast.co.il/99fm_aac", "format": "aac", "bitrate": 64 },
+        { "url": "http://eco-live.mediacast.co.il/99fm_aac", "format": "aac", "bitrate": 64 }
+      ]
+    },
+    {
+      "id": "100fm", "nameHe": "רדיוס 100FM", "nameEn": "Radios 100FM", "shortName": "100", "color": "#FB8C00",
+      "network": "regional", "collections": ["regional", "music"], "rank": 80,
+      "fm": [100.0], "primaryFm": 100.0,
+      "aliases": ["רדיוס", "radios", "radius", "100fm", "100"],
+      "website": "https://100fm.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Radios_100FM/Audio/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Radios_100FM/Audio/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "102fm-tlv", "nameHe": "רדיו תל אביב 102FM", "nameEn": "Radio Tel Aviv 102FM", "shortName": "102", "color": "#D81B60",
+      "network": "regional", "collections": ["regional", "music"], "rank": 90,
+      "fm": [102.0], "primaryFm": 102.0,
+      "aliases": ["תל אביב", "radio tel aviv", "tel aviv", "102"],
+      "website": "https://102fm.co.il/",
+      "streams": [
+        { "url": "https://102.livecdn.biz/102fm_aac", "format": "aac", "bitrate": 64 },
+        { "url": "https://102.livecdn.biz/102fm_mp3", "format": "mp3" },
+        { "url": "http://102.livecdn.biz/102fm_aac", "format": "aac", "bitrate": 64 }
+      ]
+    },
+    {
+      "id": "kan-tarbut", "nameHe": "כאן תרבות", "nameEn": "Kan Tarbut", "shortName": "תרבות", "color": "#00897B",
+      "network": "kan", "collections": ["kan", "news"], "rank": 100,
+      "fm": [100.7, 97.2, 104.8],
+      "aliases": ["רשת א", "רשת א׳", "תרבות", "reshet alef", "tarbut", "culture"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_TARBUT.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://22653.live.streamtheworld.com/KAN_TARBUT.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy.media.kan.org.il/icy/kantarbut_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kan-kol-hamusica", "nameHe": "כאן קול המוזיקה", "nameEn": "Kan Kol HaMusica", "shortName": "מוזיקה", "color": "#5E35B1",
+      "network": "kan", "collections": ["kan", "music"], "rank": 110,
+      "fm": [95.7, 98.5, 100.2, 94.4, 97.0],
+      "aliases": ["קול המוסיקה", "קול המוזיקה", "קלאסית", "kol hamusica", "kol hamusika", "classical"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_KOL_HAMUSICA.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy.media.kan.org.il/icy/kankolhamusica_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kan-moreshet", "nameHe": "כאן מורשת", "nameEn": "Kan Moreshet", "shortName": "מורשת", "color": "#6D4C41",
+      "network": "kan", "collections": ["kan", "religious"], "rank": 120,
+      "fm": [102.8],
+      "aliases": ["מורשת", "moreshet", "heritage"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_MORESHET.mp3", "format": "mp3", "bitrate": 128 },
+        { "url": "https://kanliveicy.media.kan.org.il/icy/kanmoreshet_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kan-reka", "nameHe": "כאן רק״ע", "nameEn": "Kan Reka", "shortName": "רק״ע", "color": "#3949AB",
+      "network": "kan", "collections": ["kan"], "rank": 130,
+      "fm": [94.4, 88.5, 93.7, 101.3, 88.2],
+      "aliases": ["רקע", "רק״ע", "reka", "russian", "amharic"],
+      "website": "https://www.kan.org.il/",
+      "streams": [
+        { "url": "https://kanliveicy01.bynetcdn.com/icy/kanreka_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "makan", "nameHe": "מכאן", "nameEn": "Makan", "shortName": "مكان", "color": "#43A047",
+      "network": "kan", "collections": ["kan", "arabic"], "rank": 140,
+      "fm": [99.3, 92.4, 90.3],
+      "aliases": ["מכאן", "مكان", "makan"],
+      "website": "https://www.makan.org.il/",
+      "streams": [
+        { "url": "https://kanliveicy.media.kan.org.il/icy/makan_mp3", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "radio-haifa", "nameHe": "רדיו חיפה 107.5", "nameEn": "Radio Haifa 107.5", "shortName": "107.5", "color": "#039BE5",
+      "network": "regional", "collections": ["regional"], "rank": 150,
+      "fm": [107.5], "primaryFm": 107.5,
+      "aliases": ["חיפה", "haifa"],
+      "website": "https://1075.fm/",
+      "streams": [
+        { "url": "https://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64 },
+        { "url": "http://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64 }
+      ]
+    },
+    {
+      "id": "radio-darom", "nameHe": "רדיו דרום", "nameEn": "Radio Darom", "shortName": "97", "color": "#FFB300",
+      "network": "regional", "collections": ["regional"], "rank": 160,
+      "fm": [97.0, 101.5, 95.8], "primaryFm": 97.0,
+      "aliases": ["דרום", "darom", "south", "101.5"],
+      "website": "https://radiodarom.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "radio-jerusalem", "nameHe": "רדיו ירושלים 101FM", "nameEn": "Radio Jerusalem 101FM", "shortName": "101", "color": "#795548",
+      "network": "regional", "collections": ["regional", "news"], "rank": 170,
+      "fm": [101.0], "primaryFm": 101.0,
+      "aliases": ["ירושלים", "jerusalem", "101"],
+      "website": "https://www.jerusalemnet.co.il/",
+      "streams": [
+        { "url": "https://radio.streamgates.net/stream/101fm", "format": "aac", "bitrate": 64 },
+        { "url": "http://radio.streamgates.net/stream/101fm", "format": "aac", "bitrate": 64 }
+      ]
+    },
+    {
+      "id": "radio-tsafon", "nameHe": "רדיו צפון 104.5FM", "nameEn": "Radio Tsafon 104.5FM", "shortName": "104.5", "color": "#26A69A",
+      "network": "regional", "collections": ["regional"], "rank": 180,
+      "fm": [104.5], "primaryFm": 104.5,
+      "aliases": ["צפון", "tsafon", "tzafon", "north"],
+      "website": "https://1045fm.maariv.co.il/",
+      "streams": [
+        { "url": "https://radio.streamgates.net/stream/1045fm", "format": "mp3" },
+        { "url": "http://radio.streamgates.net/stream/1045fm", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kol-rega", "nameHe": "קול רגע 96FM", "nameEn": "Kol Rega 96FM", "shortName": "96", "color": "#C0CA33",
+      "network": "regional", "collections": ["regional"], "rank": 190,
+      "fm": [96.0], "primaryFm": 96.0,
+      "aliases": ["רגע", "kol rega", "rega"],
+      "website": "https://96fm.co.il/",
+      "streams": [
+        { "url": "https://radio.streamgates.net/stream/KOLREGA", "format": "mp3" },
+        { "url": "http://radio.streamgates.net/stream/KOLREGA", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "lev-hamedina", "nameHe": "לב המדינה 91FM", "nameEn": "Lev HaMedina 91FM", "shortName": "91", "color": "#EC407A",
+      "network": "regional", "collections": ["regional"], "rank": 200,
+      "fm": [91.0], "primaryFm": 91.0,
+      "aliases": ["לב המדינה", "lev hamedina", "91"],
+      "website": "https://91fm.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Lev_Hamedina/Audio/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Lev_Hamedina/Audio/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "90fm", "nameHe": "אמצע הדרך 90FM", "nameEn": "90FM Emtza HaDerech", "shortName": "90", "color": "#AB47BC",
+      "network": "regional", "collections": ["regional"], "rank": 210,
+      "fm": [90.0], "primaryFm": 90.0,
+      "aliases": ["אמצע הדרך", "emtza haderech", "90"],
+      "website": "https://90fm.co.il/",
+      "streams": [
+        { "url": "https://radio.streamgates.net/stream/90fm", "format": "mp3" },
+        { "url": "http://radio.streamgates.net/stream/90fm", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "102fm-eilat", "nameHe": "קול הים האדום 102FM", "nameEn": "Kol HaYam HaAdom 102FM", "shortName": "אילת", "color": "#00ACC1",
+      "network": "regional", "collections": ["regional"], "rank": 220,
+      "fm": [102.0],
+      "aliases": ["אילת", "הים האדום", "eilat", "red sea", "kol hayam haadom"],
+      "website": "https://eilat102.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Eilat_Radio/Live/icecast.audio", "format": "mp3" },
+        { "url": "https://radio.streamgates.net/stream/eilat", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Eilat_Radio/Live/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "galei-israel", "nameHe": "גלי ישראל", "nameEn": "Galei Yisrael", "shortName": "גלי", "color": "#0277BD",
+      "network": "regional", "collections": ["regional", "religious"], "rank": 230,
+      "fm": [106.5, 94.0, 89.3],
+      "aliases": ["גלי ישראל", "galei israel", "galei yisrael"],
+      "website": "https://gly.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kol-barama", "nameHe": "קול ברמה", "nameEn": "Kol BaRama", "shortName": "ברמה", "color": "#455A64",
+      "network": "regional", "collections": ["religious"], "rank": 240,
+      "fm": [92.1, 105.7],
+      "aliases": ["ברמה", "kol barama", "barama"],
+      "website": "https://www.kol-barama.co.il/",
+      "streams": [
+        { "url": "https://cdn.cybercdn.live/Kol_Barama/Live_Audio/icecast.audio", "format": "mp3" },
+        { "url": "https://kb.cdnwz.net/kol_barama", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Kol_Barama/Live_Audio/icecast.audio", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kol-chai", "nameHe": "קול חי", "nameEn": "Kol Chai", "shortName": "חי", "color": "#1565C0",
+      "network": "regional", "collections": ["religious"], "rank": 250,
+      "fm": [92.8, 93.0],
+      "aliases": ["קול חי", "kol chai", "kol hai", "93fm"],
+      "website": "https://www.93fm.co.il/",
+      "streams": [
+        { "url": "https://live.kcm.fm/live-new", "format": "mp3" },
+        { "url": "http://live.kcm.fm/live-new", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "kol-chai-music", "nameHe": "קול חי מיוזיק", "nameEn": "Kol Chai Music", "shortName": "KCM", "color": "#5C6BC0",
+      "network": "digital", "collections": ["religious", "music"], "rank": 260,
+      "aliases": ["kcm", "kol chai music", "קול חי מוזיקה"],
+      "website": "https://www.93fm.co.il/",
+      "streams": [
+        { "url": "https://media2.93fm.co.il/livemusic", "format": "mp3" },
+        { "url": "http://media2.93fm.co.il/livemusic", "format": "mp3" }
+      ]
+    },
+    {
+      "id": "a-shams", "nameHe": "אשמס", "nameEn": "A-Shams", "shortName": "شمس", "color": "#FF7043",
+      "network": "regional", "collections": ["arabic", "regional"], "rank": 270,
+      "fm": [98.1, 101.1],
+      "aliases": ["الشمس", "אשמס", "ashams", "a-shams", "al shams"],
+      "website": "https://www.ashams.com/",
+      "streams": [
+        { "url": "https://cdna.streamgates.net/Ashams/Live/icecast.audio", "format": "aac", "bitrate": 64 },
+        { "url": "http://cdna.streamgates.net/Ashams/Live/icecast.audio", "format": "aac", "bitrate": 64 }
+      ]
+    }
+  ]
+}
