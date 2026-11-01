@@ -15,13 +15,6 @@ import androidx.compose.foundation.layout.navigationBars
 import androidx.compose.foundation.layout.only
 import androidx.compose.foundation.layout.safeDrawing
 import androidx.compose.foundation.layout.windowInsetsPadding
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.outlined.FavoriteBorder
-import androidx.compose.material.icons.outlined.Home
-import androidx.compose.material.icons.outlined.Radio
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.Home
-import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.NavigationBar
@@ -68,6 +61,8 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.data.AppSettings
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
+import io.github.eyalshimshi.shidur.ui.components.CrashDialog
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.LocalStationPress
 import io.github.eyalshimshi.shidur.ui.components.MiniPlayer
@@ -98,9 +93,9 @@ private class TopLevelDestination(
 )
 
 private val TOP_LEVEL = listOf(
-    TopLevelDestination(HomeRoute, { it.hasRoute(HomeRoute::class) }, Icons.Outlined.Home, Icons.Rounded.Home, R.string.nav_home),
-    TopLevelDestination(BrowseRoute(), { it.hasRoute(BrowseRoute::class) }, Icons.Outlined.Radio, Icons.Rounded.Radio, R.string.nav_browse),
-    TopLevelDestination(FavoritesRoute, { it.hasRoute(FavoritesRoute::class) }, Icons.Outlined.FavoriteBorder, Icons.Rounded.Favorite, R.string.nav_favorites),
+    TopLevelDestination(HomeRoute, { it.hasRoute(HomeRoute::class) }, AppIcons.HomeOutlined, AppIcons.Home, R.string.nav_home),
+    TopLevelDestination(BrowseRoute(), { it.hasRoute(BrowseRoute::class) }, AppIcons.RadioOutlined, AppIcons.Radio, R.string.nav_browse),
+    TopLevelDestination(FavoritesRoute, { it.hasRoute(FavoritesRoute::class) }, AppIcons.FavoriteBorderOutlined, AppIcons.Favorite, R.string.nav_favorites),
 )
 
 @Composable
@@ -114,8 +109,11 @@ fun ShidurApp(
 ) {
     val library by viewModel.library.collectAsStateWithLifecycle()
     val player by viewModel.player.collectAsStateWithLifecycle()
+    val crashReport by viewModel.crashReport.collectAsStateWithLifecycle()
     val language = LocalConfiguration.current.locales[0].language
     val hebrew = language == "iw" || language == "he"
+
+    crashReport?.let { report -> CrashDialog(report = report, onDismiss = viewModel::dismissCrashReport) }
 
     when {
         !library.loaded -> Box(
@@ -166,6 +164,7 @@ private fun MainContent(
     val sheetState = rememberSaveable(saver = PlayerSheetState.Saver) { PlayerSheetState(initiallyExpanded = false) }
     val playerCoversContent by remember(sheetState) { derivedStateOf { sheetState.progress >= 1f } }
     val scope = rememberCoroutineScope()
+    val canPinShortcuts = remember(viewModel) { viewModel.canPinShortcuts() }
 
     val play: (Station, List<Station>) -> Unit = { station, queue ->
         onBeforePlay()
@@ -176,7 +175,14 @@ private fun MainContent(
     val currentStationState = rememberUpdatedState(currentStation)
     LaunchedEffect(navigationRequest) {
         val request = navigationRequest ?: return@LaunchedEffect
-        if (request is NavigationRequest.OpenStation) viewModel.loadStation(request.stationId)
+        when (request) {
+            is NavigationRequest.OpenStation -> viewModel.loadStation(request.stationId)
+            is NavigationRequest.PlayStation -> library.stationsById[request.stationId]?.let { station ->
+                // Like tapping it in Favorites: swiping in the player moves through the favorites.
+                play(station, if (station.id in library.favoriteIds) library.favorites else listOf(station))
+            }
+            NavigationRequest.OpenPlayer -> Unit
+        }
         // The player appears once the playback service reports a station.
         val station = withTimeoutOrNull(OPEN_PLAYER_TIMEOUT_MS) {
             snapshotFlow { currentStationState.value }.first { it != null }
@@ -312,6 +318,11 @@ private fun MainContent(
                                     onSetSleepTimer = viewModel::setSleepTimer,
                                     onExtendSleepTimer = { end -> viewModel.extendSleepTimer(end, 10) },
                                     onCancelSleepTimer = viewModel::cancelSleepTimer,
+                                    onPinShortcut = if (canPinShortcuts) {
+                                        { station -> viewModel.pinShortcut(station, hebrew) }
+                                    } else {
+                                        null
+                                    },
                                 )
                             },
                         )
@@ -340,7 +351,6 @@ private fun ShidurNavHost(
                 player = player,
                 hebrew = hebrew,
                 onPlay = onPlay,
-                onToggleFavorite = viewModel::toggleFavorite,
                 onOpenSearch = { navController.navigate(SearchRoute) },
                 onOpenSettings = { navController.navigate(SettingsRoute) },
                 onOpenCollection = { collectionId -> navController.navigate(BrowseRoute(collectionId)) },

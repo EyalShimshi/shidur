@@ -8,12 +8,16 @@ import android.graphics.Typeface
 import io.github.eyalshimshi.shidur.model.Station
 
 /**
- * Draws a station "logo": its short name on its brand color. Used instead of real station logos,
- * which are trademarks we don't redistribute.
+ * Draws a station's text artwork: its short name on its brand color. Used when a station has no
+ * downloaded logo (see StationLogos).
  */
 object MonogramRenderer {
 
-    fun render(station: Station, sizePx: Int): Bitmap {
+    /**
+     * Draws [station]'s monogram on a square bitmap. [contentScale] below 1 keeps the text in the
+     * middle, e.g. for launcher icons that the launcher crops to a circle.
+     */
+    fun render(station: Station, sizePx: Int, contentScale: Float = 1f): Bitmap {
         val bitmap = Bitmap.createBitmap(sizePx, sizePx, Bitmap.Config.ARGB_8888)
         val canvas = Canvas(bitmap)
         canvas.drawColor(station.color)
@@ -22,9 +26,9 @@ object MonogramRenderer {
             color = contentColorFor(station.color)
             typeface = Typeface.create(Typeface.DEFAULT, Typeface.BOLD)
             textAlign = Paint.Align.CENTER
-            textSize = sizePx * fontScaleFor(station.shortName)
+            textSize = sizePx * fontScaleFor(station.shortName) * contentScale
         }
-        val maxWidth = sizePx * 0.82f
+        val maxWidth = sizePx * 0.82f * contentScale
         val measured = paint.measureText(station.shortName)
         if (measured > maxWidth) paint.textSize = paint.textSize * maxWidth / measured
         val metrics = paint.fontMetrics

@@ -17,9 +17,6 @@ import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.shape.CircleShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Check
-import androidx.compose.material.icons.rounded.Radio
 import androidx.compose.material3.Button
 import androidx.compose.material3.Icon
 import androidx.compose.material3.MaterialTheme
@@ -42,6 +39,7 @@ import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.StationTile
 
 @Composable
@@ -86,7 +84,7 @@ private fun WelcomeStep(onStart: () -> Unit) {
             contentAlignment = Alignment.Center,
         ) {
             Icon(
-                Icons.Rounded.Radio,
+                AppIcons.Radio,
                 contentDescription = null,
                 tint = MaterialTheme.colorScheme.onPrimaryContainer,
                 modifier = Modifier.size(64.dp),
@@ -164,7 +162,7 @@ private fun PickStationsStep(
                             contentAlignment = Alignment.Center,
                         ) {
                             Icon(
-                                Icons.Rounded.Check,
+                                AppIcons.Check,
                                 contentDescription = null,
                                 tint = MaterialTheme.colorScheme.onPrimary,
                                 modifier = Modifier.size(18.dp),

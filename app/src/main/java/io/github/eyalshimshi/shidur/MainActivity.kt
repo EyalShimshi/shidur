@@ -14,6 +14,7 @@ import androidx.annotation.OptIn
 import androidx.appcompat.app.AppCompatActivity
 import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Surface
+import androidx.compose.runtime.CompositionLocalProvider
 import androidx.compose.runtime.DisposableEffect
 import androidx.compose.runtime.getValue
 import androidx.core.content.ContextCompat
@@ -23,6 +24,7 @@ import androidx.media3.common.util.UnstableApi
 import io.github.eyalshimshi.shidur.ui.NavigationRequest
 import io.github.eyalshimshi.shidur.ui.ShidurApp
 import io.github.eyalshimshi.shidur.ui.ShidurViewModel
+import io.github.eyalshimshi.shidur.ui.components.LocalStationLogos
 import io.github.eyalshimshi.shidur.ui.theme.ShidurTheme
 import io.github.eyalshimshi.shidur.ui.theme.isDarkTheme
 import kotlinx.coroutines.flow.MutableStateFlow
@@ -41,6 +43,7 @@ class MainActivity : AppCompatActivity() {
         enableEdgeToEdge()
         if (savedInstanceState == null) handleIntent(intent)
         val castAvailable = isCastAvailable()
+        val stationLogos = (application as ShidurApplication).container.stationLogos
 
         setContent {
             val settings by viewModel.settings.collectAsStateWithLifecycle()
@@ -60,14 +63,18 @@ class MainActivity : AppCompatActivity() {
                         onDispose { }
                     }
                     Surface(color = MaterialTheme.colorScheme.background) {
-                        ShidurApp(
-                            viewModel = viewModel,
-                            settings = current,
-                            navigationRequest = request,
-                            onNavigationHandled = { navigationRequest.value = null },
-                            castAvailable = castAvailable,
-                            onBeforePlay = ::requestNotificationPermissionIfNeeded,
-                        )
+                        CompositionLocalProvider(
+                            LocalStationLogos provides if (current.stationLogos) stationLogos else null,
+                        ) {
+                            ShidurApp(
+                                viewModel = viewModel,
+                                settings = current,
+                                navigationRequest = request,
+                                onNavigationHandled = { navigationRequest.value = null },
+                                castAvailable = castAvailable,
+                                onBeforePlay = ::requestNotificationPermissionIfNeeded,
+                            )
+                        }
                     }
                 }
             }
@@ -97,7 +104,14 @@ class MainActivity : AppCompatActivity() {
         if (intent == null) return
         val data = intent.data
         if (data != null && data.scheme == "shidur" && data.host == "station") {
-            data.lastPathSegment?.let { navigationRequest.value = NavigationRequest.OpenStation(it) }
+            data.lastPathSegment?.let { stationId ->
+                // Only the app's own shortcuts carry this extra; links from elsewhere just open the station.
+                navigationRequest.value = if (intent.getBooleanExtra(EXTRA_PLAY_STATION, false)) {
+                    NavigationRequest.PlayStation(stationId)
+                } else {
+                    NavigationRequest.OpenStation(stationId)
+                }
+            }
         } else if (intent.getBooleanExtra(EXTRA_OPEN_PLAYER, false)) {
             navigationRequest.value = NavigationRequest.OpenPlayer
         }
@@ -127,6 +141,9 @@ class MainActivity : AppCompatActivity() {
 
     companion object {
         const val EXTRA_OPEN_PLAYER = "open_player"
+
+        /** Set by the app's own shortcuts: play the station in the shidur://station/ link. */
+        const val EXTRA_PLAY_STATION = "play_station"
         private const val GOOGLE_PLAY_SERVICES = "com.google.android.gms"
     }
 }

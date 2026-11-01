@@ -13,6 +13,7 @@
     <string name="section_recent">הושמעו לאחרונה</string>
     <string name="section_browse">לפי קטגוריה</string>
     <string name="see_all">הכול</string>
+    <string name="home_all_stations">כל התחנות</string>
     <string name="collection_all">הכול</string>
     <string name="favorites_empty_title">עדיין אין מועדפים</string>
     <string name="favorites_empty_body">תחנות שיתווספו למועדפים יופיעו כאן להאזנה בהקשה אחת.</string>
@@ -166,4 +167,38 @@
     <string name="settings_instant_start">הפעלה מיידית (ניסיוני)</string>
     <string name="settings_instant_start_summary">כשהאפליקציה פתוחה ושום דבר לא מתנגן, התחנה האחרונה נטענת בשקט עד 2 דקות כדי שתתחיל לנגן מיד. צורך כ-1MB לדקה, גם בגלישה סלולרית.</string>
     <string name="action_open_player">פתיחת הנגן</string>
+
+    <!-- Crash catcher -->
+    <string name="crash_title">שידור נסגרה באופן לא צפוי</string>
+    <string name="crash_body">בפעם הקודמת האפליקציה קרסה. אפשר להעתיק את הפרטים ולשלוח אותם למפתח, או לפתוח דיווח מוכן ב-GitHub. שום דבר לא נשלח אוטומטית.</string>
+    <string name="crash_copy">העתקת הפרטים</string>
+    <string name="crash_report">דיווח ב-GitHub</string>
+    <string name="action_dismiss">סגירה</string>
+
+    <!-- Shortcuts -->
+    <string name="info_add_to_home">הוספה למסך הבית</string>
+
+    <!-- Station logos -->
+    <string name="settings_station_logos">לוגו התחנות</string>
+    <string name="settings_station_logos_summary">יורד פעם אחת ממקורות ציבוריים. לתחנות בלי לוגו טוב נשאר הכיתוב.</string>
+
+    <!-- Wake-up alarm -->
+    <string name="alarm_title">שעון מעורר</string>
+    <string name="alarm_enable">השכמה עם רדיו</string>
+    <string name="alarm_off">כבוי</string>
+    <string name="alarm_rings_in">יצלצל בעוד %1$s · %2$s</string>
+    <string name="alarm_duration_hours">%1$d ש׳ %2$d דק׳</string>
+    <string name="alarm_duration_minutes">%1$d דק׳</string>
+    <string name="alarm_time">שעה</string>
+    <string name="alarm_repeat">חזרה</string>
+    <string name="alarm_once">פעם אחת</string>
+    <string name="alarm_every_day">כל יום</string>
+    <string name="alarm_station">תחנה</string>
+    <string name="alarm_no_station">בחירת תחנה</string>
+    <string name="alarm_gentle">התחלה עדינה</string>
+    <string name="alarm_gentle_summary">מתחיל בשקט ומתגבר במשך דקה</string>
+    <string name="alarm_backup_note">ההשכמה מתנגנת בעוצמת השעון המעורר. אם אי אפשר להתחבר לתחנה, יתנגן צליל השעון המעורר של הטלפון.</string>
+    <string name="alarm_permission">הרשאה לשעון מעורר</string>
+    <string name="alarm_permission_summary">נדרשת הרשאה כדי ששידור תצלצל בזמן</string>
+    <string name="alarm_tone_title">השכמה</string>
 </resources>

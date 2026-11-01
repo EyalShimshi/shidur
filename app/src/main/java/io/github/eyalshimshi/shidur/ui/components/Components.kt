@@ -1,6 +1,7 @@
 package io.github.eyalshimshi.shidur.ui.components
 
 import androidx.compose.foundation.ExperimentalFoundationApi
+import androidx.compose.foundation.Image
 import androidx.compose.foundation.LocalIndication
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
@@ -19,13 +20,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Favorite
-import androidx.compose.material.icons.rounded.FavoriteBorder
-import androidx.compose.material.icons.rounded.GraphicEq
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Refresh
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
@@ -39,6 +33,7 @@ import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.LaunchedEffect
 import androidx.compose.runtime.getValue
+import androidx.compose.runtime.produceState
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.rememberUpdatedState
 import androidx.compose.runtime.staticCompositionLocalOf
@@ -46,8 +41,10 @@ import androidx.compose.ui.Alignment
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.clip
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.ImageBitmap
 import androidx.compose.ui.graphics.Shape
 import androidx.compose.ui.graphics.luminance
+import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalDensity
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.text.font.FontWeight
@@ -60,9 +57,13 @@ import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.model.formatFrequency
 import io.github.eyalshimshi.shidur.playback.MonogramRenderer
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
+import io.github.eyalshimshi.shidur.playback.StationLogos
 import java.util.Locale
 
-/** The station's "logo": its short name on its brand color. */
+/**
+ * The station's artwork: its logo when one has been downloaded (see [LocalStationLogos]),
+ * otherwise its short name on its brand color.
+ */
 @Composable
 fun StationArtwork(
     station: Station,
@@ -70,6 +71,18 @@ fun StationArtwork(
     modifier: Modifier = Modifier,
     shape: Shape = RoundedCornerShape(size * 0.28f),
 ) {
+    val logo = rememberStationLogo(station)
+    if (logo != null) {
+        Image(
+            bitmap = logo,
+            contentDescription = null,
+            contentScale = ContentScale.Crop,
+            modifier = modifier
+                .size(size)
+                .clip(shape),
+        )
+        return
+    }
     val background = Color(station.color)
     val content = if (background.luminance() > 0.5f) Color(0xFF1D1B20) else Color.White
     val fontSize = with(LocalDensity.current) { (size * MonogramRenderer.fontScaleFor(station.shortName)).toSp() }
@@ -90,6 +103,20 @@ fun StationArtwork(
             overflow = TextOverflow.Clip,
         )
     }
+}
+
+/** The app's logo loader, or null when station logos are turned off in Settings. */
+val LocalStationLogos = staticCompositionLocalOf<StationLogos?> { null }
+
+/** The station's logo once it's available; null while loading or when it has none. */
+@Composable
+fun rememberStationLogo(station: Station): ImageBitmap? {
+    val logos = LocalStationLogos.current
+    if (logos == null || station.logo == null) return null
+    val logo by produceState(initialValue = logos.cached(station), logos, station.id, station.logo) {
+        if (value == null) value = logos.load(station)
+    }
+    return logo
 }
 
 /** "88.0 FM", "FM · varies by region", "Custom station" or "Digital". */
@@ -155,7 +182,7 @@ fun StationRow(
             Row(verticalAlignment = Alignment.CenterVertically) {
                 if (isCurrent && isPlaying) {
                     Icon(
-                        imageVector = Icons.Rounded.GraphicEq,
+                        imageVector = AppIcons.GraphicEq,
                         contentDescription = stringResource(R.string.now_playing_indicator),
                         tint = MaterialTheme.colorScheme.primary,
                     )
@@ -173,7 +200,7 @@ fun StationRow(
 fun FavoriteButton(isFavorite: Boolean, onToggle: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(onClick = onToggle, modifier = modifier) {
         Icon(
-            imageVector = if (isFavorite) Icons.Rounded.Favorite else Icons.Rounded.FavoriteBorder,
+            imageVector = if (isFavorite) AppIcons.Favorite else AppIcons.FavoriteBorder,
             contentDescription = stringResource(if (isFavorite) R.string.favorite_remove else R.string.favorite_add),
             tint = if (isFavorite) MaterialTheme.colorScheme.primary else LocalContentColor.current,
         )
@@ -213,7 +240,7 @@ fun StationTile(
                     contentAlignment = Alignment.Center,
                 ) {
                     Icon(
-                        imageVector = Icons.Rounded.GraphicEq,
+                        imageVector = AppIcons.GraphicEq,
                         contentDescription = stringResource(R.string.now_playing_indicator),
                         tint = MaterialTheme.colorScheme.onPrimary,
                         modifier = Modifier.size(14.dp),
@@ -238,13 +265,13 @@ fun StationTile(
 fun PlayPauseButton(player: PlayerUiState, onClick: () -> Unit, modifier: Modifier = Modifier) {
     IconButton(onClick = onClick, modifier = modifier) {
         when {
-            player.hasError -> Icon(Icons.Rounded.Refresh, contentDescription = stringResource(R.string.action_retry))
+            player.hasError -> Icon(AppIcons.Refresh, contentDescription = stringResource(R.string.action_retry))
             player.isBuffering && player.playWhenReady -> CircularProgressIndicator(
                 modifier = Modifier.size(24.dp),
                 strokeWidth = 2.5.dp,
             )
-            player.playWhenReady -> Icon(Icons.Rounded.Pause, contentDescription = stringResource(R.string.action_pause))
-            else -> Icon(Icons.Rounded.PlayArrow, contentDescription = stringResource(R.string.action_play))
+            player.playWhenReady -> Icon(AppIcons.Pause, contentDescription = stringResource(R.string.action_pause))
+            else -> Icon(AppIcons.PlayArrow, contentDescription = stringResource(R.string.action_play))
         }
     }
 }

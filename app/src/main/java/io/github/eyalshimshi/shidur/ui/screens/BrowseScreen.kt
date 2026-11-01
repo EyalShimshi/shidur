@@ -11,9 +11,6 @@ import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.LazyRow
 import androidx.compose.foundation.lazy.items
 import androidx.compose.foundation.lazy.itemsIndexed
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.Sort
-import androidx.compose.material.icons.rounded.Search
 import androidx.compose.material3.DropdownMenu
 import androidx.compose.material3.DropdownMenuItem
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -38,6 +35,7 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.GroupShapes
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationRow
@@ -75,11 +73,11 @@ fun BrowseScreen(
             title = { Text(stringResource(R.string.nav_browse)) },
             actions = {
                 IconButton(onClick = onOpenSearch) {
-                    Icon(Icons.Rounded.Search, contentDescription = stringResource(R.string.search_hint))
+                    Icon(AppIcons.Search, contentDescription = stringResource(R.string.search_hint))
                 }
                 Box {
                     IconButton(onClick = { sortMenuOpen = true }) {
-                        Icon(Icons.AutoMirrored.Rounded.Sort, contentDescription = stringResource(R.string.action_sort))
+                        Icon(AppIcons.Sort, contentDescription = stringResource(R.string.action_sort))
                     }
                     DropdownMenu(expanded = sortMenuOpen, onDismissRequest = { sortMenuOpen = false }) {
                         StationSort.entries.forEach { option ->

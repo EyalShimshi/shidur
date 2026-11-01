@@ -40,6 +40,8 @@ data class StationDto(
     val primaryFm: Double? = null,
     val aliases: List<String> = emptyList(),
     val website: String? = null,
+    /** Address of the station's logo image (PNG, JPEG or WebP); downloaded by the app at runtime. */
+    val logo: String? = null,
     val icyCharset: String? = null,
     val rank: Int = 1000,
     val status: String = "active",
@@ -80,6 +82,7 @@ fun StationDto.toStation(): Station = Station(
     streams = streams.map { StationStream(it.url, it.format, it.bitrate) },
     icyCharset = icyCharset,
     rank = rank,
+    logo = logo,
 )
 
 fun CustomStationDto.toStation(): Station = Station(

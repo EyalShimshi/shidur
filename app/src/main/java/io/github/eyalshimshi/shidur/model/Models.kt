@@ -27,6 +27,8 @@ data class Station(
     val icyCharset: String?,
     val rank: Int,
     val isCustom: Boolean = false,
+    /** Address of the station's logo image, or null to always use the text artwork. */
+    val logo: String? = null,
 ) {
     fun name(hebrew: Boolean): String = if (hebrew) nameHe else nameEn
 }

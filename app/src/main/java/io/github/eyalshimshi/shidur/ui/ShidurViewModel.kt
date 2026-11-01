@@ -3,21 +3,27 @@ package io.github.eyalshimshi.shidur.ui
 import android.app.Application
 import androidx.lifecycle.AndroidViewModel
 import androidx.lifecycle.viewModelScope
+import io.github.eyalshimshi.shidur.CrashReporter
 import io.github.eyalshimshi.shidur.ShidurApplication
+import io.github.eyalshimshi.shidur.data.AlarmConfig
 import io.github.eyalshimshi.shidur.data.AppSettings
 import io.github.eyalshimshi.shidur.data.CatalogRepository
 import io.github.eyalshimshi.shidur.data.DataSaverMode
 import io.github.eyalshimshi.shidur.data.ThemeMode
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.model.StationCollection
+import io.github.eyalshimshi.shidur.playback.AlarmScheduler
 import io.github.eyalshimshi.shidur.playback.HotStandby
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.playback.StartRecord
 import io.github.eyalshimshi.shidur.playback.StreamProbe
+import kotlinx.coroutines.Dispatchers
 import kotlinx.coroutines.Job
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.SharingStarted
 import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.flow.combine
 import kotlinx.coroutines.flow.filterNotNull
 import kotlinx.coroutines.flow.first
@@ -74,6 +80,26 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     /** Measured stream starts, most recent first. */
     val starts: StateFlow<List<StartRecord>> = container.diagnostics.starts
 
+    /** The wake-up alarm. */
+    val alarm: StateFlow<AlarmConfig> = container.alarmStore.config
+        .stateIn(viewModelScope, SharingStarted.Eagerly, container.alarmStore.current())
+
+    private val _crashReport = MutableStateFlow<String?>(null)
+
+    /** Details of the last crash, offered once on the next launch. */
+    val crashReport: StateFlow<String?> = _crashReport.asStateFlow()
+
+    init {
+        viewModelScope.launch(Dispatchers.IO) {
+            _crashReport.value = CrashReporter.lastReport(getApplication<Application>())
+        }
+    }
+
+    fun dismissCrashReport() {
+        _crashReport.value = null
+        viewModelScope.launch(Dispatchers.IO) { CrashReporter.clear(getApplication<Application>()) }
+    }
+
     // Playback
 
     fun play(station: Station, queue: List<Station>) = playback.play(station.id, queue.map { it.id })
@@ -113,6 +139,14 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun clearDiagnostics() = container.diagnostics.clear()
+
+    /** Whether the launcher can add station shortcuts to the home screen. */
+    fun canPinShortcuts(): Boolean = container.shortcuts.canPin()
+
+    /** Asks the launcher to add a shortcut that plays [station]. */
+    fun pinShortcut(station: Station, hebrew: Boolean) {
+        container.shortcuts.requestPin(station, hebrew)
+    }
 
     /**
      * Instant start (opt-in): when the app opens with nothing playing (on any network), keeps the
@@ -155,6 +189,33 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun cancelSleepTimer() = playback.cancelSleepTimer()
+
+    // Wake-up alarm
+
+    /** Saves and schedules the alarm; turning it on picks a station when none was chosen. */
+    fun updateAlarm(config: AlarmConfig) {
+        val updated = if (config.enabled && config.stationId == null) {
+            config.copy(stationId = defaultAlarmStationId())
+        } else {
+            config
+        }
+        container.alarmStore.save(updated)
+        AlarmScheduler.apply(getApplication<Application>(), updated)
+    }
+
+    /** Sets the alarm again, e.g. after the user allowed exact alarms in system settings. */
+    fun refreshAlarm() {
+        AlarmScheduler.apply(getApplication<Application>(), container.alarmStore.current())
+    }
+
+    fun canScheduleExactAlarms(): Boolean = AlarmScheduler.canScheduleExact(getApplication<Application>())
+
+    private fun defaultAlarmStationId(): String? {
+        val state = library.value
+        return libraryRepository.lastPlayed()?.stationId?.takeIf { it in state.stationsById }
+            ?: state.favorites.firstOrNull()?.id
+            ?: state.stations.firstOrNull()?.id
+    }
 
     // Library
 
@@ -211,6 +272,10 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setStationTint(value: Boolean) {
         viewModelScope.launch { settingsRepository.setStationTint(value) }
+    }
+
+    fun setStationLogos(value: Boolean) {
+        viewModelScope.launch { settingsRepository.setStationLogos(value) }
     }
 
     fun setBackgroundGradient(value: Boolean) {

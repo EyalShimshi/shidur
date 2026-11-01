@@ -16,10 +16,6 @@ import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
 import androidx.compose.foundation.lazy.grid.rememberLazyGridState
 import androidx.compose.foundation.shape.RoundedCornerShape
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Add
-import androidx.compose.material.icons.rounded.Close
-import androidx.compose.material.icons.rounded.FavoriteBorder
 import androidx.compose.material3.Button
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.FilledTonalIconButton
@@ -52,6 +48,7 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationTile
 import sh.calvin.reorderable.ReorderableItem
@@ -80,7 +77,7 @@ fun FavoritesScreen(
                     }
                 }
                 IconButton(onClick = onAddByUrl) {
-                    Icon(Icons.Rounded.Add, contentDescription = stringResource(R.string.action_add_station))
+                    Icon(AppIcons.Add, contentDescription = stringResource(R.string.action_add_station))
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
@@ -182,7 +179,7 @@ private fun ReorderableFavoritesGrid(
                                 modifier = Modifier.size(32.dp),
                             ) {
                                 Icon(
-                                    Icons.Rounded.Close,
+                                    AppIcons.Close,
                                     contentDescription = stringResource(R.string.action_remove),
                                     modifier = Modifier.size(18.dp),
                                 )
@@ -205,7 +202,7 @@ private fun EmptyFavorites(onBrowse: () -> Unit) {
         verticalArrangement = Arrangement.Center,
     ) {
         Icon(
-            Icons.Rounded.FavoriteBorder,
+            AppIcons.FavoriteBorder,
             contentDescription = null,
             modifier = Modifier.size(64.dp),
             tint = MaterialTheme.colorScheme.primary,

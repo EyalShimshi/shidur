@@ -11,10 +11,6 @@ import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.lazy.LazyColumn
 import androidx.compose.foundation.lazy.itemsIndexed
 import androidx.compose.foundation.text.KeyboardOptions
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.AddLink
-import androidx.compose.material.icons.rounded.Close
 import androidx.compose.material3.HorizontalDivider
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -45,6 +41,7 @@ import io.github.eyalshimshi.shidur.data.SearchEngine
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.GroupShapes
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationRow
@@ -77,7 +74,7 @@ fun SearchScreen(
             verticalAlignment = Alignment.CenterVertically,
         ) {
             IconButton(onClick = onBack) {
-                Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                Icon(AppIcons.ArrowBack, contentDescription = stringResource(R.string.action_back))
             }
             TextField(
                 value = query,
@@ -88,7 +85,7 @@ fun SearchScreen(
                 trailingIcon = {
                     if (query.isNotEmpty()) {
                         IconButton(onClick = { query = "" }) {
-                            Icon(Icons.Rounded.Close, contentDescription = stringResource(R.string.action_clear))
+                            Icon(AppIcons.Close, contentDescription = stringResource(R.string.action_clear))
                         }
                     }
                 },
@@ -114,7 +111,7 @@ fun SearchScreen(
                 item {
                     ListItem(
                         headlineContent = { Text(stringResource(R.string.search_add_url, trimmed)) },
-                        leadingContent = { Icon(Icons.Rounded.AddLink, contentDescription = null) },
+                        leadingContent = { Icon(AppIcons.AddLink, contentDescription = null) },
                         colors = ListItemDefaults.colors(containerColor = Color.Transparent),
                         modifier = Modifier.clickable {
                             keyboard?.hide()

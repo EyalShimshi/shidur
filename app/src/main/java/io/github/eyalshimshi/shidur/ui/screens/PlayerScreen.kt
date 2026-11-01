@@ -28,16 +28,6 @@ import androidx.compose.foundation.layout.width
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.rounded.Bedtime
-import androidx.compose.material.icons.rounded.Info
-import androidx.compose.material.icons.rounded.KeyboardArrowDown
-import androidx.compose.material.icons.rounded.Pause
-import androidx.compose.material.icons.rounded.PlayArrow
-import androidx.compose.material.icons.rounded.Refresh
-import androidx.compose.material.icons.rounded.Share
-import androidx.compose.material.icons.rounded.SkipNext
-import androidx.compose.material.icons.rounded.SkipPrevious
 import androidx.compose.material3.AssistChip
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -84,6 +74,7 @@ import io.github.eyalshimshi.shidur.model.formatFrequency
 import io.github.eyalshimshi.shidur.playback.PlayerUiState
 import io.github.eyalshimshi.shidur.playback.StartRecord
 import io.github.eyalshimshi.shidur.ui.LibraryUiState
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.FavoriteButton
 import io.github.eyalshimshi.shidur.ui.components.PlayerQueue
 import io.github.eyalshimshi.shidur.ui.components.StationArtwork
@@ -123,6 +114,7 @@ fun FullPlayer(
     onSetSleepTimer: (Int) -> Unit,
     onExtendSleepTimer: (Long) -> Unit,
     onCancelSleepTimer: () -> Unit,
+    onPinShortcut: ((Station) -> Unit)?,
 ) {
     var showSleepTimer by remember { mutableStateOf(false) }
     var showInfo by remember { mutableStateOf(false) }
@@ -151,12 +143,12 @@ fun FullPlayer(
         ) {
             Row(modifier = Modifier.fillMaxWidth(), verticalAlignment = Alignment.CenterVertically) {
                 IconButton(onClick = onCollapse) {
-                    Icon(Icons.Rounded.KeyboardArrowDown, contentDescription = stringResource(R.string.action_close_player))
+                    Icon(AppIcons.KeyboardArrowDown, contentDescription = stringResource(R.string.action_close_player))
                 }
                 Spacer(Modifier.weight(1f))
                 if (castAvailable) CastButton()
                 IconButton(onClick = { showInfo = true }) {
-                    Icon(Icons.Rounded.Info, contentDescription = stringResource(R.string.action_station_info))
+                    Icon(AppIcons.Info, contentDescription = stringResource(R.string.action_station_info))
                 }
             }
             PlayerContent(
@@ -192,7 +184,12 @@ fun FullPlayer(
         )
     }
     if (showInfo) {
-        StationInfoSheet(station = station, hebrew = hebrew, onDismiss = { showInfo = false })
+        StationInfoSheet(
+            station = station,
+            hebrew = hebrew,
+            onPinShortcut = onPinShortcut,
+            onDismiss = { showInfo = false },
+        )
     }
 }
 
@@ -331,7 +328,7 @@ private fun PlayerContent(
             modifier = Modifier.size(56.dp),
         ) {
             Icon(
-                Icons.Rounded.SkipPrevious,
+                AppIcons.SkipPrevious,
                 contentDescription = stringResource(R.string.action_previous_station),
                 modifier = Modifier.size(32.dp),
             )
@@ -343,7 +340,7 @@ private fun PlayerContent(
         ) {
             when {
                 player.hasError -> Icon(
-                    Icons.Rounded.Refresh,
+                    AppIcons.Refresh,
                     contentDescription = stringResource(R.string.action_retry),
                     modifier = Modifier.size(40.dp),
                 )
@@ -352,12 +349,12 @@ private fun PlayerContent(
                     modifier = Modifier.size(36.dp),
                 )
                 player.playWhenReady -> Icon(
-                    Icons.Rounded.Pause,
+                    AppIcons.Pause,
                     contentDescription = stringResource(R.string.action_pause),
                     modifier = Modifier.size(40.dp),
                 )
                 else -> Icon(
-                    Icons.Rounded.PlayArrow,
+                    AppIcons.PlayArrow,
                     contentDescription = stringResource(R.string.action_play),
                     modifier = Modifier.size(40.dp),
                 )
@@ -369,7 +366,7 @@ private fun PlayerContent(
             modifier = Modifier.size(56.dp),
         ) {
             Icon(
-                Icons.Rounded.SkipNext,
+                AppIcons.SkipNext,
                 contentDescription = stringResource(R.string.action_next_station),
                 modifier = Modifier.size(32.dp),
             )
@@ -385,10 +382,10 @@ private fun PlayerContent(
             onToggle = { onToggleFavorite(station.id) },
         )
         IconButton(onClick = onOpenSleepTimer) {
-            Icon(Icons.Rounded.Bedtime, contentDescription = stringResource(R.string.sleep_timer_title))
+            Icon(AppIcons.Bedtime, contentDescription = stringResource(R.string.sleep_timer_title))
         }
         IconButton(onClick = { shareStation(context, station, hebrew) }) {
-            Icon(Icons.Rounded.Share, contentDescription = stringResource(R.string.action_share))
+            Icon(AppIcons.Share, contentDescription = stringResource(R.string.action_share))
         }
     }
     val remaining = rememberRemaining(player.sleepTimerEnd)
@@ -473,7 +470,12 @@ private fun SleepTimerSheet(
 
 @kotlin.OptIn(ExperimentalMaterial3Api::class)
 @Composable
-private fun StationInfoSheet(station: Station, hebrew: Boolean, onDismiss: () -> Unit) {
+private fun StationInfoSheet(
+    station: Station,
+    hebrew: Boolean,
+    onPinShortcut: ((Station) -> Unit)?,
+    onDismiss: () -> Unit,
+) {
     val context = LocalContext.current
     val uriHandler = LocalUriHandler.current
     ModalBottomSheet(onDismissRequest = onDismiss) {
@@ -512,6 +514,13 @@ private fun StationInfoSheet(station: Station, hebrew: Boolean, onDismiss: () ->
             station.streams.firstOrNull()?.let { stream ->
                 TextButton(onClick = { copyToClipboard(context, stream.url) }) {
                     Text(stringResource(R.string.info_copy_stream))
+                }
+            }
+            if (onPinShortcut != null) {
+                TextButton(onClick = { onPinShortcut(station) }) {
+                    Icon(AppIcons.AddToHomeScreen, contentDescription = null, modifier = Modifier.size(18.dp))
+                    Spacer(Modifier.width(8.dp))
+                    Text(stringResource(R.string.info_add_to_home))
                 }
             }
             TextButton(onClick = { uriHandler.openUri(reportProblemUrl(station)) }) {

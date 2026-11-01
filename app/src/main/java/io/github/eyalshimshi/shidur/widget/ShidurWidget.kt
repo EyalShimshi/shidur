@@ -2,6 +2,7 @@ package io.github.eyalshimshi.shidur.widget
 
 import android.content.Context
 import android.graphics.Bitmap
+import android.graphics.BitmapFactory
 import androidx.compose.runtime.Composable
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
@@ -79,9 +80,15 @@ class ShidurWidget : GlanceAppWidget() {
         val byId = stations.associateBy { it.id }
         val favorites = container.libraryRepository.favoriteIds.first().mapNotNull { byId[it] }.take(MAX_FAVORITES)
         val lastStationId = container.libraryRepository.lastPlayed()?.stationId
+        val showLogos = container.settingsRepository.settings.first().stationLogos
         val bitmapCache = HashMap<String, Bitmap>()
         val bitmapFor: (Station) -> Bitmap = { station ->
-            bitmapCache.getOrPut(station.id) { MonogramRenderer.render(station, ARTWORK_PX) }
+            bitmapCache.getOrPut(station.id) {
+                val logo = if (showLogos) container.stationLogos.file(station) else null
+                logo?.let { BitmapFactory.decodeFile(it.path) }
+                    ?.let { Bitmap.createScaledBitmap(it, ARTWORK_PX, ARTWORK_PX, true) }
+                    ?: MonogramRenderer.render(station, ARTWORK_PX)
+            }
         }
 
         provideContent {

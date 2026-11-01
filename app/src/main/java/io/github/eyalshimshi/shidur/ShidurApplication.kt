@@ -14,6 +14,7 @@ class ShidurApplication : Application() {
     @OptIn(UnstableApi::class)
     override fun onCreate() {
         super.onCreate()
+        CrashReporter.install(this)
         container = AppContainer(this)
         try {
             // Must run on the main thread before Cast widgets or the CastPlayer are created.

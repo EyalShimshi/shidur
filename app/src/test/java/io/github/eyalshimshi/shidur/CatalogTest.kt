@@ -47,6 +47,11 @@ class CatalogTest {
                 assertTrue("${station.id}: unknown collection $collection", collection in collectionIds)
             }
             station.fm.forEach { mhz -> assertTrue("${station.id}: odd frequency $mhz", mhz in 87.5..108.0) }
+            station.logo?.let { logo ->
+                // Android can't decode SVG files; Wikimedia's PNG thumbnails of them are fine.
+                assertTrue("${station.id}: logo must be https", logo.startsWith("https://"))
+                assertTrue("${station.id}: logo must not be an SVG file", !logo.lowercase().endsWith(".svg"))
+            }
         }
     }
 }

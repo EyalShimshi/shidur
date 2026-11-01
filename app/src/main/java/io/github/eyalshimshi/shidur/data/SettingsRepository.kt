@@ -15,6 +15,8 @@ data class AppSettings(
     /** Seed of the app's colors when [dynamicColor] is off; null is the Material baseline purple. */
     val accentColor: Int? = null,
     val stationTint: Boolean = true,
+    /** Shows stations' logos (downloaded once); off keeps the text artwork. */
+    val stationLogos: Boolean = true,
     val backgroundGradient: Boolean = true,
     val animations: Boolean = true,
     val dataSaver: DataSaverMode = DataSaverMode.MOBILE,
@@ -33,6 +35,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
         const val DYNAMIC_COLOR = "dynamic_color"
         const val ACCENT_COLOR = "accent_color"
         const val STATION_TINT = "station_tint"
+        const val STATION_LOGOS = "station_logos"
         const val BACKGROUND_GRADIENT = "background_gradient"
         const val ANIMATIONS = "animations"
         const val DATA_SAVER = "data_saver"
@@ -50,6 +53,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
                 dynamicColor = p.getBoolean(Keys.DYNAMIC_COLOR, true),
                 accentColor = if (p.contains(Keys.ACCENT_COLOR)) p.getInt(Keys.ACCENT_COLOR, 0) else null,
                 stationTint = p.getBoolean(Keys.STATION_TINT, true),
+                stationLogos = p.getBoolean(Keys.STATION_LOGOS, true),
                 backgroundGradient = p.getBoolean(Keys.BACKGROUND_GRADIENT, true),
                 animations = p.getBoolean(Keys.ANIMATIONS, true),
                 dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
@@ -75,6 +79,8 @@ class SettingsRepository(private val prefs: SharedPreferences) {
     }
 
     fun setStationTint(value: Boolean) = putBoolean(Keys.STATION_TINT, value)
+
+    fun setStationLogos(value: Boolean) = putBoolean(Keys.STATION_LOGOS, value)
 
     fun setBackgroundGradient(value: Boolean) = putBoolean(Keys.BACKGROUND_GRADIENT, value)
 

@@ -5,6 +5,7 @@ import android.content.Intent
 import android.media.AudioDeviceCallback
 import android.media.AudioDeviceInfo
 import android.media.AudioManager
+import android.media.RingtoneManager
 import android.net.ConnectivityManager
 import android.net.Network
 import android.os.Bundle
@@ -17,6 +18,7 @@ import androidx.media3.cast.CastPlayer
 import androidx.media3.common.AudioAttributes
 import androidx.media3.common.C
 import androidx.media3.common.MediaItem
+import androidx.media3.common.MediaMetadata
 import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
@@ -50,6 +52,7 @@ import kotlinx.coroutines.Job
 import kotlinx.coroutines.SupervisorJob
 import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
+import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
 
 @OptIn(UnstableApi::class)
@@ -83,6 +86,14 @@ class PlaybackService : MediaLibraryService() {
     /** Stream addresses tried for the station that is currently starting. */
     private var startAttempts = 0
 
+    /** The station the wake-up alarm is playing; while set, audio uses the alarm volume. */
+    private var alarmStationId: String? = null
+    private var alarmGentle = false
+    private var alarmAudioStarted = false
+    private var alarmBackupJob: Job? = null
+    private var alarmFadeJob: Job? = null
+    private var alarmToneJob: Job? = null
+
     override fun onCreate() {
         super.onCreate()
         connectivityManager = getSystemService(ConnectivityManager::class.java)
@@ -113,6 +124,15 @@ class PlaybackService : MediaLibraryService() {
 
     override fun onGetSession(controllerInfo: MediaSession.ControllerInfo): MediaLibrarySession = session
 
+    override fun onStartCommand(intent: Intent?, flags: Int, startId: Int): Int {
+        if (intent?.action == AlarmScheduler.ACTION_START) {
+            intent.getStringExtra(AlarmScheduler.EXTRA_STATION)?.let { stationId ->
+                startAlarm(stationId, intent.getBooleanExtra(AlarmScheduler.EXTRA_GENTLE, true))
+            }
+        }
+        return super.onStartCommand(intent, flags, startId)
+    }
+
     override fun onDestroy() {
         container.hotStandby.onTitle = null
         runCatching { connectivityManager.unregisterNetworkCallback(networkCallback) }
@@ -139,14 +159,10 @@ class PlaybackService : MediaLibraryService() {
         val loadControl = DefaultLoadControl.Builder()
             .setBufferDurationsMs(15_000, 30_000, START_BUFFER_MS, REBUFFER_MS)
             .build()
-        val audioAttributes = AudioAttributes.Builder()
-            .setUsage(C.USAGE_MEDIA)
-            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
-            .build()
         return ExoPlayer.Builder(this)
             .setMediaSourceFactory(mediaSourceFactory)
             .setLoadControl(loadControl)
-            .setAudioAttributes(audioAttributes, true)
+            .setAudioAttributes(MEDIA_AUDIO, true)
             .setHandleAudioBecomingNoisy(true)
             .setWakeMode(C.WAKE_MODE_NETWORK)
             .build()
@@ -241,6 +257,7 @@ class PlaybackService : MediaLibraryService() {
 
     internal fun toggleCurrentFavorite() {
         val stationId = player.currentMediaItem?.mediaId ?: return
+        if (stationId !in stationsById) return
         serviceScope.launch { container.libraryRepository.toggleFavorite(stationId) }
     }
 
@@ -290,6 +307,8 @@ class PlaybackService : MediaLibraryService() {
             val stationId = mediaItem?.mediaId
             // An Instant start stream for another station would only waste data now.
             stationId?.let { container.hotStandby.stopUnlessFor(it) }
+            // Switching to another station after waking up ends the alarm.
+            if (alarmStationId != null && stationId != alarmStationId && stationId != ALARM_TONE_ID) endAlarm()
             if (stationId != lastStationId) {
                 lastStationId = stationId
                 nowPlayingTitle = null
@@ -308,6 +327,7 @@ class PlaybackService : MediaLibraryService() {
 
         override fun onPlayWhenReadyChanged(playWhenReady: Boolean, reason: Int) {
             stopAfterPauseJob?.cancel()
+            if (!playWhenReady && reason == Player.PLAY_WHEN_READY_CHANGE_REASON_USER_REQUEST) endAlarm()
             if (!playWhenReady) {
                 // Live radio: release the connection after a pause, and rejoin live on resume.
                 stopAfterPauseJob = serviceScope.launch {
@@ -399,6 +419,8 @@ class PlaybackService : MediaLibraryService() {
         val next = streamIndex + 1
         if (next > station.streams.lastIndex) {
             workingStreamIndex.remove(station.id)
+            // Every address failed: a wake-up alarm must still make a sound.
+            if (alarmStationId != null) playAlarmTone()
             return
         }
         workingStreamIndex[station.id] = next
@@ -427,6 +449,11 @@ class PlaybackService : MediaLibraryService() {
         // Audio is playing; a standby stream that wasn't handed over is no longer useful.
         container.hotStandby.stop()
         val item = player.currentMediaItem ?: return
+        if (alarmStationId != null && item.mediaId != ALARM_TONE_ID && !alarmAudioStarted) {
+            alarmAudioStarted = true
+            alarmBackupJob?.cancel()
+            if (alarmGentle) fadeInAlarm()
+        }
         val station = stationsById[item.mediaId] ?: return
         val extras = item.mediaMetadata.extras
         container.streamSelector.rememberWorking(station, item.streamIndex())
@@ -471,9 +498,106 @@ class PlaybackService : MediaLibraryService() {
     private fun MediaItem.streamIndex(): Int =
         mediaMetadata.extras?.getInt(ShidurCommands.EXTRA_STREAM_INDEX) ?: 0
 
+    // region Wake-up alarm
+
+    /**
+     * Plays [stationId] for the wake-up alarm: on the alarm volume, with the favorites queued so
+     * the user can switch station, quietly at first when [gentle].
+     */
+    private fun startAlarm(stationId: String, gentle: Boolean) {
+        // No app screen may have connected yet; the session must be known to show the notification.
+        if (!isSessionAdded(session)) addSession(session)
+        enterAlarmMode(stationId, gentle)
+        serviceScope.launch {
+            val byId = awaitStations().associateBy { it.id }
+            val station = byId[stationId]
+            if (station == null) {
+                playAlarmTone()
+                return@launch
+            }
+            val favorites = container.libraryRepository.favoriteIds.first()
+            val queue = (if (station.id in favorites) favorites else listOf(station.id)).mapNotNull { byId[it] }
+            val items = queue.map { playableItem(it) }
+            container.diagnostics.markRequested(station.id)
+            player.setMediaItems(items, items.indexOfFirst { it.mediaId == station.id }.coerceAtLeast(0), C.TIME_UNSET)
+            player.prepare()
+            player.play()
+            alarmBackupJob?.cancel()
+            alarmBackupJob = serviceScope.launch {
+                delay(ALARM_BACKUP_AFTER_MS)
+                if (alarmStationId != null && !alarmAudioStarted) playAlarmTone()
+            }
+        }
+    }
+
+    private fun enterAlarmMode(stationId: String, gentle: Boolean) {
+        alarmStationId = stationId
+        alarmGentle = gentle
+        alarmAudioStarted = false
+        exoPlayer.setAudioAttributes(ALARM_AUDIO, true)
+        exoPlayer.volume = if (gentle) ALARM_START_VOLUME else 1f
+    }
+
+    /** Back to normal listening: media volume, full loudness, the queue repeating again. */
+    private fun endAlarm() {
+        if (alarmStationId == null) return
+        alarmStationId = null
+        alarmBackupJob?.cancel()
+        alarmFadeJob?.cancel()
+        alarmToneJob?.cancel()
+        exoPlayer.volume = 1f
+        exoPlayer.setAudioAttributes(MEDIA_AUDIO, true)
+        player.repeatMode = Player.REPEAT_MODE_ALL
+    }
+
+    /** Raises the volume over a minute, slowly at first (loudness grows roughly evenly). */
+    private fun fadeInAlarm() {
+        alarmFadeJob?.cancel()
+        alarmFadeJob = serviceScope.launch {
+            val start = exoPlayer.volume
+            val steps = (ALARM_FADE_MS / ALARM_FADE_STEP_MS).toInt()
+            for (step in 1..steps) {
+                delay(ALARM_FADE_STEP_MS)
+                val fraction = step.toFloat() / steps
+                exoPlayer.volume = start + (1f - start) * fraction * fraction
+            }
+        }
+    }
+
+    /** The phone's own alarm sound, for when the station can't be reached. */
+    private fun playAlarmTone() {
+        alarmBackupJob?.cancel()
+        alarmFadeJob?.cancel()
+        exoPlayer.volume = 1f
+        val metadata = MediaMetadata.Builder()
+            .setTitle(getString(R.string.alarm_tone_title))
+            .setArtist(getString(R.string.app_name))
+            .setIsPlayable(true)
+            .setIsBrowsable(false)
+            .build()
+        val tone = MediaItem.Builder()
+            .setMediaId(ALARM_TONE_ID)
+            .setUri(RingtoneManager.getDefaultUri(RingtoneManager.TYPE_ALARM))
+            .setMediaMetadata(metadata)
+            .build()
+        player.setMediaItem(tone)
+        player.repeatMode = Player.REPEAT_MODE_ONE
+        player.prepare()
+        player.play()
+        alarmToneJob?.cancel()
+        alarmToneJob = serviceScope.launch {
+            delay(ALARM_TONE_MAX_MS)
+            if (player.currentMediaItem?.mediaId == ALARM_TONE_ID) player.stop()
+            endAlarm()
+        }
+    }
+
+    // endregion
+
     private fun scheduleRecent() {
         recentJob?.cancel()
         val stationId = player.currentMediaItem?.mediaId ?: return
+        if (stationId == ALARM_TONE_ID) return
         recentJob = serviceScope.launch {
             delay(RECENT_AFTER_MS)
             if (player.isPlaying && player.currentMediaItem?.mediaId == stationId) {
@@ -484,6 +608,7 @@ class PlaybackService : MediaLibraryService() {
 
     private fun rememberLastPlayed() {
         val stationId = player.currentMediaItem?.mediaId ?: return
+        if (stationId == ALARM_TONE_ID) return
         val queue = (0 until player.mediaItemCount).map { player.getMediaItemAt(it).mediaId }
         serviceScope.launch { container.libraryRepository.setLastPlayed(stationId, queue) }
     }
@@ -565,5 +690,24 @@ class PlaybackService : MediaLibraryService() {
             AudioDeviceInfo.TYPE_WIRED_HEADPHONES,
             AudioDeviceInfo.TYPE_USB_HEADSET,
         )
+
+        val MEDIA_AUDIO: AudioAttributes = AudioAttributes.Builder()
+            .setUsage(C.USAGE_MEDIA)
+            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+            .build()
+
+        /** The wake-up alarm plays on the alarm volume, which people keep up at night. */
+        val ALARM_AUDIO: AudioAttributes = AudioAttributes.Builder()
+            .setUsage(C.USAGE_ALARM)
+            .setContentType(C.AUDIO_CONTENT_TYPE_MUSIC)
+            .build()
+
+        /** Media id of the phone's alarm sound, played when the alarm's station can't be reached. */
+        const val ALARM_TONE_ID = "shidur-alarm-tone"
+        const val ALARM_START_VOLUME = 0.08f
+        const val ALARM_FADE_MS = 60_000L
+        const val ALARM_FADE_STEP_MS = 500L
+        const val ALARM_BACKUP_AFTER_MS = 30_000L
+        const val ALARM_TONE_MAX_MS = 10 * 60_000L
     }
 }

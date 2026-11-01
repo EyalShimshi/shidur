@@ -23,9 +23,6 @@ import androidx.compose.foundation.selection.toggleable
 import androidx.compose.foundation.shape.CircleShape
 import androidx.compose.foundation.shape.RoundedCornerShape
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
-import androidx.compose.material.icons.rounded.Check
 import androidx.compose.material3.ExperimentalMaterial3Api
 import androidx.compose.material3.Icon
 import androidx.compose.material3.IconButton
@@ -69,6 +66,7 @@ import io.github.eyalshimshi.shidur.data.ThemeMode
 import io.github.eyalshimshi.shidur.model.Station
 import io.github.eyalshimshi.shidur.playback.StartRecord
 import io.github.eyalshimshi.shidur.ui.ShidurViewModel
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.GroupShapes
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import io.github.eyalshimshi.shidur.ui.components.StationArtwork
@@ -97,7 +95,7 @@ fun SettingsScreen(
             title = { Text(stringResource(R.string.settings_title)) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                    Icon(AppIcons.ArrowBack, contentDescription = stringResource(R.string.action_back))
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),
@@ -134,6 +132,12 @@ fun SettingsScreen(
                     summary = null,
                     checked = settings.stationTint,
                     onChange = viewModel::setStationTint,
+                )
+                SwitchRow(
+                    title = stringResource(R.string.settings_station_logos),
+                    summary = stringResource(R.string.settings_station_logos_summary),
+                    checked = settings.stationLogos,
+                    onChange = viewModel::setStationLogos,
                 )
             }
 
@@ -222,6 +226,8 @@ fun SettingsScreen(
                     onChange = viewModel::setResumeOnHeadphones,
                 )
             }
+
+            AlarmGroup(viewModel = viewModel, hebrew = hebrew)
 
             SettingsGroup(stringResource(R.string.settings_stations)) {
                 ClickRow(
@@ -351,7 +357,7 @@ private const val MAX_SHOWN_STARTS = 10
 
 /** A titled group of cards: large outer corners, small corners between its items. */
 @Composable
-private fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> Unit) {
+internal fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> Unit) {
     Text(
         text = title,
         style = MaterialTheme.typography.titleSmall,
@@ -368,7 +374,7 @@ private fun SettingsGroup(title: String, content: @Composable ColumnScope.() -> 
 }
 
 @Composable
-private fun GroupCard(content: @Composable () -> Unit) {
+internal fun GroupCard(content: @Composable () -> Unit) {
     Surface(
         modifier = Modifier.fillMaxWidth(),
         shape = RoundedCornerShape(GroupShapes.Inner),
@@ -378,7 +384,7 @@ private fun GroupCard(content: @Composable () -> Unit) {
 }
 
 @Composable
-private fun SwitchRow(title: String, summary: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+internal fun SwitchRow(title: String, summary: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
     GroupCard {
         ListItem(
             headlineContent = { Text(title) },
@@ -406,7 +412,7 @@ private fun RadioRow(title: String, selected: Boolean, onSelect: () -> Unit) {
 }
 
 @Composable
-private fun ClickRow(title: String, summary: String?, onClick: () -> Unit) {
+internal fun ClickRow(title: String, summary: String?, onClick: () -> Unit) {
     GroupCard {
         ListItem(
             headlineContent = { Text(title) },
@@ -509,7 +515,7 @@ private fun AccentSwatch(color: Color, selected: Boolean, label: String, onClick
     ) {
         if (selected) {
             Icon(
-                imageVector = Icons.Rounded.Check,
+                imageVector = AppIcons.Check,
                 contentDescription = null,
                 tint = if (color.luminance() > 0.5f) Color.Black else Color.White,
             )

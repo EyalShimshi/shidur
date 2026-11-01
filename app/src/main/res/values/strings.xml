@@ -13,6 +13,7 @@
     <string name="section_recent">Recently played</string>
     <string name="section_browse">Browse by category</string>
     <string name="see_all">See all</string>
+    <string name="home_all_stations">All stations</string>
     <string name="collection_all">All</string>
     <string name="favorites_empty_title">No favorites yet</string>
     <string name="favorites_empty_body">Add the stations you love and they\'ll appear here for one-tap listening.</string>
@@ -166,4 +167,38 @@
     <string name="settings_instant_start">Instant start (experimental)</string>
     <string name="settings_instant_start_summary">While Shidur is open and nothing is playing, keeps your last station loading silently for up to 2 minutes so it plays at once. Uses about 1 MB a minute, also on mobile data.</string>
     <string name="action_open_player">Open player</string>
+
+    <!-- Crash catcher -->
+    <string name="crash_title">Shidur closed unexpectedly</string>
+    <string name="crash_body">The app crashed last time. Copy the details and send them to the developer, or open a ready-made report on GitHub. Nothing was sent automatically.</string>
+    <string name="crash_copy">Copy details</string>
+    <string name="crash_report">Report on GitHub</string>
+    <string name="action_dismiss">Close</string>
+
+    <!-- Shortcuts -->
+    <string name="info_add_to_home">Add to home screen</string>
+
+    <!-- Station logos -->
+    <string name="settings_station_logos">Station logos</string>
+    <string name="settings_station_logos_summary">Downloaded once from public sources. Stations without a good logo keep their text artwork.</string>
+
+    <!-- Wake-up alarm -->
+    <string name="alarm_title">Wake-up alarm</string>
+    <string name="alarm_enable">Wake up to radio</string>
+    <string name="alarm_off">Off</string>
+    <string name="alarm_rings_in">Rings in %1$s · %2$s</string>
+    <string name="alarm_duration_hours">%1$d h %2$d min</string>
+    <string name="alarm_duration_minutes">%1$d min</string>
+    <string name="alarm_time">Time</string>
+    <string name="alarm_repeat">Repeat</string>
+    <string name="alarm_once">Once</string>
+    <string name="alarm_every_day">Every day</string>
+    <string name="alarm_station">Station</string>
+    <string name="alarm_no_station">Choose a station</string>
+    <string name="alarm_gentle">Gentle start</string>
+    <string name="alarm_gentle_summary">Starts quietly and gets louder over a minute</string>
+    <string name="alarm_backup_note">The alarm plays at your alarm volume. If the station can\'t be reached, your phone\'s alarm sound plays instead.</string>
+    <string name="alarm_permission">Allow alarms</string>
+    <string name="alarm_permission_summary">Android needs your permission for Shidur to ring on time</string>
+    <string name="alarm_tone_title">Wake-up alarm</string>
 </resources>

@@ -14,8 +14,6 @@ import androidx.compose.foundation.layout.size
 import androidx.compose.foundation.rememberScrollState
 import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.foundation.verticalScroll
-import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.rounded.ArrowBack
 import androidx.compose.material3.Button
 import androidx.compose.material3.CircularProgressIndicator
 import androidx.compose.material3.ExperimentalMaterial3Api
@@ -42,6 +40,7 @@ import androidx.compose.ui.text.input.KeyboardType
 import androidx.compose.ui.unit.dp
 import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.playback.StreamProbe
+import io.github.eyalshimshi.shidur.ui.components.AppIcons
 import io.github.eyalshimshi.shidur.ui.components.LocalBottomContentPadding
 import kotlinx.coroutines.CancellationException
 import kotlinx.coroutines.launch
@@ -66,7 +65,7 @@ fun AddStationScreen(
             title = { Text(stringResource(R.string.add_station_title)) },
             navigationIcon = {
                 IconButton(onClick = onBack) {
-                    Icon(Icons.AutoMirrored.Rounded.ArrowBack, contentDescription = stringResource(R.string.action_back))
+                    Icon(AppIcons.ArrowBack, contentDescription = stringResource(R.string.action_back))
                 }
             },
             windowInsets = WindowInsets(0, 0, 0, 0),

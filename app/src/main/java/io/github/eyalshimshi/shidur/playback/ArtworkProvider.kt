@@ -9,8 +9,11 @@ import android.graphics.Bitmap
 import android.net.Uri
 import android.os.ParcelFileDescriptor
 import io.github.eyalshimshi.shidur.ShidurApplication
+import io.github.eyalshimshi.shidur.model.Station
 import java.io.File
 import java.io.FileOutputStream
+import kotlinx.coroutines.flow.first
+import kotlinx.coroutines.launch
 import kotlinx.coroutines.runBlocking
 
 /**
@@ -25,7 +28,15 @@ class ArtworkProvider : ContentProvider() {
         val context = context ?: return null
         val stationId = uri.lastPathSegment ?: return null
         val app = context.applicationContext as? ShidurApplication ?: return null
-        val station = runBlocking { app.container.catalogRepository.findStation(stationId) } ?: return null
+        val container = app.container
+        val station = runBlocking { container.catalogRepository.findStation(stationId) } ?: return null
+
+        if (runBlocking { container.settingsRepository.settings.first() }.stationLogos) {
+            val logo = container.stationLogos.file(station)
+            if (logo != null) return ParcelFileDescriptor.open(logo, ParcelFileDescriptor.MODE_READ_ONLY)
+            // Not downloaded yet: fetch it, so the next artwork request (with a new address) shows it.
+            if (station.logo != null) container.applicationScope.launch { container.stationLogos.load(station) }
+        }
 
         val directory = File(context.cacheDir, "artwork").apply { mkdirs() }
         val key = "${station.id}_${station.color}_${station.shortName}".hashCode().toUInt()
@@ -64,11 +75,19 @@ class ArtworkProvider : ContentProvider() {
     companion object {
         private const val ARTWORK_SIZE_PX = 512
 
-        fun uriFor(context: Context, stationId: String): Uri = Uri.Builder()
-            .scheme(ContentResolver.SCHEME_CONTENT)
-            .authority("${context.packageName}.artwork")
-            .appendPath("station")
-            .appendPath(stationId)
-            .build()
+        /**
+         * The artwork address for [station]. It changes once the station's logo is saved, so the
+         * notification, Android Auto and Wear OS load the logo instead of a cached text artwork.
+         */
+        fun uriFor(context: Context, station: Station): Uri {
+            val builder = Uri.Builder()
+                .scheme(ContentResolver.SCHEME_CONTENT)
+                .authority("${context.packageName}.artwork")
+                .appendPath("station")
+                .appendPath(station.id)
+            val logo = (context.applicationContext as? ShidurApplication)?.container?.stationLogos?.file(station)
+            if (logo != null) builder.appendQueryParameter("v", logo.name)
+            return builder.build()
+        }
     }
 }

@@ -6,8 +6,10 @@ import android.content.ClipData
 import android.content.ClipboardManager
 import android.content.Context
 import android.content.Intent
+import android.net.Uri
 import android.os.Build
 import android.provider.MediaStore
+import android.provider.Settings
 import android.widget.Toast
 import io.github.eyalshimshi.shidur.BuildConfig
 import io.github.eyalshimshi.shidur.R
@@ -49,6 +51,16 @@ fun copyToClipboard(context: Context, text: String) {
     Toast.makeText(context, R.string.copied, Toast.LENGTH_SHORT).show()
 }
 
+/** Opens the system screen where the user allows Shidur to set exact alarms. */
+fun openExactAlarmSettings(context: Context) {
+    val packageUri = Uri.parse("package:" + context.packageName)
+    try {
+        context.startActivity(Intent(Settings.ACTION_REQUEST_SCHEDULE_EXACT_ALARM, packageUri))
+    } catch (e: ActivityNotFoundException) {
+        context.startActivity(Intent(Settings.ACTION_APPLICATION_DETAILS_SETTINGS, packageUri))
+    }
+}
+
 /** A pre-filled GitHub issue for a problem with a station (or the app when [station] is null). */
 fun reportProblemUrl(station: Station?, streamIndex: Int? = null): String {
     val title = if (station != null) "Problem with ${station.nameEn} (${station.id})" else "Problem report"
@@ -71,5 +83,16 @@ fun reportProblemUrl(station: Station?, streamIndex: Int? = null): String {
 
 fun suggestStationUrl(): String =
     "$REPOSITORY_URL/issues/new?title=${encode("Station suggestion: ")}&body=${encode("Station name:\nWebsite:\nStream URL (if known):\n")}"
+
+/** A pre-filled GitHub issue with a crash report (shortened to keep the link a safe length). */
+fun crashReportUrl(report: String): String {
+    val exception = report.substringAfter("\n\n").lineSequence().firstOrNull()?.trim().orEmpty()
+    val title = "Crash: " + exception.ifEmpty { "unknown error" }.take(MAX_ISSUE_TITLE_CHARS)
+    val body = "**What were you doing when it crashed?**\n\n\n---\n```\n" + report.take(MAX_ISSUE_REPORT_CHARS) + "\n```\n"
+    return "$REPOSITORY_URL/issues/new?title=${encode(title)}&body=${encode(body)}"
+}
+
+private const val MAX_ISSUE_TITLE_CHARS = 120
+private const val MAX_ISSUE_REPORT_CHARS = 3_500
 
 private fun encode(value: String): String = URLEncoder.encode(value, "UTF-8").replace("+", "%20")

@@ -25,4 +25,7 @@ sealed interface NavigationRequest {
     data object OpenPlayer : NavigationRequest
 
     data class OpenStation(val stationId: String) : NavigationRequest
+
+    /** From the app's launcher shortcuts: start playing right away. */
+    data class PlayStation(val stationId: String) : NavigationRequest
 }

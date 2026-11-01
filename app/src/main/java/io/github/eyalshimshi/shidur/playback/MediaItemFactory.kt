@@ -109,7 +109,7 @@ object MediaItemFactory {
             .setDisplayTitle(name)
             .setSubtitle(nowPlaying ?: frequency)
             .setStation(name)
-            .setArtworkUri(ArtworkProvider.uriFor(context, station.id))
+            .setArtworkUri(ArtworkProvider.uriFor(context, station))
             .setIsPlayable(true)
             .setIsBrowsable(false)
             .setMediaType(MediaMetadata.MEDIA_TYPE_RADIO_STATION)
