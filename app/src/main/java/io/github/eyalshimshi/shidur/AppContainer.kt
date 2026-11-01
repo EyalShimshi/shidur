@@ -4,7 +4,7 @@ import android.content.Context
 import io.github.eyalshimshi.shidur.data.CatalogRepository
 import io.github.eyalshimshi.shidur.data.LibraryRepository
 import io.github.eyalshimshi.shidur.data.SettingsRepository
-import io.github.eyalshimshi.shidur.data.shidurDataStore
+import io.github.eyalshimshi.shidur.data.shidurPreferences
 import io.github.eyalshimshi.shidur.playback.PlaybackConnection
 import kotlinx.coroutines.CoroutineScope
 import kotlinx.coroutines.Dispatchers
@@ -22,10 +22,10 @@ class AppContainer(context: Context) {
         encodeDefaults = true
     }
 
-    private val dataStore = appContext.shidurDataStore
+    private val preferences = appContext.shidurPreferences()
 
-    val settingsRepository = SettingsRepository(dataStore)
-    val libraryRepository = LibraryRepository(dataStore, json)
+    val settingsRepository = SettingsRepository(preferences)
+    val libraryRepository = LibraryRepository(preferences, json)
     val catalogRepository = CatalogRepository(appContext, json, libraryRepository, applicationScope)
     val playbackConnection = PlaybackConnection(appContext)
 }

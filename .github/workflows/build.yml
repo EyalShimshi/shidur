@@ -57,7 +57,23 @@ jobs:
           key: ${{ env.KEYSTORE_CACHE_KEY }}
 
       - name: Build the debug APK
-        run: gradle assembleDebug --stacktrace
+        id: build
+        run: |
+          set -o pipefail
+          gradle assembleDebug 2>&1 | tee build.log
+
+      # Collects the useful error lines so they can be copied from the run's Summary page.
+      - name: Show build errors in the summary
+        if: failure() && steps.build.outcome == 'failure'
+        run: |
+          {
+            echo "## Build errors (copy everything in the box below)"
+            echo '```'
+            grep -E '^e: ' build.log | head -n 120 || true
+            grep -E -A 12 '^\* What went wrong' build.log | head -n 80 || true
+            grep -E 'AAPT: error|error: resource|ERROR:' build.log | head -n 40 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"
 
       - name: Save the debug signing key
         if: steps.keystore.outputs.cache-hit != 'true'
@@ -89,4 +105,18 @@ jobs:
             `adb install -r shidur-${{ github.run_number }}.apk` on a computer.
 
       - name: Run unit tests
-        run: gradle testDebugUnitTest --stacktrace
+        id: tests
+        run: |
+          set -o pipefail
+          gradle testDebugUnitTest 2>&1 | tee test.log
+
+      - name: Show test failures in the summary
+        if: failure() && steps.tests.outcome == 'failure'
+        run: |
+          {
+            echo "## Test failures (copy everything in the box below)"
+            echo '```'
+            grep -E -B 2 -A 8 'FAILED$|^e: ' test.log | head -n 120 || true
+            grep -E -A 12 '^\* What went wrong' test.log | head -n 40 || true
+            echo '```'
+          } >> "$GITHUB_STEP_SUMMARY"

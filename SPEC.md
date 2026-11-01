@@ -81,7 +81,7 @@ The first installable build intentionally simplifies parts of the plan. It was w
 | Spec says | v0.1 does | Why / next step |
 |---|---|---|
 | Modest modularization ([03 §3](SPEC-03-architecture.md#3-modules)) | Single `:app` module whose packages mirror the planned modules (`model`, `data`, `playback`, `ui`, `widget`) | Fewer build files to get right blind; split into modules once the code stabilizes |
-| Hilt + Room | Manual `AppContainer`; DataStore (favorites, recents, custom stations, settings) | No annotation processing (KSP) in the first build; revisit Room when schedules arrive |
+| Hilt + Room + DataStore | Manual `AppContainer`; `SharedPreferences` (favorites, recents, custom stations, settings) exposed as Flows | No annotation processing (KSP) in the first build. DataStore 1.1.5's preferences helpers didn't resolve with AGP 9's built-in Kotlin in the first CI build; revisit DataStore/Room when schedules arrive |
 | M3 Expressive components | Stable Material 3 components (with a few expressive touches: animated play-button shape, station-tinted player) | Expressive APIs are still experimental; adopt after spike S-4 |
 | Toolchain from [03 §2](SPEC-03-architecture.md#2-technology-stack) | AGP 9.2.1, Gradle 9.5.0, Kotlin 2.3.21, compileSdk 37, BOM 2026.09.00, Media3 1.11.1, Glance 1.1.1 | Versions copied from Google's CI-tested compose-samples, so the first build has the best chance of compiling |
 | Station logos ([04 §9](SPEC-04-catalog.md#9-logos)) | Generated monogram artwork (short name on station color), served via `ArtworkProvider` | No trademark assets in the repo; real logos come with the catalog pipeline |

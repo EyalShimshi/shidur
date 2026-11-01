@@ -1,13 +1,8 @@
 package io.github.eyalshimshi.shidur.data
 
-import androidx.datastore.core.DataStore
-import androidx.datastore.preferences.core.Preferences
-import androidx.datastore.preferences.core.booleanPreferencesKey
-import androidx.datastore.preferences.core.edit
-import androidx.datastore.preferences.core.stringPreferencesKey
+import android.content.SharedPreferences
 import kotlinx.coroutines.flow.Flow
 import kotlinx.coroutines.flow.distinctUntilChanged
-import kotlinx.coroutines.flow.map
 
 enum class ThemeMode { SYSTEM, LIGHT, DARK }
 
@@ -24,64 +19,56 @@ data class AppSettings(
     val onboardingDone: Boolean = false,
 )
 
-class SettingsRepository(private val dataStore: DataStore<Preferences>) {
+class SettingsRepository(private val prefs: SharedPreferences) {
 
     private object Keys {
-        val THEME = stringPreferencesKey("theme_mode")
-        val PURE_BLACK = booleanPreferencesKey("pure_black")
-        val DYNAMIC_COLOR = booleanPreferencesKey("dynamic_color")
-        val STATION_TINT = booleanPreferencesKey("station_tint")
-        val DATA_SAVER = stringPreferencesKey("data_saver")
-        val SLEEP_FADE = booleanPreferencesKey("sleep_fade")
-        val RESUME_HEADPHONES = booleanPreferencesKey("resume_headphones")
-        val ONBOARDING_DONE = booleanPreferencesKey("onboarding_done")
+        const val THEME = "theme_mode"
+        const val PURE_BLACK = "pure_black"
+        const val DYNAMIC_COLOR = "dynamic_color"
+        const val STATION_TINT = "station_tint"
+        const val DATA_SAVER = "data_saver"
+        const val SLEEP_FADE = "sleep_fade"
+        const val RESUME_HEADPHONES = "resume_headphones"
+        const val ONBOARDING_DONE = "onboarding_done"
     }
 
-    val settings: Flow<AppSettings> = dataStore.safeData()
-        .map { p ->
+    val settings: Flow<AppSettings> = prefs
+        .observe { p ->
             AppSettings(
-                themeMode = p[Keys.THEME].toEnum(ThemeMode.SYSTEM),
-                pureBlack = p[Keys.PURE_BLACK] ?: false,
-                dynamicColor = p[Keys.DYNAMIC_COLOR] ?: true,
-                stationTint = p[Keys.STATION_TINT] ?: true,
-                dataSaver = p[Keys.DATA_SAVER].toEnum(DataSaverMode.MOBILE),
-                sleepFadeOut = p[Keys.SLEEP_FADE] ?: true,
-                resumeOnHeadphones = p[Keys.RESUME_HEADPHONES] ?: false,
-                onboardingDone = p[Keys.ONBOARDING_DONE] ?: false,
+                themeMode = p.getString(Keys.THEME, null).toEnum(ThemeMode.SYSTEM),
+                pureBlack = p.getBoolean(Keys.PURE_BLACK, false),
+                dynamicColor = p.getBoolean(Keys.DYNAMIC_COLOR, true),
+                stationTint = p.getBoolean(Keys.STATION_TINT, true),
+                dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
+                sleepFadeOut = p.getBoolean(Keys.SLEEP_FADE, true),
+                resumeOnHeadphones = p.getBoolean(Keys.RESUME_HEADPHONES, false),
+                onboardingDone = p.getBoolean(Keys.ONBOARDING_DONE, false),
             )
         }
         .distinctUntilChanged()
 
-    suspend fun setThemeMode(value: ThemeMode) {
-        dataStore.edit { it[Keys.THEME] = value.name }
+    fun setThemeMode(value: ThemeMode) = putString(Keys.THEME, value.name)
+
+    fun setPureBlack(value: Boolean) = putBoolean(Keys.PURE_BLACK, value)
+
+    fun setDynamicColor(value: Boolean) = putBoolean(Keys.DYNAMIC_COLOR, value)
+
+    fun setStationTint(value: Boolean) = putBoolean(Keys.STATION_TINT, value)
+
+    fun setDataSaver(value: DataSaverMode) = putString(Keys.DATA_SAVER, value.name)
+
+    fun setSleepFadeOut(value: Boolean) = putBoolean(Keys.SLEEP_FADE, value)
+
+    fun setResumeOnHeadphones(value: Boolean) = putBoolean(Keys.RESUME_HEADPHONES, value)
+
+    fun setOnboardingDone(value: Boolean) = putBoolean(Keys.ONBOARDING_DONE, value)
+
+    private fun putString(key: String, value: String) {
+        prefs.edit().putString(key, value).apply()
     }
 
-    suspend fun setPureBlack(value: Boolean) {
-        dataStore.edit { it[Keys.PURE_BLACK] = value }
-    }
-
-    suspend fun setDynamicColor(value: Boolean) {
-        dataStore.edit { it[Keys.DYNAMIC_COLOR] = value }
-    }
-
-    suspend fun setStationTint(value: Boolean) {
-        dataStore.edit { it[Keys.STATION_TINT] = value }
-    }
-
-    suspend fun setDataSaver(value: DataSaverMode) {
-        dataStore.edit { it[Keys.DATA_SAVER] = value.name }
-    }
-
-    suspend fun setSleepFadeOut(value: Boolean) {
-        dataStore.edit { it[Keys.SLEEP_FADE] = value }
-    }
-
-    suspend fun setResumeOnHeadphones(value: Boolean) {
-        dataStore.edit { it[Keys.RESUME_HEADPHONES] = value }
-    }
-
-    suspend fun setOnboardingDone(value: Boolean) {
-        dataStore.edit { it[Keys.ONBOARDING_DONE] = value }
+    private fun putBoolean(key: String, value: Boolean) {
+        prefs.edit().putBoolean(key, value).apply()
     }
 }
 
