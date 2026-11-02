@@ -1,120 +1,139 @@
+<div align="center">
+
 # Shidur · שידור
 
-A free, open-source, ad-free Android app for listening to **Israeli radio**: Kan, Galei Tzahal / Galgalatz, regional stations and more. Material 3 design, Hebrew and English.
+**Israeli radio, simply.** A free, open-source and ad-free Android app for listening to live Israeli radio.
 
-> Unofficial app. It is not affiliated with or endorsed by any broadcaster. Station names belong to their owners. The app only plays each station's own public stream.
+[![Build](https://github.com/EyalShimshi/shidur/actions/workflows/build.yml/badge.svg)](https://github.com/EyalShimshi/shidur/actions/workflows/build.yml)
+[![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
+[![Android 12+](https://img.shields.io/badge/Android-12%2B-3DDC84?logo=android&logoColor=white)](#install)
+[![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/compose)
 
-- **Specification:** [SPEC.md](SPEC.md) (product, design, architecture, station catalog, release plan, roadmap)
-- **Package name:** `io.github.eyalshimshi.shidur`
-- **Requires:** Android 12 or newer
+[**Download**](https://github.com/EyalShimshi/shidur/releases) · [**Get it with Obtainium**][obtainium] · [**עברית**](#בעברית)
 
----
+</div>
 
-## Put the code on GitHub (one time)
+> [!NOTE]
+> Shidur is an independent, unofficial app. It is not affiliated with or endorsed by any broadcaster. It plays each station's own public stream, and station names and logos belong to their owners.
 
-GitHub builds the app, so this folder must first be uploaded to a repository named **shidur** under the **EyalShimshi** account. Pick one way:
+## Features
 
-**A. From a PC with VS Code (about 2 minutes)**
-1. In VS Code, delete `.github/workflows/build-new.yml`, an unused leftover.
-2. Open **Source Control** (`Ctrl+Shift+G`) and click **Initialize Repository** (if shown).
-3. Type the message `First build`, click **Commit** (answer **Yes** to stage all changes), then click **Publish Branch**.
-4. Choose **Publish to GitHub private repository**, named **shidur**, signed in as **EyalShimshi**.
+**Listen**
+- 27 Israeli stations: Kan, Galei Tzahal and Galgalatz, regional, religious and Arabic-language stations. Each has backup stream addresses that the app switches to by itself.
+- **Fast starts:** likely stations are pre-connected when the app opens, and a station starts connecting the moment your finger touches it. Optional **Instant start** keeps your last station ready to play at once.
+- **No ads at the start:** some stations play an ad or jingle to everyone who tunes in. Shidur downloads it in a moment, skips it, and starts at the live broadcast.
+- Song titles when the station sends them, including Hebrew titles in older encodings.
+- A **sleep timer** that fades out, and a **wake-up alarm** that plays your station quietly at first, with your phone's alarm sound as a backup if the station can't be reached.
 
-**B. From any computer with only a browser**
-1. On github.com, signed in as **EyalShimshi**, click **+ → New repository**. Name it **shidur**, choose **Private**, leave every "Add …" option unticked, and click **Create repository**.
-2. On the new empty repository page, click the **uploading an existing file** link.
-3. Open this project folder in File Explorer and select everything inside it (`Ctrl+A`), including the `.github` folder and the `.gitignore` file. You can leave out `make-folders.cmd` and `.github/workflows/build-new.yml`. Drag the selection onto the browser page and wait until every file has finished uploading.
-4. Click **Commit changes**.
+**Find**
+- A Home screen with shelves for your favorites, recently played stations and every category.
+- Search in Hebrew or English, by nickname ("גלצ") or by frequency ("88").
+- Favorites you can reorder, and any other stream added by its address (including .pls and .m3u playlists).
 
-Either way, open the repository's **Actions** tab: the **Build APK** workflow starts on its own and takes about 10 minutes. A green ✓ means the APK is on the **Releases** page (see below). A red ✗ means the build failed: click the run, then **build**, open the failed step, and copy the lines that start with `e:` or follow `What went wrong` so they can be fixed.
+**Everywhere**
+- Media notification, lock screen, Bluetooth and steering-wheel controls.
+- Android Auto, Google Cast, Wear OS controls and a home-screen widget.
+- Launcher shortcuts: long-press the app icon for your top favorites, or add any station to your home screen.
 
-## Install the app on your phone
+**Your way**
+- Material 3 design with your wallpaper's colors or an accent color you choose; light, dark and pure-black themes; a player colored after the station.
+- A player you drag open and closed and swipe between stations, with predictive back.
+- Hebrew and English, fully right-to-left.
 
-Every time code is pushed to GitHub, a GitHub Actions workflow builds the app and publishes a ready-to-install **APK** on the repository's **Releases** page. You don't need to install anything on a computer.
+## Install
 
-### Option A: install straight on the phone (easiest, no computer)
+Shidur isn't on Google Play yet. Every version is published on the [Releases](https://github.com/EyalShimshi/shidur/releases) page as an APK, signed with the same key so each one installs as an update. It needs Android 12 or newer.
 
-1. On your phone, open **https://github.com/EyalShimshi/shidur/releases** and sign in to GitHub. Because the repository is private, you need to be signed in to see it.
-2. Tap the newest **"Shidur build N"**, then under **Assets** tap **`shidur-N.apk`** to download it.
-3. Open the downloaded file from the download notification, or from the **Files** app → **Downloads**.
-4. If Android says your browser isn't allowed to install apps, tap **Settings**, turn on **Allow from this source**, go back, and tap **Install**.
-5. If Google Play Protect warns about an unrecognized app, tap **More details → Install anyway**. This is expected for apps that aren't from the Play Store.
+**With Obtainium** (recommended: updates arrive automatically)
+1. Install [Obtainium](https://github.com/ImranR98/Obtainium).
+2. On your phone, open [this link][obtainium], or add `https://github.com/EyalShimshi/shidur` in Obtainium with **Include prereleases** turned on.
 
-### Option B: install from a Windows computer with ADB
+**Directly**
+1. On your phone, open the [latest release](https://github.com/EyalShimshi/shidur/releases) and download `shidur-N.apk`.
+2. Open the downloaded file. If Android asks, allow your browser to install apps. If Google Play Protect warns about an unknown app, choose **More details → Install anyway**.
 
-ADB is Google's small command-line tool for talking to a phone. It's a zip file with no installer.
+You can also install from a computer with `adb install -r shidur-N.apk`.
 
-1. **Get ADB.** Download **SDK Platform-Tools for Windows** from https://developer.android.com/tools/releases/platform-tools and extract the zip to `C:\platform-tools`.
-2. **Get the app.** On the computer, open https://github.com/EyalShimshi/shidur/releases, download the newest `shidur-N.apk`, and save it in `C:\platform-tools` as `shidur.apk`.
-3. **Enable USB debugging on the phone** (one time only):
-   - Open **Settings → About phone** and tap **Build number** 7 times until it says you're a developer. On Samsung it's under **Settings → About phone → Software information**.
-   - Go to **Settings → System → Developer options** (on Samsung: **Settings → Developer options**) and turn on **USB debugging**.
-4. **Connect the phone** with a USB cable. On the phone, tap **Allow** on the "Allow USB debugging?" prompt (tick "Always allow from this computer").
-5. **Open a command window in the folder.** In File Explorer, open `C:\platform-tools`, click the address bar, type `cmd`, and press Enter.
-6. **Check the connection:**
-   ```
-   adb devices
-   ```
-   Your phone should be listed with the word `device` next to it.
-7. **Install:**
-   ```
-   adb install -r shidur.apk
-   ```
-   You should see `Success`. Shidur now appears in your app drawer.
+**Android Auto** lists only apps from Google Play until you allow others: in the Android Auto settings, tap **Version** ten times, then turn on **⋮ → Developer settings → Unknown sources**.
 
-**If something goes wrong:**
+## Privacy
 
-| What you see | What to do |
+No accounts, ads, analytics or trackers. Your favorites, history and settings stay on your phone and aren't backed up to the cloud.
+
+The app connects only to:
+- the stations' own streaming servers, to play them;
+- GitHub, to check for updates to the station list;
+- the public addresses of station logos (mostly Wikimedia), once per logo. Turning logos off in Settings stops this;
+- Google Play services, only if you use Google Cast.
+
+If the app crashes, the details are saved on your phone. On the next launch you can copy them or open a pre-filled report on GitHub. Nothing is sent automatically.
+
+<details>
+<summary>Permissions, and what they're for</summary>
+
+| Permission | Used for |
 |---|---|
-| `unauthorized` next to the device | Unlock the phone and accept the USB debugging prompt |
-| No device listed | Try another cable or USB port, and make sure the phone is in "File transfer" USB mode. Otherwise install the phone maker's USB driver: *Samsung Android USB Driver* or *Google USB Driver* (Pixel) |
-| `INSTALL_FAILED_UPDATE_INCOMPATIBLE` | A build signed with a different key is installed. Run `adb uninstall io.github.eyalshimshi.shidur`, then install again |
+| Internet, network state | Playing streams; lower quality on mobile data with Data saver |
+| Foreground service, wake lock | Playing in the background with the screen off |
+| Notifications | The playback controls notification |
+| Alarms & reminders, run at startup | Ringing the wake-up alarm on time, also after a restart |
 
-**No cable? Use wireless debugging (Android 11+, no drivers needed).** Put the phone and computer on the same Wi-Fi.
-1. On the phone, go to **Developer options → Wireless debugging**, turn it on, and tap **Pair device with pairing code**.
-2. On the computer, run `adb pair <IP:port shown on the phone>` and type the code.
-3. Run `adb connect <IP:port shown under "IP address & Port">`.
-4. Run `adb install -r shidur.apk`.
+</details>
 
-### Android Auto
+## בעברית
 
-Android Auto hides apps that weren't installed from the Play Store until you allow them:
-1. Open the **Android Auto** settings on the phone, scroll down, and tap **Version** 10 times.
-2. In the **⋮** menu, choose **Developer settings** and turn on **Unknown sources**.
+<div dir="rtl">
 
-Shidur then appears in the car's app list.
+**שידור** היא אפליקציה חינמית, בקוד פתוח וללא פרסומות להאזנה לרדיו הישראלי: כאן, גלי צה״ל וגלגלצ, תחנות אזוריות ועוד. יש בה מועדפים, חיפוש בעברית, טיימר שינה, שעון מעורר עם רדיו, Android Auto, Chromecast ווידג׳ט למסך הבית, בעיצוב Material 3.
 
----
+להתקנה מורידים את קובץ ה-APK העדכני מדף ה-[Releases](https://github.com/EyalShimshi/shidur/releases) ופותחים אותו בטלפון (נדרש Android 12 ומעלה). כדי לקבל עדכונים אוטומטית אפשר להשתמש ב-[Obtainium][obtainium].
 
-## What works (v0.2)
+שידור היא אפליקציה עצמאית שאינה קשורה לגופי השידור. שמות התחנות והלוגואים שייכים לבעליהם.
 
-- About 27 Israeli stations, with automatic fallback between each station's stream addresses.
-- **Home** (favorites, recently played, categories), **Browse** (categories, sorting), **Favorites** (drag to reorder, edit), and **Search** (Hebrew/English, nicknames, frequencies such as "88").
-- **Player:** one sheet that drags (or taps) open from the mini player into the full player and back; swipe sideways on the mini player or the artwork to change station; the back gesture closes it. Background playback with the media notification, lock screen, Bluetooth and steering-wheel controls, and song titles when the station sends them (Hebrew encodings handled).
-- **Fast starts:** stations are pre-connected when the app opens and the moment you touch one, so most start in well under a second. **Settings → Performance** shows how long each start took.
-- **Instant start (experimental, off by default):** keeps your last station loading silently for up to 2 minutes while the app is open and nothing plays, so it starts at once. It works on Wi-Fi and mobile data and uses about 1 MB per minute while it waits, so leave it off if your data plan is limited.
-- **Sleep timer** with fade-out; **custom stations** by URL (including `.pls`/`.m3u` playlists); **share**.
-- **Android Auto** (Favorites / Recent / Categories / All stations, plus voice search), **home-screen widget**, **Google Cast**, and **Wear OS** controls (automatic, through the media session).
-- **Settings:** light/dark/system theme, wallpaper colors or an accent color of your choice, pure black (the player keeps a black background and colors only its accents), station colors in the player, background gradient, animations, language (Hebrew/English), data saver, headphones auto-play.
+</div>
 
-**Not in this build yet** (see [SPEC-06](SPEC-06-roadmap-risks.md)):
-- automated station health checks and program schedules;
-- Bluetooth auto-start through the companion device picker;
-- share landing pages;
-- opt-in crash reports;
-- the newer Material 3 *Expressive* components (this build uses stable Material 3);
-- the two-pane player for tablets.
+## Building from source
 
-## Building
+You need JDK 17 or newer and [Gradle 9.5](https://gradle.org/install/), or a recent Android Studio.
 
-- **Cloud:** [`.github/workflows/build.yml`](.github/workflows/build.yml) builds a release APK (signed with the workflow's own key, so each build installs over the previous one) on every push to `main`/`master` and publishes it as a pre-release.
-- **Locally (optional):** install Android Studio, open this folder, and press **Run**.
-- **Toolchain:** AGP 9.2, Gradle 9.5, Kotlin 2.3, Jetpack Compose (BOM 2026.09), Media3 1.11.
+```sh
+gradle assembleDebug        # APK in app/build/outputs/apk/debug/
+gradle testDebugUnitTest    # unit tests
+```
 
-## Updating the station list
+Every push to `main` is built by [GitHub Actions](.github/workflows/build.yml), which runs the unit tests and publishes the APK as a pre-release.
 
-Stations live in [`app/src/main/assets/catalog.json`](app/src/main/assets/catalog.json). Each station has Hebrew/English names, aliases for search, FM frequencies, and a prioritized list of stream URLs. Once the repository is public, installed apps also download this file from GitHub, so station fixes reach users without a new APK.
+**Stack:** Kotlin · Jetpack Compose with Material 3 · Media3 (ExoPlayer, MediaLibraryService, Cast) · OkHttp · Glance · kotlinx.serialization
+
+**Layout:** a single `app` module with the packages `model` (stations), `data` (station list, library, settings, alarm), `playback` (service, streams, logos, Instant start), `ui` (screens, components, theme) and `widget`. The [specification](SPEC.md) covers the product, design and architecture in detail.
+
+## Contributing
+
+Bug reports, station fixes and pull requests are welcome.
+
+- **A station stopped working or is missing?** In the app, use **Settings → Report a problem** or **Suggest a station**, or [open an issue](https://github.com/EyalShimshi/shidur/issues).
+- **Fixing or adding a station** means editing [`catalog.json`](app/src/main/assets/catalog.json): Hebrew and English names, search aliases, FM frequencies, stream addresses in order of preference, and optionally a logo address (PNG, JPEG or WebP). If a stream opens every connection with the same ad or jingle, its `introSeconds` tells the app how much to skip. Raise `catalogVersion` so installed apps pick up the change. The unit tests check the file.
+- **Text** lives in [`values/strings.xml`](app/src/main/res/values/strings.xml) (English) and [`values-iw/strings.xml`](app/src/main/res/values-iw/strings.xml) (Hebrew); please update both.
+
+## Acknowledgements
+
+- The look and feel is inspired by [Echo](https://github.com/brahmkshatriya/echo).
+- [Material Icons](https://github.com/google/material-design-icons) by Google (Apache License 2.0). The icons Shidur uses are included in [`AppIcons.kt`](app/src/main/java/io/github/eyalshimshi/shidur/ui/components/AppIcons.kt).
+- Built on [AndroidX](https://github.com/androidx/androidx), [Media3](https://github.com/androidx/media) and [Reorderable](https://github.com/Calvin-LL/Reorderable) (all Apache License 2.0).
+- Station logos are trademarks of their owners, shown only to identify the stations. They aren't included in the app; it downloads them from public sources, mostly [Wikimedia Commons](https://commons.wikimedia.org/) and Hebrew Wikipedia. If you own a logo and want it removed, please open an issue.
 
 ## License
 
-GPL-3.0 (to add the full license text: on GitHub choose **Add file → Create new file**, name it `LICENSE`, click **Choose a license template**, and pick **GNU General Public License v3.0**).
+Copyright (C) 2026 EyalShimshi and the Shidur contributors.
+
+Shidur is free software: you can redistribute it and/or modify it under the terms of the GNU General Public License as published by the Free Software Foundation, either version 3 of the License, or (at your option) any later version. It is distributed in the hope that it will be useful, but WITHOUT ANY WARRANTY; without even the implied warranty of MERCHANTABILITY or FITNESS FOR A PARTICULAR PURPOSE. See [LICENSE](LICENSE) for details.
+
+**Additional permission under GNU GPL version 3 section 7:** If you modify this Program, or any covered work, by linking or combining it with the Google Play services client libraries (or a modified version of those libraries), containing parts covered by the terms of the Android Software Development Kit License Agreement, the licensors of this Program grant you additional permission to convey the resulting work.
+
+The station list ([`catalog.json`](app/src/main/assets/catalog.json)) is dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
+
+[obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.eyalshimshi.shidur%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FEyalShimshi%2Fshidur%22%2C%22author%22%3A%22EyalShimshi%22%2C%22name%22%3A%22Shidur%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%7D%22%7D
+
+
+
+

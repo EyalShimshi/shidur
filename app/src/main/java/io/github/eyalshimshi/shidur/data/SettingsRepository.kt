@@ -22,6 +22,8 @@ data class AppSettings(
     val dataSaver: DataSaverMode = DataSaverMode.MOBILE,
     /** Keeps the last station's stream open while the app is open, so it starts instantly. */
     val instantStart: Boolean = false,
+    /** Skips the clip (usually an ad) some stations play to every new listener; see StreamIntro. */
+    val skipIntros: Boolean = true,
     val sleepFadeOut: Boolean = true,
     val resumeOnHeadphones: Boolean = false,
     val onboardingDone: Boolean = false,
@@ -40,6 +42,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
         const val ANIMATIONS = "animations"
         const val DATA_SAVER = "data_saver"
         const val INSTANT_START = "instant_start"
+        const val SKIP_INTROS = "skip_intros"
         const val SLEEP_FADE = "sleep_fade"
         const val RESUME_HEADPHONES = "resume_headphones"
         const val ONBOARDING_DONE = "onboarding_done"
@@ -58,6 +61,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
                 animations = p.getBoolean(Keys.ANIMATIONS, true),
                 dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
                 instantStart = p.getBoolean(Keys.INSTANT_START, false),
+                skipIntros = p.getBoolean(Keys.SKIP_INTROS, true),
                 sleepFadeOut = p.getBoolean(Keys.SLEEP_FADE, true),
                 resumeOnHeadphones = p.getBoolean(Keys.RESUME_HEADPHONES, false),
                 onboardingDone = p.getBoolean(Keys.ONBOARDING_DONE, false),
@@ -89,6 +93,8 @@ class SettingsRepository(private val prefs: SharedPreferences) {
     fun setDataSaver(value: DataSaverMode) = putString(Keys.DATA_SAVER, value.name)
 
     fun setInstantStart(value: Boolean) = putBoolean(Keys.INSTANT_START, value)
+
+    fun setSkipIntros(value: Boolean) = putBoolean(Keys.SKIP_INTROS, value)
 
     fun setSleepFadeOut(value: Boolean) = putBoolean(Keys.SLEEP_FADE, value)
 

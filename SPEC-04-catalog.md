@@ -363,16 +363,18 @@ Generic relays with no Israeli identity are excluded.
 
 These URLs come from research cross-checks on 2026-10-26. **Each must be re-verified** against the broadcaster's own player before it enters the catalog. Kan stations broadcast on several regional frequencies, so the FM column shows the primary or well-known one.
 
+Update 2026-11-02: Kan's own stream hosts (`kanliveicy.media.kan.org.il`, `kanliveicy01.bynetcdn.com`, `kanbet.media.kan.org.il`) now resolve to 127.0.0.1, so every Kan station plays from Triton only. Triton's directory (`playerservices.streamtheworld.com/api/livestream?station=<mount>&transports=http&version=1.9`) lists each mount's servers and bitrate.
+
 | id | Name (he / en) | Network | Collections | FM | Stream leads (host/path) |
 |---|---|---|---|---|---|
-| `kan-bet` | כאן ב׳ / Kan Bet | kan | news-talk | varies by region | Triton mount `KAN_BET`; `kanliveicy.media.kan.org.il/icy/kanbet_mp3`; HLS `kanbet.media.kan.org.il/hls/…` |
-| `kan-gimel` | כאן גימל / Kan Gimel | kan | music | 97.8 (center) | Triton `KAN_GIMMEL`; `kanliveicy01.bynetcdn.com/icy/kangimmel_mp3` |
-| `kan-88` | כאן 88 / Kan 88 | kan | music | 88.0 | Triton `KAN_88`; `kanliveicy.media.kan.org.il/icy/kan88_mp3`; HLS on `kancdn.medonecdn.net` |
-| `kan-tarbut` | כאן תרבות / Kan Tarbut | kan | news-talk | varies | Triton `KAN_TARBUT`; `kanliveicy.media.kan.org.il/icy/kantarbut_mp3` |
-| `kan-kol-hamusica` | כאן קול המוזיקה / Kan Kol HaMusica | kan | music | varies | Triton `KAN_KOL_HAMUSICA`; `kanliveicy.media.kan.org.il/icy/kankolhamusica_mp3` |
-| `kan-moreshet` | כאן מורשת / Kan Moreshet | kan | religious | varies | Triton `KAN_MORESHET`; `kanliveicy.media.kan.org.il/icy/kanmoreshet_mp3` |
-| `kan-reka` | כאן רק״ע / Kan Reka | kan | languages | varies | `kanliveicy01.bynetcdn.com/icy/kanreka_mp3` |
-| `makan` | מכאן / مكان Makan | kan | arabic | varies | `kanliveicy.media.kan.org.il/icy/makan_mp3` (**flagged broken; find current URL**) |
+| `kan-bet` | כאן ב׳ / Kan Bet | kan | news-talk | varies by region | Triton mount `KAN_BET` (128k) |
+| `kan-gimel` | כאן גימל / Kan Gimel | kan | music | 97.8 (center) | Triton `KAN_GIMMEL` (192k) |
+| `kan-88` | כאן 88 / Kan 88 | kan | music | 88.0 | Triton `KAN_88` (192k) |
+| `kan-tarbut` | כאן תרבות / Kan Tarbut | kan | news-talk | varies | Triton `KAN_TARBUT` (128k) |
+| `kan-kol-hamusica` | כאן קול המוזיקה / Kan Kol HaMusica | kan | music | varies | Triton `KAN_KOL_HAMUSICA` (192k) |
+| `kan-moreshet` | כאן מורשת / Kan Moreshet | kan | religious | varies | Triton `KAN_MORESHET` (128k) |
+| `kan-reka` | כאן רק״ע / Kan Reka | kan | languages | varies | Triton `KAN_REKA` (128k) |
+| `makan` | מכאן / مكان Makan | kan | arabic | varies | Triton `RADIO_MAKAN` (128k) |
 | `glz` | גלי צה״ל / Galei Tzahal | idf | news-talk | varies | `glzwizzlv.bynetcdn.com/glz_mp3` |
 | `glglz` | גלגלצ / Galgalatz | idf | music | 91.8 | `api.bynetcdn.com/Redirector/glz/glglz/ICE-LIVE` (redirector); `glzicylv01.bynetcdn.com/glglz_mp3` |
 | `103fm` | 103FM | maariv-group | news-talk, regional | 103.0 | `cdn.cybercdn.live/103FM/Live/icecast.audio` (official page embeds a `data-file` URL) |

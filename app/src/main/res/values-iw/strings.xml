@@ -166,6 +166,8 @@
     <string name="settings_animations_summary">תנועה של תמונות וכפתורים</string>
     <string name="settings_instant_start">הפעלה מיידית (ניסיוני)</string>
     <string name="settings_instant_start_summary">כשהאפליקציה פתוחה ושום דבר לא מתנגן, התחנה האחרונה נטענת בשקט עד 2 דקות כדי שתתחיל לנגן מיד. צורך כ-1MB לדקה, גם בגלישה סלולרית.</string>
+    <string name="settings_skip_intros">דילוג על פרסומת הפתיחה</string>
+    <string name="settings_skip_intros_summary">יש תחנות שמשמיעות פרסומת או ג׳ינגל בכל פעם שמתחברים אליהן. שידור מורידה אותם ברגע ומדלגת עליהם, כך שמגיעים ישר לשידור החי. צורך עד כ-1MB נוסף בכל כניסה לתחנה כזו.</string>
     <string name="action_open_player">פתיחת הנגן</string>
 
     <!-- Crash catcher -->

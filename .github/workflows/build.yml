@@ -100,7 +100,7 @@ jobs:
           prerelease: true
           files: shidur-${{ github.run_number }}.apk
           body: |
-            Build ${{ github.run_number }} (version 0.2.${{ github.run_number }}) of commit ${{ github.sha }}.
+            Build ${{ github.run_number }} (version 0.3.${{ github.run_number }}) of commit ${{ github.sha }}.
             Install: open this page on your phone and tap the .apk file, or run
             `adb install -r shidur-${{ github.run_number }}.apk` on a computer.
 

@@ -7,9 +7,11 @@ import io.github.eyalshimshi.shidur.playback.IcyTitleDecoder
 import java.io.ByteArrayOutputStream
 import java.io.IOException
 import java.net.SocketTimeoutException
+import java.util.concurrent.TimeUnit
 import okio.Buffer
 import org.junit.Assert.assertEquals
 import org.junit.Assert.assertFalse
+import org.junit.Assert.assertNull
 import org.junit.Assert.assertTrue
 import org.junit.Assert.fail
 import org.junit.Test
@@ -77,6 +79,78 @@ class InstantStartTest {
         assertEquals("ab", readAll(ring, 2))
         assertEquals(-1, ring.read(ByteArray(4), 0, 4, timeoutMs = 10))
         assertTrue(ring.isFinished())
+    }
+
+    @Test
+    fun readerSkipsTheOpeningClip() {
+        val ring = AudioRing(16)
+        ring.write("ADADlive".toByteArray(), 0, 8)
+        ring.startReading(notBefore = 4, behindLive = Long.MAX_VALUE)
+
+        assertEquals("live", readAll(ring, 4))
+    }
+
+    @Test
+    fun standbyStreamStartsNearLiveEvenWithAnOpeningClip() {
+        val ring = AudioRing(16)
+        ring.write("ADADlive-now".toByteArray(), 0, 12)
+        ring.startReading(notBefore = 4, behindLive = 3)
+
+        assertEquals("now", readAll(ring, 3))
+    }
+
+    @Test
+    fun clipNotFullyArrivedStartsWithTheNewestData() {
+        val ring = AudioRing(16)
+        ring.write("ADA".toByteArray(), 0, 3)
+        ring.startReading(notBefore = 4, behindLive = Long.MAX_VALUE)
+        ring.write("Dlive".toByteArray(), 0, 5)
+
+        assertEquals("Dlive", readAll(ring, 5))
+    }
+
+    @Test
+    fun waitingForAudioEndsWhenEnoughArrivedOrTimeRunsOut() {
+        val ring = AudioRing(16)
+        ring.write("abcd".toByteArray(), 0, 4)
+
+        val enough = System.nanoTime()
+        assertTrue(ring.awaitWritten(4, timeoutMs = 5_000))
+        assertTrue(System.nanoTime() - enough < TimeUnit.SECONDS.toNanos(1))
+
+        val tooLittle = System.nanoTime()
+        assertFalse(ring.awaitWritten(8, timeoutMs = 20))
+        assertTrue(System.nanoTime() - tooLittle >= TimeUnit.MILLISECONDS.toNanos(20))
+    }
+
+    @Test
+    fun waitingStopsOnceTheOpeningBurstIsOver() {
+        val ring = AudioRing(16)
+        ring.write("ab".toByteArray(), 0, 2)
+
+        val started = System.nanoTime()
+        assertFalse(ring.awaitWritten(12, timeoutMs = 10_000, minBurstBytesPerSecond = 4))
+        assertTrue(System.nanoTime() - started < TimeUnit.SECONDS.toNanos(5))
+    }
+
+    @Test
+    fun stationKeysCarryTheStationAndStream() {
+        assertEquals("102fm-tlv" to 2, HotStandby.parseKey(HotStandby.stationKey("102fm-tlv", 2)))
+        assertEquals("kan-bet" to 0, HotStandby.parseKey(HotStandby.stationKey("kan-bet")))
+        assertNull(HotStandby.parseKey(null))
+        assertNull(HotStandby.parseKey("some-other-key"))
+        assertNull(HotStandby.parseKey("shidur-station:kan-bet"))
+    }
+
+    @Test
+    fun bitrateHeadersAreRead() {
+        assertEquals(128, HotStandby.kbpsFromHeader("128"))
+        assertEquals(128, HotStandby.kbpsFromHeader("128, 128"))
+        assertEquals(128, HotStandby.kbpsFromHeader("128Kbps"))
+        assertEquals(64, HotStandby.kbpsFromHeader("64k"))
+        assertNull(HotStandby.kbpsFromHeader(null))
+        assertNull(HotStandby.kbpsFromHeader("unknown"))
+        assertNull(HotStandby.kbpsFromHeader("0"))
     }
 
     @Test(expected = IOException::class)

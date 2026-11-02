@@ -36,6 +36,9 @@ import okio.BufferedSource
  * station plays. The stream is read into a small ring buffer with its ICY metadata removed. When
  * the player opens the same station, [claim] hands the running connection to the player, which
  * starts a couple of seconds behind live.
+ *
+ * The same machinery skips a station's opening clip ([StreamIntro]): [openPastIntro] reads a new
+ * connection into a ring buffer and starts the player right after the clip.
  */
 @OptIn(UnstableApi::class)
 class HotStandby(private val client: OkHttpClient) {
@@ -88,12 +91,13 @@ class HotStandby(private val client: OkHttpClient) {
 
     /**
      * Hands the standby stream over when the request is for its station ([key], see [stationKey])
-     * or its address ([uri]). Each stream is handed over once.
+     * or its address ([uri]). Each stream is handed over once. Playback starts no earlier than
+     * [introSeconds] into the stream (see [StreamIntro]).
      */
-    internal fun claim(uri: Uri, key: String?): DataSource? {
+    internal fun claim(uri: Uri, key: String?, introSeconds: Double = 0.0): DataSource? {
         val session = synchronized(this) {
             val candidate = current ?: return null
-            val forStation = key != null && key == stationKey(candidate.stationId)
+            val forStation = parseKey(key)?.first == candidate.stationId
             if (!(forStation || candidate.matches(uri.toString())) || candidate.isFinished()) return null
             current = null
             candidate
@@ -101,7 +105,19 @@ class HotStandby(private val client: OkHttpClient) {
         mainHandler.removeCallbacks(timeout)
         session.claimed = true
         session.latestTitle?.let { postTitle(session.stationId, it) }
-        return StandbySource(session)
+        return StandbySource(session, introSeconds, fromStandby = true)
+    }
+
+    /**
+     * Opens a new connection to [url] for the player, starting right after the station's opening
+     * clip. Servers send the first part of a stream in a fast burst, so the clip is downloaded and
+     * dropped within a moment instead of being played.
+     */
+    internal fun openPastIntro(url: String, intro: StreamIntro): DataSource {
+        val session = Session(intro.stationId, url, setOf(url), intro.icyCharset, intro.bitrateKbps)
+        session.claimed = true
+        session.start()
+        return StandbySource(session, intro.seconds, fromStandby = false)
     }
 
     private fun postTitle(stationId: String, title: String) {
@@ -114,6 +130,7 @@ class HotStandby(private val client: OkHttpClient) {
         private val url: String,
         initialUrls: Set<String>,
         private val icyCharset: String?,
+        bitrateKbps: Int? = null,
     ) {
         val ring = AudioRing(RING_BYTES)
         private val urls: MutableSet<String> = ConcurrentHashMap.newKeySet<String>().apply { addAll(initialUrls) }
@@ -133,7 +150,8 @@ class HotStandby(private val client: OkHttpClient) {
             private set
 
         @Volatile
-        var bytesPerSecond = DEFAULT_BYTES_PER_SECOND
+        var bytesPerSecond =
+            bitrateKbps?.takeIf { it in MIN_KBPS..MAX_KBPS }?.let { it * 125 } ?: DEFAULT_BYTES_PER_SECOND
             private set
 
         @Volatile
@@ -184,9 +202,7 @@ class HotStandby(private val client: OkHttpClient) {
                     val body = response.body ?: throw IOException("Empty response")
                     urls += response.request.url.toString()
                     headers = playerHeaders(response)
-                    response.header("icy-br")?.substringBefore(',')?.trim()?.toIntOrNull()?.let { kbps ->
-                        if (kbps in 8..512) bytesPerSecond = kbps * 125
-                    }
+                    kbpsFromHeader(response.header("icy-br"))?.let { kbps -> bytesPerSecond = kbps * 125 }
                     answered.countDown()
                     IcyDemuxer(response.header("icy-metaint")?.toIntOrNull()).pump(
                         source = body.source(),
@@ -216,8 +232,12 @@ class HotStandby(private val client: OkHttpClient) {
         }
     }
 
-    /** What the player reads after taking over a standby stream. */
-    private inner class StandbySource(private val session: Session) : BaseDataSource(/* isNetwork= */ true) {
+    /** What the player reads from a background connection: a handed-over standby stream or a new one. */
+    private inner class StandbySource(
+        private val session: Session,
+        private val introSeconds: Double,
+        private val fromStandby: Boolean,
+    ) : BaseDataSource(/* isNetwork= */ true) {
         private var uri: Uri? = null
         private var opened = false
         private var servedAudio = false
@@ -226,7 +246,25 @@ class HotStandby(private val client: OkHttpClient) {
             uri = dataSpec.uri
             transferInitializing(dataSpec)
             session.awaitAnswer()
-            session.ring.startReadingBehindLive(BACKLOG_SECONDS * session.bytesPerSecond)
+            val bytesPerSecond = session.bytesPerSecond
+            val introBytes = (introSeconds * bytesPerSecond).toLong()
+            var skipTo = 0L
+            if (introBytes > 0) {
+                val cushion = INTRO_CUSHION_SECONDS.toLong() * bytesPerSecond
+                // The opening burst usually brings the whole clip and more within a moment: start
+                // right after the clip. If the burst ends first (an ad of unknown length, or a
+                // slow network), waiting longer would only play the clip, so start a little before
+                // the newest audio.
+                val clipArrived = session.ring.awaitWritten(
+                    position = introBytes + cushion,
+                    timeoutMs = INTRO_WAIT_MS,
+                    minBurstBytesPerSecond = bytesPerSecond * 3L / 2,
+                )
+                skipTo = if (clipArrived) introBytes else maxOf(0L, session.ring.written() - cushion)
+            }
+            // A standby stream starts close to live; a new connection keeps all the audio after the clip.
+            val behindLive = if (fromStandby) BACKLOG_SECONDS.toLong() * bytesPerSecond else Long.MAX_VALUE
+            session.ring.startReading(notBefore = skipTo, behindLive = behindLive)
             opened = true
             transferStarted(dataSpec)
             return C.LENGTH_UNSET.toLong()
@@ -238,7 +276,7 @@ class HotStandby(private val client: OkHttpClient) {
             if (read < 0) return C.RESULT_END_OF_INPUT
             if (!servedAudio) {
                 servedAudio = true
-                servedStationId = session.stationId
+                if (fromStandby) servedStationId = session.stationId
             }
             bytesTransferred(read)
             return read
@@ -268,8 +306,18 @@ class HotStandby(private val client: OkHttpClient) {
         /** Playback starts this far behind live, so the player's start buffer is already full. */
         private const val BACKLOG_SECONDS = 2
         private const val DEFAULT_BYTES_PER_SECOND = 16_000
+        private const val MIN_KBPS = 8
+        private const val MAX_KBPS = 512
         private const val ANSWER_TIMEOUT_MS = 8_000L
         private const val READ_TIMEOUT_MS = 20_000L
+
+        /** Longest wait for a station's opening clip to download before playing whatever arrived. */
+        private const val INTRO_WAIT_MS = 6_000L
+
+        /** Audio kept buffered ahead when playback starts past an opening clip. */
+        private const val INTRO_CUSHION_SECONDS = 5
+
+        private const val KEY_PREFIX = "shidur-station:"
 
         /** Whether [url] is a plain audio stream (HLS and playlists can't be held open). */
         fun canHold(url: String, format: String?): Boolean {
@@ -278,7 +326,20 @@ class HotStandby(private val client: OkHttpClient) {
         }
 
         /** The key that marks a station's plain-stream media items (their custom cache key). */
-        fun stationKey(stationId: String): String = "shidur-station:$stationId"
+        fun stationKey(stationId: String, streamIndex: Int = 0): String = "$KEY_PREFIX$stationId#$streamIndex"
+
+        /** The station id and stream index in a [stationKey], or null for any other key. */
+        fun parseKey(key: String?): Pair<String, Int>? {
+            if (key == null || !key.startsWith(KEY_PREFIX)) return null
+            val body = key.removePrefix(KEY_PREFIX)
+            val stationId = body.substringBeforeLast('#')
+            val streamIndex = body.substringAfterLast('#', "").toIntOrNull() ?: return null
+            return if (stationId.isEmpty()) null else stationId to streamIndex
+        }
+
+        /** The bitrate in an "icy-br" header such as "128", "128, 128" or "128Kbps". */
+        fun kbpsFromHeader(value: String?): Int? =
+            value?.let { Regex("\\d+").find(it)?.value?.toIntOrNull() }?.takeIf { it in MIN_KBPS..MAX_KBPS }
 
         /** The response headers as the player should see them: ICY metadata is already removed. */
         private fun playerHeaders(response: Response): Map<String, List<String>> {
@@ -292,21 +353,37 @@ class HotStandby(private val client: OkHttpClient) {
 }
 
 /**
+ * A station stream whose server sends every new listener a clip, usually an ad, before the live
+ * audio. Playback skips up to its first [seconds]: the whole clip if the server's opening burst
+ * brings it, otherwise as much of the burst as possible.
+ */
+data class StreamIntro(
+    val stationId: String,
+    val seconds: Double,
+    val bitrateKbps: Int?,
+    val icyCharset: String?,
+)
+
+/**
  * The player's network data source: takes over the Instant start stream when it is for the
- * requested address, and otherwise opens a normal connection with [upstream].
+ * requested address, starts past the opening clip of streams that have one ([introFor]), and
+ * otherwise opens a normal connection with [upstream].
  */
 @OptIn(UnstableApi::class)
 class StandbyDataSourceFactory(
     private val upstream: DataSource.Factory,
     private val standby: HotStandby,
+    private val introFor: (DataSpec) -> StreamIntro? = { null },
 ) : DataSource.Factory {
-    override fun createDataSource(): DataSource = StandbyAwareDataSource(upstream.createDataSource(), standby)
+    override fun createDataSource(): DataSource =
+        StandbyAwareDataSource(upstream.createDataSource(), standby, introFor)
 }
 
 @OptIn(UnstableApi::class)
 private class StandbyAwareDataSource(
     private val upstream: DataSource,
     private val standby: HotStandby,
+    private val introFor: (DataSpec) -> StreamIntro?,
 ) : DataSource {
     private val listeners = mutableListOf<TransferListener>()
     private var active: DataSource? = null
@@ -317,22 +394,33 @@ private class StandbyAwareDataSource(
     }
 
     override fun open(dataSpec: DataSpec): Long {
-        val claimed = if (dataSpec.position == 0L) standby.claim(dataSpec.uri, dataSpec.key) else null
-        if (claimed != null) {
-            listeners.forEach(claimed::addTransferListener)
-            active = claimed
-            try {
-                return claimed.open(dataSpec)
-            } catch (e: IOException) {
-                runCatching { claimed.close() }
-                active = null
-                // A cancelled load must stop; otherwise a failed standby stream just means
-                // connecting normally, rather than an error that would skip to another address.
-                if (Thread.currentThread().isInterrupted) throw e
+        if (dataSpec.position == 0L) {
+            val intro = introFor(dataSpec)
+            standby.claim(dataSpec.uri, dataSpec.key, intro?.seconds ?: 0.0)?.let { claimed ->
+                openOrNull(claimed, dataSpec)?.let { return it }
+            }
+            if (intro != null) {
+                openOrNull(standby.openPastIntro(dataSpec.uri.toString(), intro), dataSpec)?.let { return it }
             }
         }
         active = upstream
         return upstream.open(dataSpec)
+    }
+
+    /** Opens a background-connection [source]; null if it failed, so a normal connection is tried. */
+    private fun openOrNull(source: DataSource, dataSpec: DataSpec): Long? {
+        listeners.forEach(source::addTransferListener)
+        active = source
+        return try {
+            source.open(dataSpec)
+        } catch (e: IOException) {
+            runCatching { source.close() }
+            active = null
+            // A cancelled load must stop; otherwise a failed background stream just means
+            // connecting normally, rather than an error that would skip to another address.
+            if (Thread.currentThread().isInterrupted) throw e
+            null
+        }
     }
 
     override fun read(buffer: ByteArray, offset: Int, length: Int): Int =
@@ -389,9 +477,58 @@ class AudioRing(capacity: Int) {
     fun isFinished(): Boolean = lock.withLock { finished }
 
     /** Moves the reader to [bytes] behind the newest data, or to the oldest data still kept. */
-    fun startReadingBehindLive(bytes: Int) {
-        lock.withLock { readPosition = maxOf(oldestPosition(), writePosition - bytes) }
+    fun startReadingBehindLive(bytes: Int) = startReading(notBefore = 0L, behindLive = bytes.toLong())
+
+    /**
+     * Moves the reader to stream position [notBefore], skipping what came before it, or later: at
+     * most [behindLive] bytes behind the newest data, and never before the oldest data still kept.
+     * If [notBefore] hasn't arrived yet, reading starts with the newest data.
+     */
+    fun startReading(notBefore: Long, behindLive: Long) {
+        lock.withLock {
+            readPosition = maxOf(oldestPosition(), minOf(notBefore, writePosition), writePosition - behindLive)
+        }
     }
+
+    /**
+     * Waits until [position] bytes have arrived in total; returns whether they did. Gives up when
+     * the stream ends, when [timeoutMs] passes, or, if [minBurstBytesPerSecond] is set, once the
+     * server's opening burst is over: data arrived slower than that over the last moment.
+     */
+    fun awaitWritten(position: Long, timeoutMs: Long, minBurstBytesPerSecond: Long = 0L): Boolean {
+        lock.withLock {
+            val deadline = System.nanoTime() + TimeUnit.MILLISECONDS.toNanos(timeoutMs)
+            val minWindowBytes = minBurstBytesPerSecond * BURST_WINDOW_NANOS / 1_000_000_000L
+            var windowStarted = false
+            var windowStart = 0L
+            var windowStartPosition = 0L
+            while (writePosition < position && !finished) {
+                val now = System.nanoTime()
+                if (now - deadline >= 0L) return false
+                if (minBurstBytesPerSecond > 0L && writePosition > 0L) {
+                    if (!windowStarted) {
+                        windowStarted = true
+                        windowStart = now
+                        windowStartPosition = writePosition
+                    } else if (now - windowStart >= BURST_WINDOW_NANOS) {
+                        if (writePosition - windowStartPosition < minWindowBytes) return false
+                        windowStart = now
+                        windowStartPosition = writePosition
+                    }
+                }
+                try {
+                    changed.awaitNanos(minOf(deadline - now, POLL_NANOS))
+                } catch (e: InterruptedException) {
+                    Thread.currentThread().interrupt()
+                    throw InterruptedIOException()
+                }
+            }
+            return writePosition >= position
+        }
+    }
+
+    /** How many bytes have arrived in total. */
+    fun written(): Long = lock.withLock { writePosition }
 
     /**
      * Copies up to [length] bytes into [target], waiting up to [timeoutMs] for data. Returns the
@@ -423,6 +560,12 @@ class AudioRing(capacity: Int) {
     }
 
     private fun oldestPosition(): Long = maxOf(0L, writePosition - buffer.size)
+
+    private companion object {
+        /** How long data may arrive at about real-time speed before the opening burst counts as over. */
+        const val BURST_WINDOW_NANOS = 700_000_000L
+        const val POLL_NANOS = 100_000_000L
+    }
 }
 
 /** Splits a SHOUTcast/Icecast stream into audio and its in-band metadata blocks. */

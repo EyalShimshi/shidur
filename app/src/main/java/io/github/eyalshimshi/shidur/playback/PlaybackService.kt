@@ -23,6 +23,7 @@ import androidx.media3.common.Metadata
 import androidx.media3.common.PlaybackException
 import androidx.media3.common.Player
 import androidx.media3.common.util.UnstableApi
+import androidx.media3.datasource.DataSpec
 import androidx.media3.datasource.DefaultDataSource
 import androidx.media3.datasource.okhttp.OkHttpDataSource
 import androidx.media3.exoplayer.DefaultLoadControl
@@ -54,6 +55,7 @@ import kotlinx.coroutines.cancel
 import kotlinx.coroutines.delay
 import kotlinx.coroutines.flow.first
 import kotlinx.coroutines.launch
+import kotlinx.coroutines.withContext
 
 @OptIn(UnstableApi::class)
 class PlaybackService : MediaLibraryService() {
@@ -71,8 +73,12 @@ class PlaybackService : MediaLibraryService() {
     private lateinit var audioManager: AudioManager
     private lateinit var loadErrorPolicy: RadioLoadErrorHandlingPolicy
 
+    // Read by loading threads too (see introFor).
+    @Volatile
     private var stationsById: Map<String, Station> = emptyMap()
     private var favoriteIds: List<String> = emptyList()
+
+    @Volatile
     private var settings = AppSettings()
     private val workingStreamIndex = mutableMapOf<String, Int>()
     private var lastStationId: String? = null
@@ -152,7 +158,7 @@ class PlaybackService : MediaLibraryService() {
         // warm-ups are reused by playback. The standby factory hands over the stream that Instant
         // start kept open, when there is one for the requested address.
         val httpFactory = OkHttpDataSource.Factory(container.httpClient).setUserAgent(USER_AGENT)
-        val networkFactory = StandbyDataSourceFactory(httpFactory, container.hotStandby)
+        val networkFactory = StandbyDataSourceFactory(httpFactory, container.hotStandby, ::introFor)
         loadErrorPolicy = RadioLoadErrorHandlingPolicy()
         val mediaSourceFactory = DefaultMediaSourceFactory(DefaultDataSource.Factory(this, networkFactory))
             .setLoadErrorHandlingPolicy(loadErrorPolicy)
@@ -174,6 +180,19 @@ class PlaybackService : MediaLibraryService() {
     } catch (t: Throwable) {
         Log.w(TAG, "Cast playback unavailable; using local playback only", t)
         local
+    }
+
+    /**
+     * The opening clip (usually an ad) to skip on the stream [dataSpec] opens, if its station has
+     * one and the setting is on. Runs on a loading thread.
+     */
+    private fun introFor(dataSpec: DataSpec): StreamIntro? {
+        if (!settings.skipIntros) return null
+        val (stationId, streamIndex) = HotStandby.parseKey(dataSpec.key) ?: return null
+        val station = stationsById[stationId] ?: return null
+        val stream = station.streams.getOrNull(streamIndex) ?: return null
+        val seconds = stream.introSeconds?.takeIf { it > 0.0 } ?: return null
+        return StreamIntro(station.id, seconds, stream.bitrate, station.icyCharset)
     }
 
     private fun sessionActivity(): PendingIntent {
@@ -506,7 +525,8 @@ class PlaybackService : MediaLibraryService() {
      */
     private fun startAlarm(stationId: String, gentle: Boolean) {
         // No app screen may have connected yet; the session must be known to show the notification.
-        if (!isSessionAdded(session)) addSession(session)
+        // Adding a session that's already added does nothing.
+        addSession(session)
         enterAlarmMode(stationId, gentle)
         serviceScope.launch {
             val byId = awaitStations().associateBy { it.id }
@@ -650,7 +670,9 @@ class PlaybackService : MediaLibraryService() {
                 if (previous != null && previous != network) {
                     // New network: cached DNS answers and pooled connections belong to the old one.
                     container.dns.clear()
-                    container.httpClient.connectionPool.evictAll()
+                    // Closing a TLS connection sends a goodbye message, and Android forbids network
+                    // access on the main thread.
+                    withContext(Dispatchers.IO) { container.httpClient.connectionPool.evictAll() }
                 }
                 if (player.playerError != null && player.playWhenReady) retryCurrentStation()
             }

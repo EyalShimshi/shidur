@@ -214,6 +214,12 @@ fun SettingsScreen(
                     onChange = viewModel::setInstantStart,
                 )
                 SwitchRow(
+                    title = stringResource(R.string.settings_skip_intros),
+                    summary = stringResource(R.string.settings_skip_intros_summary),
+                    checked = settings.skipIntros,
+                    onChange = viewModel::setSkipIntros,
+                )
+                SwitchRow(
                     title = stringResource(R.string.settings_sleep_fade),
                     summary = null,
                     checked = settings.sleepFadeOut,

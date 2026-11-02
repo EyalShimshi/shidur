@@ -166,6 +166,8 @@
     <string name="settings_animations_summary">Artwork and button motion</string>
     <string name="settings_instant_start">Instant start (experimental)</string>
     <string name="settings_instant_start_summary">While Shidur is open and nothing is playing, keeps your last station loading silently for up to 2 minutes so it plays at once. Uses about 1 MB a minute, also on mobile data.</string>
+    <string name="settings_skip_intros">Skip opening ads</string>
+    <string name="settings_skip_intros_summary">Some stations play an ad or jingle every time you tune in. Shidur downloads it in a moment and skips it, so you go straight to the live broadcast. Uses up to about 1 MB more each time you tune in to one of these stations.</string>
     <string name="action_open_player">Open player</string>
 
     <!-- Crash catcher -->

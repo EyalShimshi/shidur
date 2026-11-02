@@ -6,6 +6,11 @@ data class StationStream(
     val url: String,
     val format: String? = null,
     val bitrate: Int? = null,
+    /**
+     * Length of the clip (usually an ad) the server plays to every new listener before live audio;
+     * for ads of varying length, the most to skip.
+     */
+    val introSeconds: Double? = null,
 )
 
 data class Station(

@@ -59,8 +59,8 @@ object MediaItemFactory {
             .setMediaId(mediaId)
             .setUri(uri)
             .setMimeType(if (isHls) MimeTypes.APPLICATION_M3U8 else null)
-            // Lets Instant start recognize the station whichever of its addresses the item uses.
-            .setCustomCacheKey(if (isHls) null else HotStandby.stationKey(station.id))
+            // Lets Instant start and the intro skip recognize the station and which of its addresses this is.
+            .setCustomCacheKey(if (isHls) null else HotStandby.stationKey(station.id, index))
             .setMediaMetadata(metadata)
             .build()
     }

@@ -42,6 +42,10 @@ class CatalogTest {
                     "${station.id}: bad stream url ${stream.url}",
                     stream.url.startsWith("https://") || stream.url.startsWith("http://"),
                 )
+                stream.introSeconds?.let { seconds ->
+                    assertTrue("${station.id}: intro of $seconds s is out of range", seconds in 0.5..60.0)
+                    assertTrue("${station.id}: HLS streams can't skip an intro", stream.format != "hls")
+                }
             }
             station.collections.forEach { collection ->
                 assertTrue("${station.id}: unknown collection $collection", collection in collectionIds)

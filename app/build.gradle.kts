@@ -17,7 +17,7 @@ android {
         // CI builds count up, so each new APK installs as an update of the previous one.
         val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionCode = buildNumber
-        versionName = "0.2.$buildNumber"
+        versionName = "0.3.$buildNumber"
     }
 
     buildTypes {

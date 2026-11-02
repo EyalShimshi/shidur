@@ -102,6 +102,21 @@ Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on 
 | — | **Instant start** (experimental, off by default): on any network, while the app is open and nothing plays, keeps the last station's stream open for up to 2 minutes and hands the open connection to the player | Near-zero start for the most likely station; costs about 1 MB per minute (also on mobile data, which the setting states), so it is opt-in |
 | Debug APK per push | Release build (not debuggable, so Compose runs much faster), signed with the same CI key, `versionCode` = CI run number | Installs over earlier builds; minification stays off until keep rules are tested |
 
+## Implementation notes — third build (v0.3)
+
+| Spec says | v0.3 does | Why / next step |
+|---|---|---|
+| Logos via the catalog pipeline ([04 §9](SPEC-04-catalog.md#9-logos)) | A `logo` address per station in `catalog.json` (26 of 27 stations, mostly Wikimedia). Downloaded once, checked, made square and kept on the device; the text artwork stays as the fallback; a Settings switch turns logos off | No trademark files in the repository |
+| ACRA crash reports ([05 §7](SPEC-05-quality-release.md#7-crash-reporting-acra-opt-in-per-report)) | Own crash catcher: the last crash is saved on the device, and the next launch offers to copy it or open a pre-filled GitHub issue | No extra library; nothing is sent automatically |
+| — | Wake-up alarm: `setAlarmClock`, alarm volume, gentle fade-in, the phone's alarm sound when the station can't be reached, set again after a restart | User request |
+| — | Launcher shortcuts: the top 4 favorites on the app icon, and "Add to home screen" for any station | User request |
+| Material Symbols | Own `AppIcons.kt` with the ~30 icons used, instead of `material-icons-extended` | Smaller APK |
+| Home with category chips | Echo-style shelves: favorites, recently played and one row per category | User request |
+| — | Opening ads skipped: streams marked with `introSeconds` are read through the Instant start ring buffer, and playback starts after the clip the server sends every new listener (103FM: a 14-second ad). Kan's Triton streams get rotating ads of unknown length: they ask for a 60-second opening burst, and playback starts 5 seconds before its end. A Settings switch, on by default | Issue #2 |
+| — | Kan plays from Triton only: Kan's own hosts were shut down, which had broken Kan Reka and Makan | Found while working on #2 |
+| — | Network changes no longer crash the app: idle connections are closed off the main thread | Issue #1 |
+| Licensing (Q-03) | GPL-3.0-or-later with the §7 permission for Google Play services; `LICENSE` added; README rewritten for publishing | Maintainer chose `-or-later` |
+
 ## Glossary
 
 | Term | Meaning |

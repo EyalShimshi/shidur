@@ -299,6 +299,10 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { settingsRepository.setSleepFadeOut(value) }
     }
 
+    fun setSkipIntros(value: Boolean) {
+        viewModelScope.launch { settingsRepository.setSkipIntros(value) }
+    }
+
     fun setResumeOnHeadphones(value: Boolean) {
         viewModelScope.launch { settingsRepository.setResumeOnHeadphones(value) }
     }

@@ -25,6 +25,11 @@ data class StreamDto(
     val url: String,
     val format: String? = null,
     val bitrate: Int? = null,
+    /**
+     * Seconds of the same clip (usually an ad) the server sends each new listener before live
+     * audio; for ads of varying length, the most to skip.
+     */
+    val introSeconds: Double? = null,
 )
 
 @Serializable
@@ -79,7 +84,7 @@ fun StationDto.toStation(): Station = Station(
     primaryFrequency = primaryFm,
     aliases = aliases,
     website = website,
-    streams = streams.map { StationStream(it.url, it.format, it.bitrate) },
+    streams = streams.map { StationStream(it.url, it.format, it.bitrate, it.introSeconds) },
     icyCharset = icyCharset,
     rank = rank,
     logo = logo,
