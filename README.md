@@ -112,7 +112,7 @@ Every push to `main` is built by [GitHub Actions](.github/workflows/build.yml), 
 Bug reports, station fixes and pull requests are welcome.
 
 - **A station stopped working or is missing?** In the app, use **Settings → Report a problem** or **Suggest a station**, or [open an issue](https://github.com/EyalShimshi/shidur/issues).
-- **Fixing or adding a station** means editing [`catalog.json`](app/src/main/assets/catalog.json): Hebrew and English names, search aliases, FM frequencies, stream addresses in order of preference, and optionally a logo address (PNG, JPEG or WebP). If a stream opens every connection with the same ad or jingle, its `introSeconds` tells the app how much to skip. Raise `catalogVersion` so installed apps pick up the change. The unit tests check the file.
+- **Fixing or adding a station** means editing [`catalog.json`](app/src/main/assets/catalog.json): Hebrew and English names, search aliases, FM frequencies, stream addresses in order of preference, and optionally a logo address (PNG, JPEG or WebP). If a stream opens every connection with the same ad or jingle, its `introSeconds` tells the app how much to skip. Raise `catalogVersion` so installed apps pick up the change. The unit tests check the file, and [`tools/check-streams.ps1`](tools/check-streams.ps1) (PowerShell 7) checks that every address answers.
 - **Text** lives in [`values/strings.xml`](app/src/main/res/values/strings.xml) (English) and [`values-iw/strings.xml`](app/src/main/res/values-iw/strings.xml) (Hebrew); please update both.
 
 ## Acknowledgements

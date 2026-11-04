@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": 2026110201,
+  "catalogVersion": 2026110401,
   "collections": [
     { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
     { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
@@ -19,6 +19,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/4/49/KanReshetBetLogo.svg/960px-KanReshetBetLogo.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_reshet_bet/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_BET.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 },
         { "url": "https://28563.live.streamtheworld.com/KAN_BET.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
       ]
@@ -55,6 +56,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/3/39/KanGimel.svg/960px-KanGimel.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_gimel/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_GIMMEL.mp3?burst-time=60", "format": "mp3", "bitrate": 192, "introSeconds": 60 }
       ]
     },
@@ -66,6 +68,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/0/09/Kan88Logo.svg/960px-Kan88Logo.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_88/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_88.mp3?burst-time=60", "format": "mp3", "bitrate": 192, "introSeconds": 60 }
       ]
     },
@@ -77,8 +80,8 @@
       "website": "https://103fm.maariv.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/7/72/103FM.svg/960px-103FM.svg.png",
       "streams": [
-        { "url": "https://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3", "introSeconds": 14.5 },
-        { "url": "http://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3", "introSeconds": 14.5 }
+        { "url": "https://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" }
       ]
     },
     {
@@ -114,7 +117,6 @@
       "logo": "https://upload.wikimedia.org/wikipedia/he/0/09/102fmdec2025.png",
       "streams": [
         { "url": "https://102.livecdn.biz/102fm_aac", "format": "aac", "bitrate": 64, "introSeconds": 2.6 },
-        { "url": "https://102.livecdn.biz/102fm_mp3", "format": "mp3" },
         { "url": "http://102.livecdn.biz/102fm_aac", "format": "aac", "bitrate": 64, "introSeconds": 2.6 }
       ]
     },
@@ -126,8 +128,8 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ed/KanTarbutNewLogo.svg/960px-KanTarbutNewLogo.svg.png",
       "streams": [
-        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_TARBUT.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 },
-        { "url": "https://22653.live.streamtheworld.com/KAN_TARBUT.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_tarbut/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
+        { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_TARBUT.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
       ]
     },
     {
@@ -138,6 +140,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/d/d0/KanKolMusic.svg/960px-KanKolMusic.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_kol_hamuzika/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_KOL_HAMUSICA.mp3?burst-time=60", "format": "mp3", "bitrate": 192, "introSeconds": 60 }
       ]
     },
@@ -149,6 +152,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/e7/KanMoreshet.svg/960px-KanMoreshet.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_moreshet/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_MORESHET.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
       ]
     },
@@ -160,6 +164,7 @@
       "website": "https://www.kan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/thumb/e/ee/KanReka.svg/960px-KanReka.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/kan_reka/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/KAN_REKA.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
       ]
     },
@@ -171,6 +176,7 @@
       "website": "https://www.makan.org.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/a/a9/Kan_makan.svg/960px-Kan_makan.svg.png",
       "streams": [
+        { "url": "https://kancdn.medonecdn.net/livehls/oil/kancdn-live/live/radio/radio_makan/live.livx/playlist.m3u8?bitrate=192000&audioId=1&lang=pol&renditions", "format": "hls", "bitrate": 192 },
         { "url": "https://playerservices.streamtheworld.com/api/livestream-redirect/RADIO_MAKAN.mp3?burst-time=60", "format": "mp3", "bitrate": 128, "introSeconds": 60 }
       ]
     },
@@ -194,8 +200,8 @@
       "website": "https://radiodarom.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/c/ca/%D7%9C%D7%95%D7%92%D7%95_%D7%A8%D7%93%D7%99%D7%95_%D7%93%D7%A8%D7%95%D7%9D.png",
       "streams": [
-        { "url": "https://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3", "introSeconds": 2.7 },
-        { "url": "http://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3", "introSeconds": 2.7 }
+        { "url": "https://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Darom_97FM/Live/icecast.audio", "format": "mp3" }
       ]
     },
     {
@@ -229,8 +235,8 @@
       "website": "https://96fm.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/commons/5/52/%D7%9C%D7%95%D7%92%D7%95_%D7%A8%D7%93%D7%99%D7%95_%D7%A7%D7%95%D7%9C_%D7%A8%D7%92%D7%A2_%D7%A0%D7%A7%D7%99.png",
       "streams": [
-        { "url": "https://radio.streamgates.net/stream/KOLREGA", "format": "mp3" },
-        { "url": "http://radio.streamgates.net/stream/KOLREGA", "format": "mp3" }
+        { "url": "https://cdn.cybercdn.live/Kol_Rega/Live_Audio/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Kol_Rega/Live_Audio/icecast.audio", "format": "mp3" }
       ]
     },
     {
@@ -266,7 +272,6 @@
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/3/30/102fmeilat2024.webp/960px-102fmeilat2024.webp",
       "streams": [
         { "url": "https://cdn.cybercdn.live/Eilat_Radio/Live/icecast.audio", "format": "mp3" },
-        { "url": "https://radio.streamgates.net/stream/eilat", "format": "mp3" },
         { "url": "http://cdn.cybercdn.live/Eilat_Radio/Live/icecast.audio", "format": "mp3" }
       ]
     },
@@ -278,8 +283,8 @@
       "website": "https://gly.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/1/12/GaleyIsraelLOGO.jpg",
       "streams": [
-        { "url": "https://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3", "introSeconds": 4.3 },
-        { "url": "http://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3", "introSeconds": 4.3 }
+        { "url": "https://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3" },
+        { "url": "http://cdn.cybercdn.live/Galei_Israel/Live/icecast.audio", "format": "mp3" }
       ]
     },
     {
@@ -291,7 +296,6 @@
       "logo": "https://upload.wikimedia.org/wikipedia/he/4/48/%D7%9C%D7%95%D7%92%D7%95_%D7%A7%D7%95%D7%9C_%D7%91%D7%A8%D7%9E%D7%94.png",
       "streams": [
         { "url": "https://cdn.cybercdn.live/Kol_Barama/Live_Audio/icecast.audio", "format": "mp3" },
-        { "url": "https://kb.cdnwz.net/kol_barama", "format": "mp3" },
         { "url": "http://cdn.cybercdn.live/Kol_Barama/Live_Audio/icecast.audio", "format": "mp3" }
       ]
     },

@@ -112,8 +112,9 @@ Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on 
 | — | Launcher shortcuts: the top 4 favorites on the app icon, and "Add to home screen" for any station | User request |
 | Material Symbols | Own `AppIcons.kt` with the ~30 icons used, instead of `material-icons-extended` | Smaller APK |
 | Home with category chips | Echo-style shelves: favorites, recently played and one row per category | User request |
-| — | Opening ads skipped: streams marked with `introSeconds` are read through the Instant start ring buffer, and playback starts after the clip the server sends every new listener (103FM: a 14-second ad). Kan's Triton streams get rotating ads of unknown length: they ask for a 60-second opening burst, and playback starts 5 seconds before its end. A Settings switch, on by default | Issue #2 |
-| — | Kan plays from Triton only: Kan's own hosts were shut down, which had broken Kan Reka and Makan | Found while working on #2 |
+| — | Opening ads skipped: streams marked with `introSeconds` are read through the Instant start ring buffer, and playback starts after the clip the server sends every new listener (102FM: a 2-second jingle). Kan plays first from its own HLS streams, which have no per-listener ads; its Triton fallback gets rotating 11–14 s ads, so it asks for a 60-second opening burst and playback starts 5 seconds before its end. CyberCDN clips (103FM's 14-second ad) go only to browsers, not to the app. A Settings switch, on by default | Issue #2; measured with the app's User-Agent and a phone capture |
+| — | Kan's own old hosts were shut down, which had broken Kan Reka and Makan: Kan now plays from its HLS streams on `kancdn.medonecdn.net`, with Triton as the fallback | Found while working on #2 |
+| — | Stream addresses checked with `tools/check-streams.ps1`: Kol Rega moved to CyberCDN; four dead backup addresses removed | Station data goes stale on its own |
 | — | Network changes no longer crash the app: idle connections are closed off the main thread | Issue #1 |
 | Licensing (Q-03) | GPL-3.0-or-later with the §7 permission for Google Play services; `LICENSE` added; README rewritten for publishing | Maintainer chose `-or-later` |
 

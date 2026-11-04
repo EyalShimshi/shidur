@@ -10,6 +10,8 @@ import java.io.InputStream
 import java.net.HttpURLConnection
 import java.net.URI
 
+// Keep this an app-style name: CyberCDN servers add an opening ad or jingle for browser-like
+// User-Agents (measured in November 2026), but not for apps.
 val USER_AGENT: String =
     "Shidur/${BuildConfig.VERSION_NAME} (Android ${Build.VERSION.RELEASE}; +https://github.com/EyalShimshi/shidur)"
 
