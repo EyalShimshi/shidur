@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": 2026110501,
+  "catalogVersion": 2026110502,
   "collections": [
     { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
     { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
@@ -211,8 +211,7 @@
       "aliases": ["ירושלים", "jerusalem", "101"],
       "website": "https://www.jerusalemnet.co.il/",
       "streams": [
-        { "url": "https://radio.streamgates.net/stream/101fm", "format": "aac", "bitrate": 64 },
-        { "url": "http://radio.streamgates.net/stream/101fm", "format": "aac", "bitrate": 64 }
+        { "url": "https://radio.streamgates.net/stream/101fm", "format": "aac", "bitrate": 64 }
       ]
     },
     {
@@ -223,8 +222,7 @@
       "website": "https://1045fm.maariv.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/a/a7/104.5FM.svg/960px-104.5FM.svg.png",
       "streams": [
-        { "url": "https://radio.streamgates.net/stream/1045fm", "format": "mp3" },
-        { "url": "http://radio.streamgates.net/stream/1045fm", "format": "mp3" }
+        { "url": "https://radio.streamgates.net/stream/1045fm", "format": "mp3" }
       ]
     },
     {
@@ -259,8 +257,7 @@
       "website": "https://90fm.co.il/",
       "logo": "https://90fm.s3.eu-central-1.amazonaws.com/2025/05/%D7%9C%D7%95%D7%92%D7%95-%D7%97%D7%93%D7%A9-100-fm.webp",
       "streams": [
-        { "url": "https://radio.streamgates.net/stream/90fm", "format": "mp3" },
-        { "url": "http://radio.streamgates.net/stream/90fm", "format": "mp3" }
+        { "url": "https://radio.streamgates.net/stream/90fm", "format": "mp3" }
       ]
     },
     {
@@ -307,8 +304,7 @@
       "website": "https://www.93fm.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/f/f0/Channels4_profile.jpg",
       "streams": [
-        { "url": "https://live.kcm.fm/live-new", "format": "mp3" },
-        { "url": "http://live.kcm.fm/live-new", "format": "mp3" }
+        { "url": "https://live.kcm.fm/live-new", "format": "mp3" }
       ]
     },
     {

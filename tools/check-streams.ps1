@@ -47,7 +47,8 @@ function Test-Addresses($targets) {
       $type = if ($resp.Content.Headers.ContentType) { $resp.Content.Headers.ContentType.MediaType } else { '' }
       $resp.Dispose()
       $problem =
-        if ($status -ge 400) { "HTTP $status" }
+        if ($status -eq 429) { $null }  # Rate-limited (Wikimedia limits GitHub's shared servers), not broken.
+        elseif ($status -ge 400) { "HTTP $status" }
         elseif ($t.Kind -eq 'logo' -and $type -notlike 'image/*') { "not an image ($type)" }
         elseif ($t.Kind -eq 'stream' -and $type -like 'text/html*') { 'a web page, not audio' }
         else { $null }
