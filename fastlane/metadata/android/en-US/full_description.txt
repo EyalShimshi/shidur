@@ -1,0 +1,30 @@
+Shidur is a free, open-source app for listening to live Israeli radio. No ads, no account, no tracking.
+
+LISTEN
+• 27 Israeli stations: Kan's stations, Galei Tzahal and Galgalatz, regional stations such as 103FM, Eco99 and Radio Darom, and religious and Arabic-language stations
+• Stations start fast, and switch to a backup address on their own when one fails
+• Skips the ad or jingle some stations play every time you tune in
+• Song titles when the station sends them
+• A sleep timer that fades out, and a wake-up alarm that plays your station
+
+FIND
+• A home screen with your favorites, recently played stations and every category
+• Search in Hebrew or English, by name, nickname or FM frequency
+• Reorder your favorites, or add any other stream by its address
+
+EVERYWHERE
+• Lock screen, Bluetooth and steering-wheel controls
+• Android Auto, Chromecast, Wear OS and a home-screen widget
+• Your favorite stations as shortcuts on the app icon
+
+YOUR WAY
+• Material You design in your wallpaper's colors, with light, dark and pure-black themes
+• Hebrew and English, fully right-to-left
+
+PRIVACY
+Your favorites and settings stay on your phone. Shidur has no ads, analytics or trackers, and needs no account.
+
+OPEN SOURCE
+Shidur is free software (GPL-3.0). Its code and station list are on GitHub: https://github.com/EyalShimshi/shidur
+
+Shidur is an independent app. It is not affiliated with or endorsed by any broadcaster. Station names and logos belong to their owners and are shown only to identify the stations.

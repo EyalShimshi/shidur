@@ -61,6 +61,7 @@ import io.github.eyalshimshi.shidur.R
 import io.github.eyalshimshi.shidur.data.AppSettings
 import io.github.eyalshimshi.shidur.data.CatalogRepository
 import io.github.eyalshimshi.shidur.data.DataSaverMode
+import io.github.eyalshimshi.shidur.data.PRIVACY_POLICY_URL
 import io.github.eyalshimshi.shidur.data.REPOSITORY_URL
 import io.github.eyalshimshi.shidur.data.ThemeMode
 import io.github.eyalshimshi.shidur.model.Station
@@ -208,12 +209,6 @@ fun SettingsScreen(
                     }
                 }
                 SwitchRow(
-                    title = stringResource(R.string.settings_instant_start),
-                    summary = stringResource(R.string.settings_instant_start_summary),
-                    checked = settings.instantStart,
-                    onChange = viewModel::setInstantStart,
-                )
-                SwitchRow(
                     title = stringResource(R.string.settings_skip_intros),
                     summary = stringResource(R.string.settings_skip_intros_summary),
                     checked = settings.skipIntros,
@@ -238,7 +233,11 @@ fun SettingsScreen(
             SettingsGroup(stringResource(R.string.settings_stations)) {
                 ClickRow(
                     title = stringResource(R.string.settings_check_updates),
-                    summary = stringResource(R.string.settings_catalog_version, catalogVersion.toString()),
+                    summary = if (settings.expertMode) {
+                        stringResource(R.string.settings_catalog_version, catalogVersion.toString())
+                    } else {
+                        null
+                    },
                     onClick = {
                         viewModel.refreshCatalog { result ->
                             val message = when (result) {
@@ -270,13 +269,32 @@ fun SettingsScreen(
                 )
             }
 
-            SettingsGroup(stringResource(R.string.settings_performance)) {
-                PerformanceItems(
-                    starts = starts,
-                    stationsById = stationsById,
-                    hebrew = hebrew,
-                    onClear = viewModel::clearDiagnostics,
+            SettingsGroup(stringResource(R.string.settings_advanced)) {
+                SwitchRow(
+                    title = stringResource(R.string.settings_expert),
+                    summary = stringResource(R.string.settings_expert_summary),
+                    checked = settings.expertMode,
+                    onChange = viewModel::setExpertMode,
                 )
+                if (settings.expertMode) {
+                    SwitchRow(
+                        title = stringResource(R.string.settings_instant_start),
+                        summary = stringResource(R.string.settings_instant_start_summary),
+                        checked = settings.instantStart,
+                        onChange = viewModel::setInstantStart,
+                    )
+                }
+            }
+
+            if (settings.expertMode) {
+                SettingsGroup(stringResource(R.string.settings_performance)) {
+                    PerformanceItems(
+                        starts = starts,
+                        stationsById = stationsById,
+                        hebrew = hebrew,
+                        onClear = viewModel::clearDiagnostics,
+                    )
+                }
             }
 
             SettingsGroup(stringResource(R.string.settings_about)) {
@@ -284,6 +302,11 @@ fun SettingsScreen(
                     title = stringResource(R.string.about_version, BuildConfig.VERSION_NAME),
                     summary = stringResource(R.string.about_license),
                     onClick = { uriHandler.openUri(REPOSITORY_URL) },
+                )
+                ClickRow(
+                    title = stringResource(R.string.about_privacy),
+                    summary = stringResource(R.string.about_privacy_summary),
+                    onClick = { uriHandler.openUri(PRIVACY_POLICY_URL) },
                 )
                 GroupCard {
                     Text(

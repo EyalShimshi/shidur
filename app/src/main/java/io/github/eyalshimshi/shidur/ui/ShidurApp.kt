@@ -280,7 +280,8 @@ private fun MainContent(
                     val queue = remember(currentStation, player.queueIds, player.currentIndex, library.stationsById) {
                         PlayerQueue.of(currentStation, player, library.stationsById)
                     }
-                    val lastStart = starts.firstOrNull()?.takeIf { it.stationId == currentStation.id }
+                    val lastStart = starts.firstOrNull()
+                        ?.takeIf { settings.expertMode && it.stationId == currentStation.id }
                     MaterialTheme(colorScheme = playerScheme) {
                         PlayerSheet(
                             state = sheetState,

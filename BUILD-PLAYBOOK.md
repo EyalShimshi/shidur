@@ -279,6 +279,10 @@ Commit messages say why, not just what. One round is one commit, or a few.
 | CI caches aren't secrets | A signing key in a cache is readable by fork pull requests once the repo is public |
 | Store policies constrain permissions | Exact-alarm permissions are restricted for store builds |
 | Test environments can lie | An office proxy cut radio streams after 32 KB; the real check happened on the phone |
+| Measure with the app's own identity | CyberCDN sent a 14-second ad to browser User-Agents but not to the app; the skip had been built on a browser measurement |
+| Prototype visual rules on real data | Logo layouts were tried on all 26 real logos in a browser canvas, before and after side by side, then ported to unit-tested Kotlin |
+| Store policies decide permissions | Google Play keeps `USE_EXACT_ALARM` for alarm-clock apps, so a radio app with an alarm uses `SCHEDULE_EXACT_ALARM` and asks the user once |
+| Keep data fixes a browser edit away | Stations live in a JSON file that CI validates, a weekly workflow checks every address and opens an issue, and installed apps download the fixed list |
 
 ## Appendix A: Round summary
 

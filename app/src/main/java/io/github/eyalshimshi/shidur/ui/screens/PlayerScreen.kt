@@ -87,6 +87,7 @@ import io.github.eyalshimshi.shidur.ui.reportProblemUrl
 import io.github.eyalshimshi.shidur.ui.searchSong
 import io.github.eyalshimshi.shidur.ui.shareStation
 import io.github.eyalshimshi.shidur.ui.theme.LocalAnimationsEnabled
+import io.github.eyalshimshi.shidur.ui.theme.LocalExpertMode
 import java.util.Locale
 import kotlinx.coroutines.delay
 
@@ -511,9 +512,11 @@ private fun StationInfoSheet(
                     Text(stringResource(R.string.info_website))
                 }
             }
-            station.streams.firstOrNull()?.let { stream ->
-                TextButton(onClick = { copyToClipboard(context, stream.url) }) {
-                    Text(stringResource(R.string.info_copy_stream))
+            if (LocalExpertMode.current) {
+                station.streams.firstOrNull()?.let { stream ->
+                    TextButton(onClick = { copyToClipboard(context, stream.url) }) {
+                        Text(stringResource(R.string.info_copy_stream))
+                    }
                 }
             }
             if (onPinShortcut != null) {

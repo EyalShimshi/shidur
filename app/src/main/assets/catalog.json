@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": 2026110401,
+  "catalogVersion": 2026110501,
   "collections": [
     { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
     { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
@@ -316,7 +316,7 @@
       "network": "digital", "collections": ["religious", "music"], "rank": 260,
       "aliases": ["kcm", "kol chai music", "קול חי מוזיקה"],
       "website": "https://www.93fm.co.il/",
-      "logo": "https://upload.wikimedia.org/wikipedia/commons/4/43/%D7%94%D7%A6%D7%92%D7%AA_%D7%9C%D7%95%D7%92%D7%95_%D7%94%D7%97%D7%93%D7%A9_%D7%A7%D7%95%D7%9C_%D7%97%D7%99_%D7%9E%D7%99%D7%95%D7%96%D7%99%D7%A7.jpg",
+      "logo": "https://kcm.fm/static/images/fblogo.png",
       "streams": [
         { "url": "https://media2.93fm.co.il/livemusic", "format": "mp3" },
         { "url": "http://media2.93fm.co.il/livemusic", "format": "mp3" }

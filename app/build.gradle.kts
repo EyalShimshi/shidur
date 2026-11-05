@@ -17,14 +17,29 @@ android {
         // CI builds count up, so each new APK installs as an update of the previous one.
         val buildNumber = System.getenv("GITHUB_RUN_NUMBER")?.toIntOrNull() ?: 1
         versionCode = buildNumber
-        versionName = "0.3.$buildNumber"
+        // Release tags (v1.0.0) name the version; other builds are development builds.
+        versionName = System.getenv("APP_VERSION_NAME")?.removePrefix("v")?.takeIf { it.isNotBlank() }
+            ?: "1.0-dev.$buildNumber"
+    }
+
+    signingConfigs {
+        // The release key, when CI provides it (see MAINTAINING.md); otherwise builds are signed
+        // with the debug key as before. Google Play only accepts builds signed with the release key.
+        val keystore = System.getenv("RELEASE_KEYSTORE_FILE")?.let { file(it) }
+        if (keystore != null && keystore.exists()) {
+            create("release") {
+                storeFile = keystore
+                storePassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+                keyAlias = System.getenv("RELEASE_KEY_ALIAS") ?: "shidur"
+                keyPassword = System.getenv("RELEASE_KEYSTORE_PASSWORD")
+            }
+        }
     }
 
     buildTypes {
         getByName("release") {
-            // Signed with the same key as earlier builds so it installs over them. Release builds
-            // are not debuggable, which makes Compose UI noticeably smoother.
-            signingConfig = signingConfigs.getByName("debug")
+            // Release builds are not debuggable, which makes Compose UI noticeably smoother.
+            signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
             isMinifyEnabled = false
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),

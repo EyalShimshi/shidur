@@ -1,0 +1,1 @@
+First official release: 27 Israeli stations with fast starts, skipped opening ads, favorites, search, sleep timer, wake-up alarm, Android Auto, Chromecast and a home-screen widget.

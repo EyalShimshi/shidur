@@ -156,7 +156,7 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     fun startInstantStart() {
         instantStartJob?.cancel()
         instantStartJob = viewModelScope.launch {
-            if (!settingsRepository.settings.first().instantStart) return@launch
+            if (settingsRepository.settings.first().let { !it.instantStart || !it.expertMode }) return@launch
             val state = library.first { it.loaded }
             val playerState = withTimeoutOrNull(CONNECT_TIMEOUT_MS) { player.first { it.connected } } ?: return@launch
             if (playerState.playWhenReady || playerState.isCasting) return@launch
@@ -301,6 +301,12 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
 
     fun setSkipIntros(value: Boolean) {
         viewModelScope.launch { settingsRepository.setSkipIntros(value) }
+    }
+
+    /** Expert mode shows technical details and experimental options; Instant start needs it on. */
+    fun setExpertMode(value: Boolean) {
+        settingsRepository.setExpertMode(value)
+        if (value) startInstantStart() else stopInstantStart()
     }
 
     fun setResumeOnHeadphones(value: Boolean) {

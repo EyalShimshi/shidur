@@ -24,6 +24,8 @@ data class AppSettings(
     val instantStart: Boolean = false,
     /** Skips the clip (usually an ad) some stations play to every new listener; see StreamIntro. */
     val skipIntros: Boolean = true,
+    /** Shows technical details (start times, stream addresses) and experimental options. */
+    val expertMode: Boolean = false,
     val sleepFadeOut: Boolean = true,
     val resumeOnHeadphones: Boolean = false,
     val onboardingDone: Boolean = false,
@@ -43,6 +45,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
         const val DATA_SAVER = "data_saver"
         const val INSTANT_START = "instant_start"
         const val SKIP_INTROS = "skip_intros"
+        const val EXPERT_MODE = "expert_mode"
         const val SLEEP_FADE = "sleep_fade"
         const val RESUME_HEADPHONES = "resume_headphones"
         const val ONBOARDING_DONE = "onboarding_done"
@@ -62,6 +65,7 @@ class SettingsRepository(private val prefs: SharedPreferences) {
                 dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
                 instantStart = p.getBoolean(Keys.INSTANT_START, false),
                 skipIntros = p.getBoolean(Keys.SKIP_INTROS, true),
+                expertMode = p.getBoolean(Keys.EXPERT_MODE, false),
                 sleepFadeOut = p.getBoolean(Keys.SLEEP_FADE, true),
                 resumeOnHeadphones = p.getBoolean(Keys.RESUME_HEADPHONES, false),
                 onboardingDone = p.getBoolean(Keys.ONBOARDING_DONE, false),
@@ -95,6 +99,8 @@ class SettingsRepository(private val prefs: SharedPreferences) {
     fun setInstantStart(value: Boolean) = putBoolean(Keys.INSTANT_START, value)
 
     fun setSkipIntros(value: Boolean) = putBoolean(Keys.SKIP_INTROS, value)
+
+    fun setExpertMode(value: Boolean) = putBoolean(Keys.EXPERT_MODE, value)
 
     fun setSleepFadeOut(value: Boolean) = putBoolean(Keys.SLEEP_FADE, value)
 

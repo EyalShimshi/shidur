@@ -26,6 +26,9 @@ fun isDarkTheme(settings: AppSettings): Boolean = when (settings.themeMode) {
 /** Whether decorative motion (springs, pulses) is enabled in Settings. */
 val LocalAnimationsEnabled = staticCompositionLocalOf { true }
 
+/** Whether Expert mode is on: technical details and experimental options are shown. */
+val LocalExpertMode = staticCompositionLocalOf { false }
+
 /** Accent colors offered in Settings. The first one is Material's baseline purple (the default). */
 val ACCENT_PRESETS: List<Int> = listOf(
     0xFF6750A4.toInt(),
@@ -57,7 +60,10 @@ fun ShidurTheme(settings: AppSettings, content: @Composable () -> Unit) {
         else -> lightColorScheme()
     }
     val scheme = if (dark && settings.pureBlack) base.withPureBlack() else base
-    CompositionLocalProvider(LocalAnimationsEnabled provides settings.animations) {
+    CompositionLocalProvider(
+        LocalAnimationsEnabled provides settings.animations,
+        LocalExpertMode provides settings.expertMode,
+    ) {
         MaterialTheme(colorScheme = scheme, content = content)
     }
 }

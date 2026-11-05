@@ -118,6 +118,16 @@ Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on 
 | — | Network changes no longer crash the app: idle connections are closed off the main thread | Issue #1 |
 | Licensing (Q-03) | GPL-3.0-or-later with the §7 permission for Google Play services; `LICENSE` added; README rewritten for publishing | Maintainer chose `-or-later` |
 
+## Implementation notes — first release (v1.0)
+
+| Spec says | v1.0 does | Why / next step |
+|---|---|---|
+| Logos made square ([04 §9](SPEC-04-catalog.md#9-logos)) | Logos that are a solid tile or badge fill the square with their own color; others are trimmed of empty margins and centered on their own background (or white, dark for white logos); a thin border line is ignored. `LogoLayout` is pure and unit-tested | Galgalatz's tile floated on white; prototyped on all 26 real logos in a browser before porting |
+| — | **Expert mode** (Settings → Advanced, off by default) shows start times, the Performance section, stream addresses, the station list version and Instant start, which only runs in Expert mode | Technical details confused regular users |
+| Signing key ceremony ([05 §5](SPEC-05-quality-release.md#5-signing--key-management)) | A one-time workflow creates the release key; the build reads it from repository secrets and falls back to the debug key until then. Tags (`v1.0.0`) publish a full release with the APK and the Play app bundle | No tools on the maintainer's computer; secrets, unlike the cache, aren't readable by fork pull requests |
+| Google Play ([05 §6.2](SPEC-05-quality-release.md#62-google-play-later)) | `SCHEDULE_EXACT_ALARM` instead of `USE_EXACT_ALARM`; `AD_ID` removed; privacy policy (`PRIVACY.md`, linked in the app); store listing texts and images in `fastlane/metadata/android`; `PUBLISHING.md` walks through the account, declarations, closed test and production | Play policy, checked against Google's help pages |
+| Catalog health checks ([04 §6](SPEC-04-catalog.md#6-automation-github-actions)) | A weekly *Station check* workflow tests every stream and logo address and opens or closes one issue; the build fails when `catalog.json` changes without a higher `catalogVersion`; issue forms for station problems and suggestions | Station data goes stale on its own; fixes are a browser edit |
+
 ## Glossary
 
 | Term | Meaning |

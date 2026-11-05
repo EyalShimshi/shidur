@@ -193,11 +193,12 @@ Item tints and accent picks use the same generator, so both inherit Material's c
   - the item's short name on its brand color;
   - black or white text, chosen by the background's luminance;
   - font size fitted to the text length.
-- **Normalize remote images:**
-  - make them square;
-  - put transparent logos on a matching background with a margin;
-  - reject tiny images (fall back to the monogram);
-  - cache them on disk.
+- **Normalize remote images** into squares:
+  - **a logo that is a solid shape** (a tile, a badge, a circle) fills the whole square with its own edge color, so it never floats on white;
+  - **other logos** lose their empty margins and sit centered (12% margin) on their own background color, or on white (dark for white logos);
+  - **a busy square picture** (photo, full-bleed icon) is used as it is;
+  - ignore a thin border line, reject tiny images (fall back to the monogram), and cache the result on disk with a version in its name, so changing the rules redraws them.
+- **Prototype image rules on the real images** (in a browser canvas) and compare before and after side by side, before writing the app code.
 - **Allow turning remote images off**, for privacy and data. The monograms keep the app complete.
 
 ## 3. Layout and navigation patterns

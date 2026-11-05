@@ -17,6 +17,9 @@ val USER_AGENT: String =
 
 const val REPOSITORY_URL = "https://github.com/EyalShimshi/shidur"
 
+/** The privacy policy; Google Play requires a link to it inside the app. */
+const val PRIVACY_POLICY_URL = "$REPOSITORY_URL/blob/main/PRIVACY.md"
+
 /** Simple blocking HTTPS GET for small JSON/XML documents. Call from a background thread. */
 fun httpGet(url: String, maxBytes: Int = 512 * 1024, timeoutMs: Int = 10_000): String {
     require(url.startsWith("https://")) { "App data must be fetched over HTTPS" }

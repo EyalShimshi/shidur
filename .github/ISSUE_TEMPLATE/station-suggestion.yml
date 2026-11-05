@@ -1,0 +1,20 @@
+name: Suggest a station
+description: An Israeli station that's missing from the app.
+title: "Station suggestion: "
+labels: ["station"]
+body:
+  - type: input
+    id: name
+    attributes:
+      label: Station name
+    validations:
+      required: true
+  - type: input
+    id: website
+    attributes:
+      label: Website
+  - type: input
+    id: stream
+    attributes:
+      label: Stream address, if you know it
+      description: An address that plays in a browser or another app, ending for example in .mp3, .aac or .m3u8.

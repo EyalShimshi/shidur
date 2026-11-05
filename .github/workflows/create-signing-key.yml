@@ -1,0 +1,44 @@
+name: Create release signing key
+
+# Run once from the Actions tab. It creates the key that signs official releases (and that
+# Google Play knows as the upload key), and offers it as a download for one day. Save the two
+# files as repository secrets, keep the zip somewhere safe, then delete the download.
+# See MAINTAINING.md → "Release signing key".
+
+on:
+  workflow_dispatch:
+
+permissions:
+  contents: read
+
+jobs:
+  create:
+    runs-on: ubuntu-latest
+    steps:
+      - name: Set up a JDK (for keytool)
+        uses: actions/setup-java@v4
+        with:
+          distribution: temurin
+          java-version: "21"
+
+      - name: Create the key
+        run: |
+          password=$(openssl rand -hex 24)
+          echo "::add-mask::$password"
+          # RSA 4096, valid for 30 years (Google Play needs validity past 2033).
+          keytool -genkeypair -keystore release.keystore -storetype PKCS12 \
+            -alias shidur -keyalg RSA -keysize 4096 -validity 10950 \
+            -storepass "$password" -keypass "$password" \
+            -dname "CN=Shidur, O=Shidur, C=IL"
+          mkdir key
+          base64 -w0 release.keystore > key/RELEASE_KEYSTORE_BASE64.txt
+          printf '%s' "$password" > key/RELEASE_KEYSTORE_PASSWORD.txt
+          cp release.keystore key/shidur-release.keystore
+          keytool -list -keystore release.keystore -storepass "$password" -alias shidur | grep -i fingerprint || true
+
+      - name: Offer the key as a download for one day
+        uses: actions/upload-artifact@v4
+        with:
+          name: release-signing-key
+          path: key/
+          retention-days: 1

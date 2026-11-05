@@ -1,0 +1,59 @@
+name: Station check
+
+# Every Monday, checks that every stream and logo address in the station list still works.
+# Problems open (or update) one issue labeled "station-check"; it closes itself once everything
+# works again. Run it any time from the Actions tab.
+
+on:
+  schedule:
+    - cron: "23 5 * * 1"
+  workflow_dispatch:
+
+permissions:
+  contents: read
+  issues: write
+
+concurrency:
+  group: station-check
+  cancel-in-progress: true
+
+jobs:
+  check:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Check every stream and logo address
+        id: check
+        continue-on-error: true
+        shell: pwsh
+        run: ./tools/check-streams.ps1 -Report report.md
+
+      - name: Show the result
+        run: cat report.md >> "$GITHUB_STEP_SUMMARY"
+
+      - name: Open, update or close the issue
+        env:
+          GH_TOKEN: ${{ github.token }}
+          REPO: ${{ github.repository }}
+          FAILED: ${{ steps.check.outcome == 'failure' }}
+        run: |
+          label=station-check
+          number=$(gh issue list --repo "$REPO" --state open --label "$label" --json number --jq '.[0].number // empty' 2>/dev/null || true)
+          if [ "$FAILED" = "true" ]; then
+            {
+              echo "The weekly station check found addresses that don't work. Checked from GitHub's servers (outside Israel)."
+              echo
+              cat report.md
+            } > body.md
+            gh label create "$label" --repo "$REPO" --color D93F0B --description "Found by the weekly station check" 2>/dev/null || true
+            if [ -n "$number" ]; then
+              gh issue edit "$number" --repo "$REPO" --body-file body.md
+            else
+              gh issue create --repo "$REPO" --title "Station check: some addresses don't work" --label "$label" --body-file body.md
+            fi
+          elif [ -n "$number" ]; then
+            gh issue close "$number" --repo "$REPO" --comment "Every station and logo address works again ($(date -u +%F))."
+          fi

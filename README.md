@@ -20,7 +20,7 @@
 
 **Listen**
 - 27 Israeli stations: Kan, Galei Tzahal and Galgalatz, regional, religious and Arabic-language stations. Each has backup stream addresses that the app switches to by itself.
-- **Fast starts:** likely stations are pre-connected when the app opens, and a station starts connecting the moment your finger touches it. Optional **Instant start** keeps your last station ready to play at once.
+- **Fast starts:** likely stations are pre-connected when the app opens, and a station starts connecting the moment your finger touches it. In **Expert mode**, the experimental **Instant start** keeps your last station ready to play at once, and Settings shows how long each start took.
 - **No ads at the start:** some stations play an ad or jingle to everyone who tunes in. Shidur downloads it in a moment, skips it, and starts at the live broadcast.
 - Song titles when the station sends them, including Hebrew titles in older encodings.
 - A **sleep timer** that fades out, and a **wake-up alarm** that plays your station quietly at first, with your phone's alarm sound as a backup if the station can't be reached.
@@ -42,17 +42,17 @@
 
 ## Install
 
-Shidur isn't on Google Play yet. Every version is published on the [Releases](https://github.com/EyalShimshi/shidur/releases) page as an APK, signed with the same key so each one installs as an update. It needs Android 12 or newer.
+Shidur isn't on Google Play yet. Each official version is published on the [Releases](https://github.com/EyalShimshi/shidur/releases) page as an APK, signed with the same key so each one installs as an update. It needs Android 12 or newer.
 
 **With Obtainium** (recommended: updates arrive automatically)
 1. Install [Obtainium](https://github.com/ImranR98/Obtainium).
-2. On your phone, open [this link][obtainium], or add `https://github.com/EyalShimshi/shidur` in Obtainium with **Include prereleases** turned on.
+2. On your phone, open [this link][obtainium], or add `https://github.com/EyalShimshi/shidur` in Obtainium. To also get development builds, turn on **Include prereleases**.
 
 **Directly**
-1. On your phone, open the [latest release](https://github.com/EyalShimshi/shidur/releases) and download `shidur-N.apk`.
+1. On your phone, open the [latest release](https://github.com/EyalShimshi/shidur/releases/latest) and download the `.apk` file.
 2. Open the downloaded file. If Android asks, allow your browser to install apps. If Google Play Protect warns about an unknown app, choose **More details → Install anyway**.
 
-You can also install from a computer with `adb install -r shidur-N.apk`.
+You can also install from a computer with `adb install -r shidur-v1.0.0.apk` (use the file's actual name).
 
 **Android Auto** lists only apps from Google Play until you allow others: in the Android Auto settings, tap **Version** ten times, then turn on **⋮ → Developer settings → Unknown sources**.
 
@@ -66,7 +66,7 @@ The app connects only to:
 - the public addresses of station logos (mostly Wikimedia), once per logo. Turning logos off in Settings stops this;
 - Google Play services, only if you use Google Cast.
 
-If the app crashes, the details are saved on your phone. On the next launch you can copy them or open a pre-filled report on GitHub. Nothing is sent automatically.
+If the app crashes, the details are saved on your phone. On the next launch you can copy them or open a pre-filled report on GitHub. Nothing is sent automatically. The full [privacy policy](PRIVACY.md) has the details.
 
 <details>
 <summary>Permissions, and what they're for</summary>
@@ -132,7 +132,7 @@ Shidur is free software: you can redistribute it and/or modify it under the term
 
 The station list ([`catalog.json`](app/src/main/assets/catalog.json)) is dedicated to the public domain under [CC0 1.0](https://creativecommons.org/publicdomain/zero/1.0/).
 
-[obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.eyalshimshi.shidur%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FEyalShimshi%2Fshidur%22%2C%22author%22%3A%22EyalShimshi%22%2C%22name%22%3A%22Shidur%22%2C%22additionalSettings%22%3A%22%7B%5C%22includePrereleases%5C%22%3Atrue%7D%22%7D
+[obtainium]: https://apps.obtainium.imranr.dev/redirect?r=obtainium://app/%7B%22id%22%3A%22io.github.eyalshimshi.shidur%22%2C%22url%22%3A%22https%3A%2F%2Fgithub.com%2FEyalShimshi%2Fshidur%22%2C%22author%22%3A%22EyalShimshi%22%2C%22name%22%3A%22Shidur%22%7D
 
 
 

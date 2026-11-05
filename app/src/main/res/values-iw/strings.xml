@@ -110,7 +110,9 @@
     <string name="settings_about">אודות</string>
     <string name="about_version">שידור %1$s</string>
     <string name="about_license">קוד פתוח · GPL-3.0 · הקשה לצפייה בקוד</string>
-    <string name="about_disclaimer">שידור היא אפליקציה עצמאית בקוד פתוח, שאינה קשורה לגופי השידור ואינה מטעמם. שמות התחנות שייכים לבעליהם.</string>
+    <string name="about_disclaimer">שידור היא אפליקציה עצמאית בקוד פתוח, שאינה קשורה לגופי השידור ואינה מטעמם. שמות התחנות והסמלילים שייכים לבעליהם.</string>
+    <string name="about_privacy">מדיניות פרטיות</string>
+    <string name="about_privacy_summary">בלי חשבונות, פרסומות או מעקב</string>
 
     <!-- First run -->
     <string name="welcome_title">כל הרדיו הישראלי. אפליקציה אחת פשוטה.</string>
@@ -144,6 +146,9 @@
 
     <!-- Performance -->
     <string name="settings_performance">ביצועים</string>
+    <string name="settings_advanced">מתקדם</string>
+    <string name="settings_expert">מצב מומחה</string>
+    <string name="settings_expert_summary">מציג פרטים טכניים ואפשרויות ניסיוניות: כמה זמן לוקח לתחנות להתחיל, כתובות שידור והפעלה מיידית</string>
     <string name="perf_empty">אחרי שינגנו כמה תחנות יופיע כאן כמה מהר הן מתחילות.</string>
     <string name="perf_average">זמן התחלה ממוצע: %1$s</string>
     <string name="perf_average_summary">%1$d ההתחלות האחרונות · מההקשה ועד הצליל</string>

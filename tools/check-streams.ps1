@@ -1,6 +1,6 @@
 <#
 .SYNOPSIS
-Checks the station list's stream addresses, and measures stations' opening clips.
+Checks the station list's stream and logo addresses, and measures stations' opening clips.
 
 .DESCRIPTION
 Needs only PowerShell 7; nothing to install. Requests use the app's style of User-Agent,
@@ -8,7 +8,10 @@ because some servers decide by User-Agent whether to add an opening ad (CyberCDN
 for browsers but not for apps).
 
   ./tools/check-streams.ps1                        # every address: status, type, server
+  ./tools/check-streams.ps1 -Report report.md      # only problems, as Markdown; exit code 1 if any
   ./tools/check-streams.ps1 -Intro 102fm-tlv,kan-bet
+
+-Report is what the weekly "Station check" workflow runs. Failing addresses are tried twice.
 
 -Intro measures each station's first plain (non-HLS) stream: it connects twice, 20 seconds
 apart, and matches the audio frames. Audio that both connections start with is a fixed clip
@@ -17,32 +20,86 @@ joins the first one's timeline, is a clip that changes per connection (a rotatin
 #>
 param(
   [string[]]$Intro,
+  [string]$Report,
   [string]$Catalog = (Join-Path $PSScriptRoot '..\app\src\main\assets\catalog.json'),
-  [string]$UserAgent = 'Shidur/0.3 (Android; +https://github.com/EyalShimshi/shidur)'
+  [string]$UserAgent = 'Shidur/1.0 (Android; +https://github.com/EyalShimshi/shidur)'
 )
 
 $ErrorActionPreference = 'Stop'
 $stations = (Get-Content $Catalog -Raw -Encoding UTF8 | ConvertFrom-Json).stations
 
-if (-not $Intro) {
-  $targets = foreach ($s in $stations) { $i = 0; foreach ($st in $s.streams) { [pscustomobject]@{ Station = $s.id; Index = $i; Url = $st.url }; $i++ } }
+function Test-Addresses($targets) {
   $targets | ForEach-Object -ThrottleLimit 10 -Parallel {
     $t = $_
-    $client = [System.Net.Http.HttpClient]::new(); $client.Timeout = [TimeSpan]::FromSeconds(12)
+    # Redirects are followed here, like the app does, including from https to http.
+    $handler = [System.Net.Http.HttpClientHandler]::new(); $handler.AllowAutoRedirect = $false
+    $client = [System.Net.Http.HttpClient]::new($handler); $client.Timeout = [TimeSpan]::FromSeconds(15)
     $client.DefaultRequestHeaders.UserAgent.ParseAdd($using:UserAgent)
     try {
-      $resp = $client.GetAsync($t.Url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
-      $status = [int]$resp.StatusCode
-      $note = if ($status -ge 300 -and $status -lt 400) { "redirect to $($resp.Headers.Location) (the app follows it)" } else { $resp.RequestMessage.RequestUri.Host }
+      $url = [Uri]$t.Url
+      for ($hop = 0; ; $hop++) {
+        $resp = $client.GetAsync($url, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
+        $status = [int]$resp.StatusCode
+        if ($status -lt 300 -or $status -ge 400 -or -not $resp.Headers.Location -or $hop -ge 5) { break }
+        $url = [Uri]::new($url, $resp.Headers.Location)
+        $resp.Dispose()
+      }
       $type = if ($resp.Content.Headers.ContentType) { $resp.Content.Headers.ContentType.MediaType } else { '' }
       $resp.Dispose()
-      [pscustomobject]@{ Station = $t.Station; I = $t.Index; Status = $status; Type = $type; Note = $note }
+      $problem =
+        if ($status -ge 400) { "HTTP $status" }
+        elseif ($t.Kind -eq 'logo' -and $type -notlike 'image/*') { "not an image ($type)" }
+        elseif ($t.Kind -eq 'stream' -and $type -like 'text/html*') { 'a web page, not audio' }
+        else { $null }
+      $t | Add-Member -NotePropertyMembers @{ Status = $status; Type = $type; Note = $url.Host; Problem = $problem } -PassThru
     } catch {
       $e = $_.Exception; while ($e.InnerException) { $e = $e.InnerException }
-      [pscustomobject]@{ Station = $t.Station; I = $t.Index; Status = 'ERR'; Type = ''; Note = $e.Message }
+      $t | Add-Member -NotePropertyMembers @{ Status = 'ERR'; Type = ''; Note = $e.Message; Problem = $e.Message } -PassThru
     } finally { $client.Dispose() }
-  } | Sort-Object Station, I | Format-Table -AutoSize -Wrap
-  'Behind a proxy that buffers plain-http responses, http:// addresses can time out even when they work.'
+  }
+}
+
+if (-not $Intro) {
+  $targets = foreach ($s in $stations) {
+    $i = 0
+    foreach ($st in $s.streams) { [pscustomobject]@{ Station = $s.id; Kind = 'stream'; Index = $i; Url = $st.url }; $i++ }
+    if ($s.logo) { [pscustomobject]@{ Station = $s.id; Kind = 'logo'; Index = 0; Url = $s.logo } }
+  }
+  $results = @(Test-Addresses $targets)
+  if (-not $Report) {
+    $results | Sort-Object Station, Kind, Index | Format-Table Station, Kind, Index, Status, Type, Note -AutoSize -Wrap
+    'Behind a proxy that buffers plain-http responses, http:// addresses can time out even when they work.'
+    return
+  }
+  # A second chance for anything that failed, so a passing hiccup doesn't open an issue.
+  $failed = @($results | Where-Object Problem)
+  if ($failed) {
+    Start-Sleep -Seconds 20
+    $retried = @(Test-Addresses ($failed | Select-Object Station, Kind, Index, Url))
+    $results = @($results | Where-Object { -not $_.Problem }) + $retried
+  }
+  $problems = @($results | Where-Object Problem)
+  $down = foreach ($group in $results | Where-Object Kind -eq 'stream' | Group-Object Station) {
+    if (-not ($group.Group | Where-Object { -not $_.Problem })) { $group.Name }
+  }
+  $lines = [System.Collections.Generic.List[string]]::new()
+  $lines.Add("Checked $($results.Count) addresses on $((Get-Date).ToUniversalTime().ToString('yyyy-MM-dd')).")
+  $lines.Add('')
+  if (-not $problems) {
+    $lines.Add('Every stream and logo address works.')
+  } else {
+    if ($down) { $lines.Add("**Stations that don't play at all:** $(($down | Sort-Object) -join ', ')"); $lines.Add('') }
+    $lines.Add('| Station | Kind | # | Problem | Address |')
+    $lines.Add('|---|---|---|---|---|')
+    foreach ($p in $problems | Sort-Object Station, Kind, Index) {
+      $lines.Add("| $($p.Station) | $($p.Kind) | $($p.Index) | $($p.Problem -replace '\|', '/') | $($p.Url) |")
+    }
+    $lines.Add('')
+    $lines.Add('`#` is the position in the station''s `streams` list (0 is tried first). To fix: edit `app/src/main/assets/catalog.json` and raise `catalogVersion` (see MAINTAINING.md → "Fix a station"). Some servers block requests from outside Israel, so confirm a failure on a phone before removing an address.')
+  }
+  Set-Content -Path $Report -Value $lines -Encoding utf8NoBOM
+  $lines
+  if ($problems) { exit 1 }
   return
 }
 

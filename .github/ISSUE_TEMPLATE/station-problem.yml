@@ -1,0 +1,29 @@
+name: A station doesn't play
+description: A station is silent, plays the wrong thing, or shows the wrong name or logo.
+title: "Station problem: "
+labels: ["station"]
+body:
+  - type: input
+    id: station
+    attributes:
+      label: Station
+      description: The station's name, as shown in the app.
+    validations:
+      required: true
+  - type: textarea
+    id: what
+    attributes:
+      label: What happens?
+      description: For example "doesn't start", "stops after a minute", "plays another station", "old logo".
+    validations:
+      required: true
+  - type: input
+    id: network
+    attributes:
+      label: Network
+      description: Wi-Fi or mobile data, and whether you are in Israel.
+  - type: input
+    id: version
+    attributes:
+      label: App version
+      description: Settings → About.
