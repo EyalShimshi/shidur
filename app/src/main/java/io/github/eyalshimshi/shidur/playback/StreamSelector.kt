@@ -21,7 +21,7 @@ class StreamSelector(
     private val connectivity = context.getSystemService(ConnectivityManager::class.java)
 
     @Volatile
-    private var dataSaver = DataSaverMode.MOBILE
+    private var dataSaver = DataSaverMode.OFF
 
     init {
         scope.launch { settings.settings.collect { dataSaver = it.dataSaver } }

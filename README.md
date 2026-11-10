@@ -20,7 +20,7 @@
 
 **Listen**
 - 27 Israeli stations: Kan, Galei Tzahal and Galgalatz, regional, religious and Arabic-language stations. Each has backup stream addresses that the app switches to by itself.
-- **Fast starts:** likely stations are pre-connected when the app opens, and a station starts connecting the moment your finger touches it. In **Expert mode**, the experimental **Instant start** keeps your last station ready to play at once, and Settings shows how long each start took.
+- **Fast starts:** likely stations are pre-connected when the app opens, and a station starts connecting the moment your finger touches it. **Instant start** keeps your last station ready to play at once (Data saver turns it off). In **Expert mode**, Settings shows how long each start took.
 - **No ads at the start:** some stations play an ad or jingle to everyone who tunes in. Shidur downloads it in a moment, skips it, and starts at the live broadcast.
 - Song titles when the station sends them, including Hebrew titles in older encodings.
 - A **sleep timer** that fades out, and a **wake-up alarm** that plays your station quietly at first, with your phone's alarm sound as a backup if the station can't be reached.
@@ -61,7 +61,7 @@ You can also install from a computer with `adb install -r shidur-v1.0.0.apk` (us
 No accounts, ads, analytics or trackers. Your favorites, history and settings stay on your phone and aren't backed up to the cloud.
 
 The app connects only to:
-- the stations' own streaming servers, to play them;
+- the stations' own streaming servers, to play them and, when the app opens, to get your likely stations ready;
 - GitHub, to check for updates to the station list;
 - the public addresses of station logos (mostly Wikimedia), once per logo. Turning logos off in Settings stops this;
 - Google Play services, only if you use Google Cast.

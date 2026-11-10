@@ -148,7 +148,7 @@
     <string name="settings_performance">Performance</string>
     <string name="settings_advanced">Advanced</string>
     <string name="settings_expert">Expert mode</string>
-    <string name="settings_expert_summary">Shows technical details and experimental options: how long stations take to start, stream addresses and Instant start</string>
+    <string name="settings_expert_summary">Shows technical details: how long stations take to start, stream addresses and the station list version</string>
     <string name="perf_empty">Play a few stations to see how quickly they start.</string>
     <string name="perf_average">Average start: %1$s</string>
     <string name="perf_average_summary">Last %1$d starts · from tap to sound</string>
@@ -169,8 +169,9 @@
     <string name="settings_background_gradient_summary">A soft wash of color at the top of screens</string>
     <string name="settings_animations">Animations</string>
     <string name="settings_animations_summary">Artwork and button motion</string>
-    <string name="settings_instant_start">Instant start (experimental)</string>
-    <string name="settings_instant_start_summary">While Shidur is open and nothing is playing, keeps your last station loading silently for up to 2 minutes so it plays at once. Uses about 1 MB a minute, also on mobile data.</string>
+    <string name="settings_instant_start">Instant start</string>
+    <string name="settings_instant_start_summary">While Shidur is open and nothing is playing, keeps your last station loading silently for up to 2 minutes so it plays at once. Uses about 1 MB a minute, also on mobile data. Turning on Data saver turns it off.</string>
+    <string name="settings_instant_start_off">Off while Data saver is on</string>
     <string name="settings_skip_intros">Skip opening ads</string>
     <string name="settings_skip_intros_summary">Some stations play an ad or jingle every time you tune in. Shidur downloads it in a moment and skips it, so you go straight to the live broadcast. Uses up to about 1 MB more each time you tune in to one of these stations.</string>
     <string name="action_open_player">Open player</string>

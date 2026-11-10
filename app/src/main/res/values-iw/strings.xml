@@ -148,7 +148,7 @@
     <string name="settings_performance">ביצועים</string>
     <string name="settings_advanced">מתקדם</string>
     <string name="settings_expert">מצב מומחה</string>
-    <string name="settings_expert_summary">מציג פרטים טכניים ואפשרויות ניסיוניות: כמה זמן לוקח לתחנות להתחיל, כתובות שידור והפעלה מיידית</string>
+    <string name="settings_expert_summary">מציג פרטים טכניים: כמה זמן לוקח לתחנות להתחיל, כתובות שידור וגרסת רשימת התחנות</string>
     <string name="perf_empty">אחרי שינגנו כמה תחנות יופיע כאן כמה מהר הן מתחילות.</string>
     <string name="perf_average">זמן התחלה ממוצע: %1$s</string>
     <string name="perf_average_summary">%1$d ההתחלות האחרונות · מההקשה ועד הצליל</string>
@@ -169,8 +169,9 @@
     <string name="settings_background_gradient_summary">גוון צבע עדין בראש המסכים</string>
     <string name="settings_animations">אנימציות</string>
     <string name="settings_animations_summary">תנועה של תמונות וכפתורים</string>
-    <string name="settings_instant_start">הפעלה מיידית (ניסיוני)</string>
-    <string name="settings_instant_start_summary">כשהאפליקציה פתוחה ושום דבר לא מתנגן, התחנה האחרונה נטענת בשקט עד 2 דקות כדי שתתחיל לנגן מיד. צורך כ-1MB לדקה, גם בגלישה סלולרית.</string>
+    <string name="settings_instant_start">הפעלה מיידית</string>
+    <string name="settings_instant_start_summary">כשהאפליקציה פתוחה ושום דבר לא מתנגן, התחנה האחרונה נטענת בשקט עד 2 דקות כדי שתתחיל לנגן מיד. צורך כ-1MB לדקה, גם בגלישה סלולרית. הפעלת חיסכון בנתונים מכבה אותה.</string>
+    <string name="settings_instant_start_off">כבויה כשחיסכון בנתונים פועל</string>
     <string name="settings_skip_intros">דילוג על פרסומת הפתיחה</string>
     <string name="settings_skip_intros_summary">יש תחנות שמשמיעות פרסומת או ג׳ינגל בכל פעם שמתחברים אליהן. שידור מורידה אותם ברגע ומדלגת עליהם, כך שמגיעים ישר לשידור החי. צורך עד כ-1MB נוסף בכל כניסה לתחנה כזו.</string>
     <string name="action_open_player">פתיחת הנגן</string>

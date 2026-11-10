@@ -149,14 +149,14 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     /**
-     * Instant start (opt-in): when the app opens with nothing playing (on any network), keeps the
-     * last station's stream open so that playing it starts at once. Stopped when the app leaves
-     * the screen, after two minutes, or when another station plays.
+     * Instant start (on by default): when the app opens with nothing playing (on any network), keeps
+     * the last station's stream open so that playing it starts at once. Never runs while Data saver
+     * is on. Stopped when the app leaves the screen, after two minutes, or when another station plays.
      */
     fun startInstantStart() {
         instantStartJob?.cancel()
         instantStartJob = viewModelScope.launch {
-            if (settingsRepository.settings.first().let { !it.instantStart || !it.expertMode }) return@launch
+            if (settingsRepository.settings.first().let { !it.instantStart || it.dataSaver != DataSaverMode.OFF }) return@launch
             val state = library.first { it.loaded }
             val playerState = withTimeoutOrNull(CONNECT_TIMEOUT_MS) { player.first { it.connected } } ?: return@launch
             if (playerState.playWhenReady || playerState.isCasting) return@launch
@@ -287,7 +287,9 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
     }
 
     fun setDataSaver(value: DataSaverMode) {
-        viewModelScope.launch { settingsRepository.setDataSaver(value) }
+        settingsRepository.setDataSaver(value)
+        // Data saver turns Instant start off.
+        if (value == DataSaverMode.OFF) startInstantStart() else stopInstantStart()
     }
 
     fun setInstantStart(value: Boolean) {
@@ -303,10 +305,9 @@ class ShidurViewModel(application: Application) : AndroidViewModel(application) 
         viewModelScope.launch { settingsRepository.setSkipIntros(value) }
     }
 
-    /** Expert mode shows technical details and experimental options; Instant start needs it on. */
+    /** Expert mode shows technical details: start times, stream addresses, the station list version. */
     fun setExpertMode(value: Boolean) {
         settingsRepository.setExpertMode(value)
-        if (value) startInstantStart() else stopInstantStart()
     }
 
     fun setResumeOnHeadphones(value: Boolean) {

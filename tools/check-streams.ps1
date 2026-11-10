@@ -165,12 +165,21 @@ $downloads = $jobs | ForEach-Object -ThrottleLimit ([Math]::Min(64, [Math]::Max(
   $j = $_
   if ($j.Leg -eq 'second') { Start-Sleep -Seconds 20 }
   $seconds = if ($j.Leg -eq 'second') { 18 } else { 40 }
-  $client = [System.Net.Http.HttpClient]::new(); $client.Timeout = [TimeSpan]::FromSeconds(70)
-  $request = [System.Net.Http.HttpRequestMessage]::new('GET', $j.Url)
-  $request.Headers.TryAddWithoutValidation('User-Agent', $using:UserAgent) | Out-Null
-  $request.Headers.TryAddWithoutValidation('Icy-MetaData', '1') | Out-Null
+  # Redirects are followed by hand, like the app does, including from https to http.
+  $handler = [System.Net.Http.HttpClientHandler]::new(); $handler.AllowAutoRedirect = $false
+  $client = [System.Net.Http.HttpClient]::new($handler); $client.Timeout = [TimeSpan]::FromSeconds(70)
   try {
-    $resp = $client.SendAsync($request, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
+    $url = [Uri]$j.Url
+    for ($hop = 0; ; $hop++) {
+      $request = [System.Net.Http.HttpRequestMessage]::new('GET', $url)
+      $request.Headers.TryAddWithoutValidation('User-Agent', $using:UserAgent) | Out-Null
+      $request.Headers.TryAddWithoutValidation('Icy-MetaData', '1') | Out-Null
+      $resp = $client.SendAsync($request, [System.Net.Http.HttpCompletionOption]::ResponseHeadersRead).GetAwaiter().GetResult()
+      $status = [int]$resp.StatusCode
+      if ($status -lt 300 -or $status -ge 400 -or -not $resp.Headers.Location -or $hop -ge 5) { break }
+      $url = [Uri]::new($url, $resp.Headers.Location)
+      $resp.Dispose()
+    }
     $metaint = 0; $values = $null
     if ($resp.Headers.TryGetValues('icy-metaint', [ref]$values)) { $metaint = [int]($values | Select-Object -First 1) }
     $body = $resp.Content.ReadAsStreamAsync().GetAwaiter().GetResult()

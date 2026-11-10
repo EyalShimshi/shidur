@@ -209,6 +209,19 @@ fun SettingsScreen(
                     }
                 }
                 SwitchRow(
+                    title = stringResource(R.string.settings_instant_start),
+                    summary = stringResource(
+                        if (settings.dataSaver == DataSaverMode.OFF) {
+                            R.string.settings_instant_start_summary
+                        } else {
+                            R.string.settings_instant_start_off
+                        },
+                    ),
+                    checked = settings.instantStart,
+                    onChange = viewModel::setInstantStart,
+                    enabled = settings.dataSaver == DataSaverMode.OFF,
+                )
+                SwitchRow(
                     title = stringResource(R.string.settings_skip_intros),
                     summary = stringResource(R.string.settings_skip_intros_summary),
                     checked = settings.skipIntros,
@@ -276,14 +289,6 @@ fun SettingsScreen(
                     checked = settings.expertMode,
                     onChange = viewModel::setExpertMode,
                 )
-                if (settings.expertMode) {
-                    SwitchRow(
-                        title = stringResource(R.string.settings_instant_start),
-                        summary = stringResource(R.string.settings_instant_start_summary),
-                        checked = settings.instantStart,
-                        onChange = viewModel::setInstantStart,
-                    )
-                }
             }
 
             if (settings.expertMode) {
@@ -413,7 +418,14 @@ internal fun GroupCard(content: @Composable () -> Unit) {
 }
 
 @Composable
-internal fun SwitchRow(title: String, summary: String?, checked: Boolean, onChange: (Boolean) -> Unit) {
+internal fun SwitchRow(
+    title: String,
+    summary: String?,
+    checked: Boolean,
+    onChange: (Boolean) -> Unit,
+    enabled: Boolean = true,
+) {
+    val disabled = MaterialTheme.colorScheme.onSurface.copy(alpha = DISABLED_ALPHA)
     GroupCard {
         ListItem(
             headlineContent = { Text(title) },
@@ -422,12 +434,22 @@ internal fun SwitchRow(title: String, summary: String?, checked: Boolean, onChan
             } else {
                 null
             },
-            trailingContent = { Switch(checked = checked, onCheckedChange = null) },
-            colors = ListItemDefaults.colors(containerColor = Color.Transparent),
-            modifier = Modifier.toggleable(value = checked, onValueChange = onChange, role = Role.Switch),
+            trailingContent = { Switch(checked = checked, onCheckedChange = null, enabled = enabled) },
+            colors = if (enabled) {
+                ListItemDefaults.colors(containerColor = Color.Transparent)
+            } else {
+                ListItemDefaults.colors(
+                    containerColor = Color.Transparent,
+                    headlineColor = disabled,
+                    supportingColor = disabled,
+                )
+            },
+            modifier = Modifier.toggleable(value = checked, onValueChange = onChange, enabled = enabled, role = Role.Switch),
         )
     }
 }
+
+private const val DISABLED_ALPHA = 0.38f
 
 /** A radio option; place inside a [GroupCard] together with the other options. */
 @Composable

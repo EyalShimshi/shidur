@@ -19,12 +19,15 @@ data class AppSettings(
     val stationLogos: Boolean = true,
     val backgroundGradient: Boolean = true,
     val animations: Boolean = true,
-    val dataSaver: DataSaverMode = DataSaverMode.MOBILE,
-    /** Keeps the last station's stream open while the app is open, so it starts instantly. */
-    val instantStart: Boolean = false,
+    val dataSaver: DataSaverMode = DataSaverMode.OFF,
+    /**
+     * Keeps the last station's stream open while the app is open, so it starts instantly. On by
+     * default; it never runs while Data saver is on.
+     */
+    val instantStart: Boolean = true,
     /** Skips the clip (usually an ad) some stations play to every new listener; see StreamIntro. */
     val skipIntros: Boolean = true,
-    /** Shows technical details (start times, stream addresses) and experimental options. */
+    /** Shows technical details: start times, stream addresses and the station list version. */
     val expertMode: Boolean = false,
     val sleepFadeOut: Boolean = true,
     val resumeOnHeadphones: Boolean = false,
@@ -62,8 +65,8 @@ class SettingsRepository(private val prefs: SharedPreferences) {
                 stationLogos = p.getBoolean(Keys.STATION_LOGOS, true),
                 backgroundGradient = p.getBoolean(Keys.BACKGROUND_GRADIENT, true),
                 animations = p.getBoolean(Keys.ANIMATIONS, true),
-                dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.MOBILE),
-                instantStart = p.getBoolean(Keys.INSTANT_START, false),
+                dataSaver = p.getString(Keys.DATA_SAVER, null).toEnum(DataSaverMode.OFF),
+                instantStart = p.getBoolean(Keys.INSTANT_START, true),
                 skipIntros = p.getBoolean(Keys.SKIP_INTROS, true),
                 expertMode = p.getBoolean(Keys.EXPERT_MODE, false),
                 sleepFadeOut = p.getBoolean(Keys.SLEEP_FADE, true),

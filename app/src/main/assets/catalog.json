@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": 2026110502,
+  "catalogVersion": 2026111001,
   "collections": [
     { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
     { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
@@ -80,8 +80,8 @@
       "website": "https://103fm.maariv.co.il/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/7/72/103FM.svg/960px-103FM.svg.png",
       "streams": [
-        { "url": "https://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" },
-        { "url": "http://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3" }
+        { "url": "https://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3", "introSeconds": 3.5 },
+        { "url": "http://cdn.cybercdn.live/103FM/Live/icecast.audio", "format": "mp3", "introSeconds": 3.5 }
       ]
     },
     {
@@ -188,8 +188,8 @@
       "website": "https://1075.fm/",
       "logo": "https://upload.wikimedia.org/wikipedia/he/3/3f/1075fm.png",
       "streams": [
-        { "url": "https://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64 },
-        { "url": "http://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64 }
+        { "url": "https://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64, "introSeconds": 2.5 },
+        { "url": "http://1075.livecdn.biz/radiohaifa", "format": "aac", "bitrate": 64, "introSeconds": 2.5 }
       ]
     },
     {

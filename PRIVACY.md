@@ -1,6 +1,6 @@
 # Shidur privacy policy
 
-*Effective November 5, 2026. Applies to the Shidur app for Android (`io.github.eyalshimshi.shidur`). [עברית](#מדיניות-פרטיות)*
+*Effective November 10, 2026. Applies to the Shidur app for Android (`io.github.eyalshimshi.shidur`). [עברית](#מדיניות-פרטיות)*
 
 Shidur doesn't collect, sell or share personal information. It has no accounts, no ads, no analytics and no trackers.
 
@@ -18,7 +18,7 @@ To work, Shidur connects to these services, which see your device's IP address l
 
 | Service | Why |
 |---|---|
-| The radio stations' streaming servers | To play the station you choose |
+| The radio stations' streaming servers | To play the station you choose, and, when the app opens, to get your likely stations ready (Instant start; Data saver turns it off) |
 | GitHub (`raw.githubusercontent.com`) | To download updates to the station list |
 | The addresses of station logos, mostly Wikimedia (`upload.wikimedia.org`) | To show station logos, once per logo. You can turn logos off in Settings |
 | Google Play services | Only when you cast to a Chromecast or similar device |
@@ -52,13 +52,13 @@ Changes to this policy are published in this file, and its history is public on 
 
 ## מדיניות פרטיות
 
-*בתוקף מ-5 בנובמבר 2026. חלה על אפליקציית שידור לאנדרואיד.*
+*בתוקף מ-10 בנובמבר 2026. חלה על אפליקציית שידור לאנדרואיד.*
 
 שידור לא אוספת, לא מוכרת ולא משתפת מידע אישי. אין בה חשבונות, פרסומות, ניתוח נתונים או מעקב.
 
 **מה נשמר בטלפון:** התחנות המועדפות, התחנות האחרונות, תחנות שהוספתם לפי כתובת, ההגדרות והשעון המעורר; סמלילי התחנות ורשימת התחנות; ואם האפליקציה קרסה, תיאור הקריסה (גרסת האפליקציה, גרסת אנדרואיד, דגם הטלפון והשגיאה). המידע נשאר במכשיר, לא מגובה לענן ונמחק כשמסירים את האפליקציה.
 
-**למי האפליקציה מתחברת:** לשרתי השידור של התחנות כדי לנגן אותן; ל-GitHub כדי לעדכן את רשימת התחנות; לכתובות הסמלילים (בעיקר ויקימדיה) כדי להציג אותם, פעם אחת לכל סמליל (אפשר לכבות בהגדרות); ולשירותי Google Play רק כשמשדרים ל-Chromecast. השירותים האלה רואים את כתובת ה-IP של המכשיר, כמו כל אתר שגולשים אליו.
+**למי האפליקציה מתחברת:** לשרתי השידור של התחנות כדי לנגן אותן, וכשהאפליקציה נפתחת גם כדי להכין את התחנות שסביר שתבחרו (הפעלה מיידית; חיסכון בנתונים מכבה אותה); ל-GitHub כדי לעדכן את רשימת התחנות; לכתובות הסמלילים (בעיקר ויקימדיה) כדי להציג אותם, פעם אחת לכל סמליל (אפשר לכבות בהגדרות); ולשירותי Google Play רק כשמשדרים ל-Chromecast. השירותים האלה רואים את כתובת ה-IP של המכשיר, כמו כל אתר שגולשים אליו.
 
 **דיווחי קריסה ובעיות:** שום דבר לא נשלח אוטומטית. אחרי קריסה אפשר להעתיק את התיאור או לפתוח בדפדפן דיווח ממולא מראש ב-GitHub, לקרוא ולערוך אותו, והוא נשלח רק אם בוחרים לשלוח. דיווחים ב-GitHub פומביים.
 

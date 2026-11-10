@@ -328,7 +328,7 @@ The ongoing thing (playback, timer, cart) is **one continuous surface**, not two
 - **Start small, then fill.** Use small start-up buffers and page sizes.
 - **Remember what worked** (the last working source or server) and try it first.
 - **Show the speed.** A small "Started in 0.62 s" under the hero status, and a *Performance* section in Settings with recent timings. This makes speed visible to users and debuggable for you.
-- **Aggressive modes are opt-in.** Preloading or keeping connections open is off by default, with the cost stated ("Uses about 1 MB a minute, also on mobile data").
+- **Costly speed-ups state their cost and step aside for Data saver.** Preloading or keeping a connection open can be on by default when its setting states the cost ("Uses about 1 MB a minute, also on mobile data") and turning on Data saver turns it off. Data saver itself is off by default; people with limited plans turn it on.
 - **Nothing blocks the main thread.** All I/O, including closing connections, runs in the background.
 
 ## 6. States

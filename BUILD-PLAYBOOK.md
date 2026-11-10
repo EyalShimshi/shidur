@@ -183,7 +183,7 @@ Build the path from code to a phone first. Everything after it depends on it.
   1. Measure first: time from tap to result, shown in Settings → Performance and as a small "Started in 0.62 s" line.
   2. Optimize: start work on press-down, prefetch likely next items, cache, use smaller start-up buffers, remember what worked.
   3. Measure again.
-- **Honest trade-offs.** When the owner's idea has a real cost (data, battery, fake traffic), say so with numbers. Propose a cheaper alternative, and ship the expensive one as opt-in with the cost in its description.
+- **Honest trade-offs.** When the owner's idea has a real cost (data, battery, fake traffic), say so with numbers and propose a cheaper alternative. Ship the expensive one with the cost in its setting's description, with the default the owner picks, and let Data saver turn it off.
 - **Small owner tweaks are done right away,** with strings and docs updated in the same change.
 
 ## 6. Phase 5: Quality built in
@@ -279,6 +279,7 @@ Commit messages say why, not just what. One round is one commit, or a few.
 | CI caches aren't secrets | A signing key in a cache is readable by fork pull requests once the repo is public |
 | Store policies constrain permissions | Exact-alarm permissions are restricted for store builds |
 | Test environments can lie | An office proxy cut radio streams after 32 KB; the real check happened on the phone |
+| When your network blocks a source, measure from CI | The office proxy blocked Radio Haifa; a workflow measured its 2-second jingle from GitHub's servers, and the agent read the result from the run's log |
 | Measure with the app's own identity | CyberCDN sent a 14-second ad to browser User-Agents but not to the app; the skip had been built on a browser measurement |
 | Prototype visual rules on real data | Logo layouts were tried on all 26 real logos in a browser canvas, before and after side by side, then ported to unit-tested Kotlin |
 | Store policies decide permissions | Google Play keeps `USE_EXACT_ALARM` for alarm-clock apps, so a radio app with an alarm uses `SCHEDULE_EXACT_ALARM` and asks the user once |
