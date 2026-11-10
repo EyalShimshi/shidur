@@ -1,0 +1,48 @@
+name: Measure opening clips
+
+# Measures the clip (an ad or a jingle) that some stations' servers play to every new listener,
+# from GitHub's servers: for stations your own network blocks, or to check every station at once.
+# Run it from the Actions tab with station ids as in catalog.json (separated by commas), or
+# leave the box empty for every station. The result is on the run's Summary page.
+# It also runs when this file or the measuring tool changes.
+
+on:
+  workflow_dispatch:
+    inputs:
+      stations:
+        description: Station ids separated by commas, or empty for every station
+        required: false
+        default: ""
+  push:
+    branches: [main]
+    paths:
+      - .github/workflows/measure-intros.yml
+      - tools/check-streams.ps1
+
+permissions:
+  contents: read
+
+jobs:
+  measure:
+    runs-on: ubuntu-latest
+    timeout-minutes: 15
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Measure opening clips
+        shell: pwsh
+        env:
+          STATIONS: ${{ inputs.stations }}
+        run: |
+          $ids = @($env:STATIONS -split '[,\s]+' | Where-Object { $_ })
+          if (-not $ids) { $ids = @('all') }
+          $lines = @(./tools/check-streams.ps1 -Intro $ids)
+          $lines
+          $summary = @(
+            '## Opening clips'
+            ''
+            'Measured from GitHub''s servers with the app''s User-Agent. A station''s `introSeconds` should be its clip''s length plus about half a second (see MAINTAINING.md).'
+            ''
+          ) + ($lines | ForEach-Object { "- $_" })
+          $summary | Add-Content -Path $env:GITHUB_STEP_SUMMARY -Encoding utf8

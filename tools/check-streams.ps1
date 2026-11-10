@@ -10,8 +10,11 @@ for browsers but not for apps).
   ./tools/check-streams.ps1                        # every address: status, type, server
   ./tools/check-streams.ps1 -Report report.md      # only problems, as Markdown; exit code 1 if any
   ./tools/check-streams.ps1 -Intro 102fm-tlv,kan-bet
+  ./tools/check-streams.ps1 -Intro all             # every station's opening clip
 
 -Report is what the weekly "Station check" workflow runs. Failing addresses are tried twice.
+The "Measure opening clips" workflow runs -Intro from GitHub's servers, for stations your own
+network blocks.
 
 -Intro measures each station's first plain (non-HLS) stream: it connects twice, 20 seconds
 apart, and matches the audio frames. Audio that both connections start with is a fixed clip
@@ -150,14 +153,15 @@ public static class OpeningClip {
 }
 '@
 
-$jobs = foreach ($id in $Intro) {
+$jobs = foreach ($id in $(if ($Intro -contains 'all') { $stations.id } else { $Intro })) {
   $station = $stations | Where-Object id -eq $id
   if (-not $station) { Write-Warning "No station '$id'"; continue }
   $stream = $station.streams | Where-Object { $_.format -ne 'hls' -and $_.url -notmatch '\.m3u8' } | Select-Object -First 1
   if (-not $stream) { Write-Warning "$id has no plain stream to measure"; continue }
   foreach ($leg in 'first', 'second') { [pscustomobject]@{ Id = $id; Leg = $leg; Url = $stream.url; Intro = $stream.introSeconds } }
 }
-$downloads = $jobs | ForEach-Object -ThrottleLimit 16 -Parallel {
+# Every connection at once, so each station's second connection starts 20 seconds after its first.
+$downloads = $jobs | ForEach-Object -ThrottleLimit ([Math]::Min(64, [Math]::Max(16, @($jobs).Count))) -Parallel {
   $j = $_
   if ($j.Leg -eq 'second') { Start-Sleep -Seconds 20 }
   $seconds = if ($j.Leg -eq 'second') { 18 } else { 40 }
@@ -182,7 +186,7 @@ $downloads = $jobs | ForEach-Object -ThrottleLimit 16 -Parallel {
   } catch { [pscustomobject]@{ Id = $j.Id; Leg = $j.Leg; Data = $null; Error = $_.Exception.Message } } finally { $client.Dispose() }
 }
 
-foreach ($id in $Intro) {
+foreach ($id in ($jobs | Select-Object -ExpandProperty Id -Unique)) {
   $first = $downloads | Where-Object { $_.Id -eq $id -and $_.Leg -eq 'first' }
   $second = $downloads | Where-Object { $_.Id -eq $id -and $_.Leg -eq 'second' }
   if (-not $first.Data -or -not $second.Data) { "{0}: download failed {1} {2}" -f $id, $first.Error, $second.Error; continue }
@@ -190,11 +194,12 @@ foreach ($id in $Intro) {
   $b = [OpeningClip]::StripIcy($second.Data, $second.Metaint)
   $runs = [OpeningClip]::Runs($a, $b)
   $burst = if ($first.FirstSecond -gt 0) { [OpeningClip]::Seconds($a[0..([Math]::Min($a.Length, $first.FirstSecond) - 1)]) } else { 0 }
+  $kbps = [Math]::Round($a.Length * 8 / [Math]::Max(1, [OpeningClip]::Seconds($a)) / 1000)
   $catalogIntro = if ($first.Intro) { "$($first.Intro) s" } else { 'none' }
   $verdict =
     if (-not $runs.Count -or -not ($runs | Where-Object { -not [double]::IsNaN($_[2]) })) { 'inconclusive: the two connections share no audio (different servers?)' }
     elseif ($runs[0][2] -eq 0) { 'fixed opening clip of {0:N1} s' -f $runs[0][1] }
     elseif ([double]::IsNaN($runs[0][2])) { 'opening clip of {0:N1} s that changes per connection' -f $runs[0][1] }
     else { 'no opening clip' }
-  '{0}: {1}. Opening burst: {2:N0} s of audio in the first second. Catalog introSeconds: {3}' -f $id, $verdict, $burst, $catalogIntro
+  '{0}: {1}. Opening burst: {2:N0} s of audio in the first second; {3} kbps. Catalog introSeconds: {4}' -f $id, $verdict, $burst, $kbps, $catalogIntro
 }
