@@ -94,18 +94,19 @@ Grow → Store presence → **Main store listing**. Everything is ready in [`fas
 New personal accounts must run a closed test with at least **12 testers** who stay opted in for **14 days in a row** before they can publish to everyone.
 
 1. Test and release → Testing → **Closed testing** → Create track (or use *Alpha*) → **Countries:** Israel (add more if you like).
-2. **Testers:** create an email list with the Gmail addresses of at least 12 people (ask 15, in case some drop out). Save, and copy the **opt-in link**.
+2. **Testers** tab: create an email list with the Gmail addresses of at least 12 people (ask 15, in case some drop out), tick it, set the feedback link to `https://github.com/EyalShimshi/shidur/issues`, and **Save**. The opt-in links are on the same tab; the web one is `https://play.google.com/apps/testing/io.github.eyalshimshi.shidur`.
 3. **Create release:**
-   - Upload `shidur-v1.0.0.aab`. On the first upload, keep **Google-managed app signing**: Google keeps the key that signs the copies people download, and your release key becomes the *upload key*.
-   - Release notes: paste `changelogs/default.txt`.
-   - Next → **Save and publish**. The first review can take a few days.
-4. **Send testers the opt-in link.** Each opens it, taps *Become a tester*, and installs Shidur from Play. Ask them to keep it for at least 14 days. Feedback is welcome but not required.
-5. **To fix something during the test,** publish a new tag (`v1.0.1`) and upload its `.aab` to the same track. The 14 days continue.
+   - Upload the `.aab` from the latest GitHub release, or use *Add from library* if you already uploaded it to Internal testing. On the first upload, keep **Google-managed app signing**: Google keeps the key that signs the copies people download, and your release key becomes the *upload key*.
+   - Release notes: paste both `changelogs/default.txt` files, the Hebrew one between `<iw-IL>` tags and the English one between `<en-US>` tags.
+   - Next → **Save**. Warnings about missing testers, a deobfuscation file or native debug symbols don't block anything.
+4. **Send it to Google:** **Publishing overview** lists everything waiting: the release, store listing and declarations. First finish anything App content marks as an error (such as the foreground service video), then press **Send changes for review**. The first review can take a few days. With managed publishing off, the test goes live as soon as it's approved.
+5. **Send testers the opt-in link.** It works only after approval, and only for addresses on the list. Each tester opens it, taps *Become a tester*, and installs Shidur from Play. Ask them to keep it for at least 14 days. Feedback is welcome but not required.
+6. **To fix something during the test,** publish a new tag (for example `v1.0.2`) and upload its `.aab` to the same track. The 14 days continue.
 
 ## 7. Apply for production and publish
 
 1. After 14 days, the Dashboard shows **Apply for production**. It asks about your closed test (how you found testers and what you learned), the app, and whether it's ready. Review takes up to 7 days.
-2. Once approved: Production → Countries → **Create release** → *Add from library* (the same bundle) or upload a newer one → release notes → **Save and publish**. Starting with a staged rollout (for example 20%) is safer.
+2. Once approved: Production → Countries → **Create release** → *Add from library* (the same bundle) or upload a newer one → release notes → **Save** → Publishing overview → **Send changes for review**. Starting with a staged rollout (for example 20%) is safer.
 3. **Android Auto (optional):** Play distributes the app to cars only after you opt in: Test and release → Advanced settings → **Form factors** → add Android Auto, accept its terms, and pass its separate review. Without it, Android Auto users need the "unknown sources" developer setting.
 
 ## After launch
