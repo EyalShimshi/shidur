@@ -288,7 +288,7 @@ Commit messages say why, not just what. One round is one commit, or a few.
 | Store policies decide permissions | Google Play keeps `USE_EXACT_ALARM` for alarm-clock apps, so a radio app with an alarm uses `SCHEDULE_EXACT_ALARM` and asks the user once |
 | Keep data fixes a browser edit away | Stations live in a JSON file that CI validates, a weekly workflow checks every address and opens an issue, and installed apps download the fixed list |
 | Turn on code shrinking before the store asks | After the first review, Google Play flagged 1.0.1 for unoptimized code (1% obfuscated; the minimum is 25%). R8 went on with a mapping file per release, an emulator smoke test before publishing, and a workflow that decodes crash issues |
-| Keep rules must name the constructor | Since AGP 9, `-keep class A` no longer keeps `A()`. Glance creates widget actions by reflection, and its own rule kept the class but not the constructor |
+| Smoke-test the shrunk build, not the debug build | The first R8 build compiled cleanly but crashed at start: AGP 9's stricter keep rules dropped a constructor that an older library (Room, via Glance and WorkManager) creates by reflection. The emulator test caught it before anything was published |
 
 ## Appendix A: Round summary
 
