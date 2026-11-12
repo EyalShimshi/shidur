@@ -1,8 +1,9 @@
 #!/usr/bin/env bash
 # Runs the release APK on an emulator before it's published. R8 removes code it thinks is unused,
-# and code that is only reached by reflection breaks only when the app runs. Opens the app, plays a
-# station from a shidur:// link, goes to the home screen, and fails if the app crashes or nothing
-# plays. Crashes are shown with the original names, decoded with the build's mapping file.
+# and code that is only reached by reflection breaks only when the app runs. Opens the app, taps
+# through the first-launch screens (by their English labels), plays a station from a shidur://
+# link, goes to the home screen, and fails if the app crashes or nothing plays. Crashes are shown
+# with the original names, decoded with the build's mapping file.
 # Usage: smoke-test.sh <apk> <mapping.txt>
 set -u
 
@@ -76,6 +77,17 @@ wait_until_playing() {
   return 1
 }
 
+# Taps the element showing the text $1, found in the screen's accessibility tree.
+tap_text() {
+  timeout 30 adb shell uiautomator dump /sdcard/window.xml > /dev/null
+  local bounds x1 y1 x2 y2
+  bounds=$(adb shell cat /sdcard/window.xml | grep -oE "text=\"$1\"[^>]*bounds=\"[^\"]+\"" | head -n 1 |
+    grep -oE '\[[0-9]+,[0-9]+\]\[[0-9]+,[0-9]+\]')
+  if [ -z "$bounds" ]; then return 1; fi
+  read -r x1 y1 x2 y2 <<< "$(echo "$bounds" | tr -c '0-9' ' ')"
+  adb shell input tap $(((x1 + x2) / 2)) $(((y1 + y2) / 2))
+}
+
 adb install -r -g "$apk" || fail "The APK didn't install"
 adb logcat -c || true
 
@@ -84,6 +96,16 @@ adb shell am start -W -n "$pkg/.MainActivity"
 sleep 10
 check_no_crash "while opening"
 adb shell pidof "$pkg" > /dev/null || fail "Shidur isn't running after opening it"
+
+# A first launch shows the welcome screen, then the station picker (which needs the station list).
+for button in "Get started" "Skip"; do
+  if ! tap_text "$button"; then
+    collect_diagnostics
+    fail "The first-launch screens have no \"$button\" button" decoded.txt
+  fi
+  sleep 3
+done
+check_no_crash "after the first-launch screens"
 
 played=""
 for station in $stations; do
