@@ -43,8 +43,10 @@ jobs:
             *-dev.*) tag="build-$build" ;;
             *) tag="v$version" ;;
           esac
-          if ! gh release download "$tag" --pattern "mapping-$build.txt" --output mapping.txt; then
-            echo "Release $tag has no mapping-$build.txt (builds from before R8 was turned on need none)."
+          if gh release download "$tag" --pattern "mapping-$build.zip" --output mapping.zip; then
+            unzip -p mapping.zip > mapping.txt
+          elif ! gh release download "$tag" --pattern "mapping-$build.txt" --output mapping.txt; then
+            echo "Release $tag has no mapping file for build $build (builds from before R8 was turned on need none)."
             exit 0
           fi
           # Only the report inside the code block, or the whole issue if it has none.
@@ -52,7 +54,7 @@ jobs:
           [ -s report.txt ] || cp issue.txt report.txt
           "$ANDROID_HOME/cmdline-tools/latest/bin/retrace" mapping.txt report.txt > decoded.txt
           {
-            echo "The crash report with the original names, decoded with \`mapping-$build.txt\` from [$tag](https://github.com/$GH_REPO/releases/tag/$tag):"
+            echo "The crash report with the original names, decoded with the mapping file of build $build from [$tag](https://github.com/$GH_REPO/releases/tag/$tag):"
             echo
             echo '```'
             cat decoded.txt

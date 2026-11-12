@@ -139,8 +139,10 @@ jobs:
       - name: Rename the APK
         run: |
           cp app/build/outputs/apk/release/app-release.apk "shidur-${{ github.run_number }}.apk"
-          # Decodes crash reports from this build (see the Decode crash report workflow).
+          # Decodes crash reports from this build (see the Decode crash report workflow); zipped,
+          # it's a tenth of the size.
           cp app/build/outputs/mapping/release/mapping.txt "mapping-${{ github.run_number }}.txt"
+          zip -q -9 "mapping-${{ github.run_number }}.zip" "mapping-${{ github.run_number }}.txt"
           if [ "${{ github.ref_type }}" = "tag" ]; then
             cp app/build/outputs/apk/release/app-release.apk "shidur-${{ github.ref_name }}.apk"
             cp app/build/outputs/bundle/release/app-release.aab "shidur-${{ github.ref_name }}.aab"
@@ -190,7 +192,7 @@ jobs:
           prerelease: true
           files: |
             shidur-${{ github.run_number }}.apk
-            mapping-${{ github.run_number }}.txt
+            mapping-${{ github.run_number }}.zip
           body: |
             Development build ${{ github.run_number }} (version 1.0-dev.${{ github.run_number }}) of commit ${{ github.sha }}.
             Install: open this page on your phone and tap the .apk file, or run
@@ -207,11 +209,11 @@ jobs:
           files: |
             shidur-${{ github.ref_name }}.apk
             shidur-${{ github.ref_name }}.aab
-            mapping-${{ github.run_number }}.txt
+            mapping-${{ github.run_number }}.zip
           body: |
             Install `shidur-${{ github.ref_name }}.apk` on Android 12 or newer, or get updates automatically with Obtainium.
             `shidur-${{ github.ref_name }}.aab` is the app bundle for Google Play.
-            `mapping-${{ github.run_number }}.txt` decodes crash reports from this version.
+            `mapping-${{ github.run_number }}.zip` decodes crash reports from this version.
 
       - name: Run unit tests
         id: tests

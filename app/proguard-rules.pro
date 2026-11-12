@@ -3,7 +3,7 @@
 # -keep class A { <init>(); }  (gradle.properties keeps AGP 8's looser meaning for older libraries).
 
 # Line numbers for crash reports. Class and method names are decoded with the build's
-# mapping-N.txt (MAINTAINING.md, "Crash reports").
+# mapping-N.zip from its release (MAINTAINING.md, "Crash reports").
 -keepattributes SourceFile,LineNumberTable
 -renamesourcefileattribute SourceFile
 
