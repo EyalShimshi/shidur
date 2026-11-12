@@ -98,7 +98,7 @@ New personal accounts must run a closed test with at least **12 testers** who st
 3. **Create release:**
    - Upload the `.aab` from the latest GitHub release, or use *Add from library* if you already uploaded it to Internal testing. On the first upload, keep **Google-managed app signing**: Google keeps the key that signs the copies people download, and your release key becomes the *upload key*.
    - Release notes: paste both `changelogs/default.txt` files, the Hebrew one between `<iw-IL>` tags and the English one between `<en-US>` tags.
-   - Next → **Save**. Warnings about missing testers, a deobfuscation file or native debug symbols don't block anything.
+   - Next → **Save**. Warnings about missing testers or native debug symbols don't block anything. Play reads the deobfuscation file from the bundle.
 4. **Send it to Google:** **Publishing overview** lists everything waiting: the release, store listing and declarations. First finish anything App content marks as an error (such as the foreground service video), then press **Send changes for review**. The first review can take a few days. With managed publishing off, the test goes live as soon as it's approved.
 5. **Send testers the opt-in link.** It works only after approval, and only for addresses on the list. Each tester opens it, taps *Become a tester*, and installs Shidur from Play. Ask them to keep it for at least 14 days. Feedback is welcome but not required.
 6. **To fix something during the test,** publish a new tag (for example `v1.0.2`) and upload its `.aab` to the same track. The 14 days continue.
@@ -112,6 +112,7 @@ New personal accounts must run a closed test with at least **12 testers** who st
 ## After launch
 
 - **Updates:** publish a tag, upload its `.aab` to Production, and add release notes. Notes for a specific version can go in `changelogs/<versionCode>.txt`.
+- **Google's automatic checks:** Test and release → **For the next release** lists findings about the uploaded bundle, each with a deadline. For example, 1.0.1 was flagged for unoptimized code, which led to turning on R8 (MAINTAINING.md).
 - **Station fixes don't need a new version.** Editing `catalog.json` on GitHub updates installed apps (see MAINTAINING.md).
 - **GitHub and Play builds are signed differently** (Google re-signs Play builds). Someone switching between them must uninstall first. Point most people to Google Play, and keep GitHub and Obtainium for everyone else.
 - **Developer verification (2027):** Android will require apps on certified phones to come from verified developers, also outside Play. Your Play Console account counts as verified for Play. For the GitHub APKs, register the package and the release key's certificate when Play Console offers it. Google's page: <https://developer.android.com/developer-verification>.

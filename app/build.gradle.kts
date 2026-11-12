@@ -40,7 +40,10 @@ android {
         getByName("release") {
             // Release builds are not debuggable, which makes Compose UI noticeably smoother.
             signingConfig = signingConfigs.findByName("release") ?: signingConfigs.getByName("debug")
-            isMinifyEnabled = false
+            // R8 shrinks and obfuscates the code and drops unused resources; Google Play flags
+            // apps whose code isn't optimized. Each build's mapping file decodes its crash reports.
+            isMinifyEnabled = true
+            isShrinkResources = true
             proguardFiles(
                 getDefaultProguardFile("proguard-android-optimize.txt"),
                 "proguard-rules.pro",

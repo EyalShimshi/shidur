@@ -5,8 +5,8 @@ Notes for the maintainer. Users and contributors: see [README.md](README.md).
 ## Release flow
 
 1. Commit and push to `main`: in VS Code, **Source Control → Commit → Sync Changes**, or `git push` in a terminal.
-2. GitHub Actions builds the app in about 10 minutes and publishes `shidur-N.apk` as the pre-release **Shidur build N** (version `1.0-dev.N`).
-3. If the run fails (red ✗), open it: its **Summary** page shows the compiler or test errors in a box, ready to copy.
+2. GitHub Actions builds the app, opens it and plays a station on an emulator, and then publishes `shidur-N.apk` as the pre-release **Shidur build N** (version `1.0-dev.N`), in about 20 minutes.
+3. If the run fails (red ✗), open it: its **Summary** page shows the compiler or test errors, or what the smoke test saw, in a box, ready to copy.
 4. **Official releases** come from a tag such as `v1.0.0` (GitHub → Releases → Draft a new release → new tag). The same workflow then publishes a full release with the APK and the Google Play app bundle (`.aab`). It refuses to run without the release key. Google Play: see [PUBLISHING.md](PUBLISHING.md).
 
 ## Install a build on your own phone with ADB
@@ -39,6 +39,16 @@ Wireless (Android 11+): **Developer options → Wireless debugging → Pair devi
 - **Before making the repository public,** the release key must be in place. Pull requests from forks can read the Actions cache, but not secrets. Also choose **Settings → Actions → General → Require approval for all external contributors**, and delete the old debug key cache.
 
 Once the repository is public, installed apps also start downloading station list updates from `main`.
+
+## Crash reports and code shrinking (R8)
+
+Release builds are shrunk and obfuscated by R8, which makes them smaller and faster; Google Play flags apps whose code isn't. In crash reports, class and method names become short codes like `a.b.c`.
+
+- **Crash issues are decoded automatically.** When someone opens an issue titled "Crash: …" from the app, the *Decode crash report* workflow takes `mapping-N.txt` for the build named in the report from its GitHub release, and comments with the original names. To decode an issue again: **Actions → Decode crash report → Run workflow**, with the issue number. Don't delete releases: a build's crash reports need its mapping file.
+- **Play Console's crash reports** are decoded with the mapping file inside the app bundle.
+- **The smoke test** runs every build on an emulator before anything is published: it opens the app, plays a station from a `shidur://` link and goes to the home screen. When it fails, the run's Summary shows the crash with the original names.
+- **Code that is reached only by reflection needs a keep rule** in [`app/proguard-rules.pro`](app/proguard-rules.pro). One example is the widget's button handler, which Glance creates from its class name. Since AGP 9, a rule that keeps a class must list the constructor too: `-keep class A { <init>(); }`.
+- **If a library update fails the build with "Missing classes detected while running R8",** the run's Summary lists the rules R8 suggests. Add them to `app/proguard-rules.pro` once you've checked that the missing classes are really optional.
 
 ## Fix a station (from the browser, in two minutes)
 

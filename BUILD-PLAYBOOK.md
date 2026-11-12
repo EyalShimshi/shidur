@@ -113,10 +113,11 @@ Build the path from code to a phone first. Everything after it depends on it.
 1. **Repository:** private at first, under the owner's account.
 2. **CI workflow** ([Appendix B](#appendix-b-ci-workflow-skeleton)), run on every push:
    1. Set up the toolchain.
-   2. Build the release artifact.
+   2. Build the release artifact, shrunk and obfuscated (R8 on Android), and keep its mapping file.
    3. On failure, write the error lines to the run's summary page, in a box that's easy to copy.
-   4. Publish a pre-release with the artifact, named `<app>-<run number>.apk`.
-   5. Run the unit tests, and write any failures to the summary as well.
+   4. Smoke-test the artifact on an emulator: open it, use the core feature, go to the background. Shrinkers break code that's reached by reflection, which only shows at run time.
+   5. Publish a pre-release with the artifact, named `<app>-<run number>.apk`, and its mapping file.
+   6. Run the unit tests, and write any failures to the summary as well.
 3. **Versions:**
    - the build number (`versionCode`) is the CI run number, so each build installs over the previous one;
    - the version name is `<major>.<minor>.<run number>`;
@@ -192,7 +193,9 @@ Build the path from code to a phone first. Everything after it depends on it.
 - **Crash catcher:**
   - an uncaught-exception handler saves the report on the device (version, device, stack trace);
   - the next launch offers *Copy details* / *Report on GitHub* (a pre-filled issue, size-limited) / *Close*;
-  - nothing is sent automatically.
+  - nothing is sent automatically;
+  - with obfuscated builds, a workflow decodes the stack trace in new crash issues with the build's mapping file.
+- **Shrink and obfuscate from the first store release.** Google Play scores code optimization and flags apps below its minimum. Write keep rules only for what's reached by reflection, and let the emulator smoke test prove them.
 - **Diagnostics** for the core experience: timings, and which path was used (cached, pre-connected, fallback).
 - **Threading discipline:** no I/O on the main thread, including closing network connections.
 - **Design passes:** dark, pure black, RTL, 200% text, screen reader, reduced motion (DESIGN-PHILOSOPHY.md §13).
@@ -284,6 +287,8 @@ Commit messages say why, not just what. One round is one commit, or a few.
 | Prototype visual rules on real data | Logo layouts were tried on all 26 real logos in a browser canvas, before and after side by side, then ported to unit-tested Kotlin |
 | Store policies decide permissions | Google Play keeps `USE_EXACT_ALARM` for alarm-clock apps, so a radio app with an alarm uses `SCHEDULE_EXACT_ALARM` and asks the user once |
 | Keep data fixes a browser edit away | Stations live in a JSON file that CI validates, a weekly workflow checks every address and opens an issue, and installed apps download the fixed list |
+| Turn on code shrinking before the store asks | After the first review, Google Play flagged 1.0.1 for unoptimized code (1% obfuscated; the minimum is 25%). R8 went on with a mapping file per release, an emulator smoke test before publishing, and a workflow that decodes crash issues |
+| Keep rules must name the constructor | Since AGP 9, `-keep class A` no longer keeps `A()`. Glance creates widget actions by reflection, and its own rule kept the class but not the constructor |
 
 ## Appendix A: Round summary
 
@@ -395,6 +400,8 @@ val buildNumber = (System.getenv("GITHUB_RUN_NUMBER") ?: "1").toInt()
 versionCode = buildNumber
 versionName = "0.1.$buildNumber"
 ```
+
+Before the first store release, turn on R8 (`isMinifyEnabled = true`, `isShrinkResources = true`), and add an emulator smoke test before the publish step. Shidur's `.github/workflows/build.yml` and `.github/scripts/smoke-test.sh` show both, with `reactivecircus/android-emulator-runner`.
 
 ## Appendix C: Kickoff prompt
 

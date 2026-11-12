@@ -1,0 +1,61 @@
+name: Decode crash report
+
+# Release builds are shrunk and obfuscated by R8, so the app's crash reports name classes and
+# methods like "a.b.c". When an issue with a crash report is opened, this downloads the mapping file
+# of the build in the report from its GitHub release and comments with the original names.
+# To decode an issue again: Actions → Decode crash report → Run workflow, with the issue number.
+
+on:
+  issues:
+    types: [opened]
+  workflow_dispatch:
+    inputs:
+      issue:
+        description: Number of the issue with the crash report
+        required: true
+
+permissions:
+  contents: read
+  issues: write
+
+jobs:
+  decode:
+    if: github.event_name == 'workflow_dispatch' || startsWith(github.event.issue.title, 'Crash:')
+    runs-on: ubuntu-latest
+    steps:
+      - name: Decode the crash report
+        env:
+          GH_TOKEN: ${{ github.token }}
+          GH_REPO: ${{ github.repository }}
+          ISSUE: ${{ github.event.issue.number || inputs.issue }}
+        run: |
+          set -euo pipefail
+          gh issue view "$ISSUE" --json body --jq .body > issue.txt
+          # The report starts with "Shidur <version> (<build number>)".
+          line=$(grep -m 1 -oE 'Shidur [0-9A-Za-z.+-]+ \([0-9]+\)' issue.txt || true)
+          if [ -z "$line" ]; then
+            echo "Issue #$ISSUE has no \"Shidur <version> (<build>)\" line."
+            exit 0
+          fi
+          version=$(echo "$line" | cut -d ' ' -f 2)
+          build=$(echo "$line" | grep -oE '[0-9]+\)$' | tr -d ')')
+          case "$version" in
+            *-dev.*) tag="build-$build" ;;
+            *) tag="v$version" ;;
+          esac
+          if ! gh release download "$tag" --pattern "mapping-$build.txt" --output mapping.txt; then
+            echo "Release $tag has no mapping-$build.txt (builds from before R8 was turned on need none)."
+            exit 0
+          fi
+          # Only the report inside the code block, or the whole issue if it has none.
+          awk '/^```/ { block++; next } block == 1' issue.txt > report.txt
+          [ -s report.txt ] || cp issue.txt report.txt
+          "$ANDROID_HOME/cmdline-tools/latest/bin/retrace" mapping.txt report.txt > decoded.txt
+          {
+            echo "The crash report with the original names, decoded with \`mapping-$build.txt\` from [$tag](https://github.com/$GH_REPO/releases/tag/$tag):"
+            echo
+            echo '```'
+            cat decoded.txt
+            echo '```'
+          } > comment.md
+          gh issue comment "$ISSUE" --body-file comment.md
