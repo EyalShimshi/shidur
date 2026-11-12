@@ -42,6 +42,24 @@ check_no_crash() {
   fi
 }
 
+# Writes the media session, the text on the screen and Shidur's own log to decoded.txt, with the
+# original names, and a screenshot to smoke-test-screen.png.
+collect_diagnostics() {
+  local pid
+  pid=$(adb shell pidof "$pkg" | tr -d '\r')
+  {
+    echo "--- Media session ---"
+    adb shell dumpsys media_session | grep -A 30 "package=$pkg"
+    echo "--- Text on the screen ---"
+    timeout 30 adb shell uiautomator dump /sdcard/window.xml > /dev/null
+    adb shell cat /sdcard/window.xml | grep -oE '(text|content-desc)="[^"]+"' | head -n 80
+    echo "--- Shidur's log ---"
+    if [ -n "$pid" ]; then adb logcat -d --pid="$pid" | tail -n 250; fi
+  } > diagnostics.txt 2>&1
+  adb exec-out screencap -p > smoke-test-screen.png 2> /dev/null || true
+  decode diagnostics.txt
+}
+
 is_playing() {
   adb shell dumpsys media_session | grep -A 30 "package=$pkg" |
     grep -qE 'state=PlaybackState \{state=(PLAYING\(3\)|3),'
@@ -79,11 +97,7 @@ for station in $stations; do
   echo "::warning::$station didn't start playing within 45 seconds"
 done
 if [ -z "$played" ]; then
-  {
-    adb shell dumpsys media_session | grep -A 30 "package=$pkg"
-    adb logcat -d | grep -iE "ExoPlayer|Playback|Shidur|AndroidRuntime" | tail -n 100
-  } > player.txt
-  decode player.txt
+  collect_diagnostics
   fail "No station started playing" decoded.txt
 fi
 echo "$played is playing"
@@ -91,7 +105,10 @@ echo "$played is playing"
 echo "Going to the home screen"
 adb shell input keyevent KEYCODE_HOME
 sleep 10
-wait_until_playing 30 "in the background" || fail "$played stopped playing when Shidur went to the background"
+if ! wait_until_playing 30 "in the background"; then
+  collect_diagnostics
+  fail "$played stopped playing when Shidur went to the background" decoded.txt
+fi
 
 echo "Opening a station page"
 adb shell am start -W -a android.intent.action.VIEW -d "shidur://station/kan-88" -n "$pkg/.MainActivity"

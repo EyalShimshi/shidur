@@ -3,6 +3,7 @@ package io.github.eyalshimshi.shidur.playback
 import android.content.ComponentName
 import android.content.Context
 import android.os.Bundle
+import android.util.Log
 import androidx.core.content.ContextCompat
 import androidx.core.os.bundleOf
 import androidx.media3.common.C
@@ -73,7 +74,9 @@ class PlaybackConnection(
         controllerFuture = future
         future.addListener(
             {
-                val connected = runCatching { future.get() }.getOrNull()
+                val connected = runCatching { future.get() }
+                    .onFailure { Log.w(TAG, "Couldn't connect to the playback service", it) }
+                    .getOrNull()
                 if (connected == null) {
                     controllerFuture = null
                     return@addListener
@@ -215,5 +218,9 @@ class PlaybackConnection(
             sleepTimerEnd = sleepEnd.takeIf { it > 0L },
             isCasting = c.deviceInfo.playbackType == DeviceInfo.PLAYBACK_TYPE_REMOTE,
         )
+    }
+
+    private companion object {
+        const val TAG = "PlaybackConnection"
     }
 }

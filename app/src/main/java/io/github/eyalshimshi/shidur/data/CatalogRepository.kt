@@ -79,7 +79,9 @@ class CatalogRepository(
     private fun loadLocal() {
         val bundled = runCatching {
             context.assets.open(ASSET_NAME).bufferedReader(Charsets.UTF_8).use { it.readText() }
-        }.mapCatching { parse(it) }.getOrNull()
+        }.mapCatching { parse(it) }
+            .onFailure { Log.w(TAG, "Couldn't read the bundled catalog", it) }
+            .getOrNull()
         val cached = runCatching {
             val file = cacheFile()
             if (file.exists()) parse(file.readText(Charsets.UTF_8)) else null
