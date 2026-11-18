@@ -121,7 +121,7 @@ Every push to `main` is built by [GitHub Actions](.github/workflows/build.yml), 
 
 ```sh
 node web/scripts/serve.mjs       # then open http://localhost:8080/shidur/
-cd web && node --test test/      # unit tests
+cd web && node --test "test/*.test.js"   # unit tests
 node web/scripts/smoke.mjs       # plays stations in a headless Chrome or Edge, with screenshots
 ```
 

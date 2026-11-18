@@ -46,7 +46,7 @@ jobs:
 
       - name: Run the unit tests
         working-directory: web
-        run: node --test test/
+        run: node --test "test/*.test.js"
 
       # The site is web/ without its tests and tools, plus the app's station list.
       - name: Put the site together
