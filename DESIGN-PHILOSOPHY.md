@@ -427,6 +427,8 @@ The principles, tokens, copy rules and checklist apply everywhere. Map the mecha
 
 For an identical look on iOS, build with Flutter or Compose Multiplatform. Otherwise keep native iOS controls and apply this document's colors, shapes, spacing, motion and words.
 
+A worked web example is the `web/` folder of [Shidur](https://github.com/EyalShimshi/shidur): Preact with htm and no build step, the §2.2 generator ported to JavaScript, tokens as CSS custom properties, a pointer-driven player sheet, and the same layouts as the app.
+
 ## 13. Definition of done
 
 A screen is done when all of these hold:

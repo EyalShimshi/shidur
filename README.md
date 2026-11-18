@@ -2,14 +2,14 @@
 
 # Shidur · שידור
 
-**Israeli radio, simply.** A free, open-source and ad-free Android app for listening to live Israeli radio.
+**Israeli radio, simply.** A free, open-source and ad-free Android app for listening to live Israeli radio, also [in your browser](https://www.shimshii.com/shidur/).
 
 [![Build](https://github.com/EyalShimshi/shidur/actions/workflows/build.yml/badge.svg)](https://github.com/EyalShimshi/shidur/actions/workflows/build.yml)
 [![License: GPL-3.0-or-later](https://img.shields.io/badge/license-GPL--3.0--or--later-blue)](LICENSE)
 [![Android 12+](https://img.shields.io/badge/Android-12%2B-3DDC84?logo=android&logoColor=white)](#install)
 [![Jetpack Compose](https://img.shields.io/badge/Jetpack%20Compose-Material%203-4285F4?logo=jetpackcompose&logoColor=white)](https://developer.android.com/compose)
 
-[**Download**](https://github.com/EyalShimshi/shidur/releases) · [**Get it with Obtainium**][obtainium] · [**עברית**](#בעברית)
+[**Download**](https://github.com/EyalShimshi/shidur/releases) · [**Get it with Obtainium**][obtainium] · [**Listen in your browser**](https://www.shimshii.com/shidur/) · [**עברית**](#בעברית)
 
 </div>
 
@@ -56,6 +56,12 @@ You can also install from a computer with `adb install -r shidur-v1.0.0.apk` (us
 
 **Android Auto** lists only apps from Google Play until you allow others: in the Android Auto settings, tap **Version** ten times, then turn on **⋮ → Developer settings → Unknown sources**.
 
+## Web version
+
+[**www.shimshii.com/shidur**](https://www.shimshii.com/shidur/) plays the same stations in a browser, on a phone or a computer, with nothing to install. It has the Home shelves, search, favorites, a sleep timer, the station-colored player, Hebrew and English, light and dark themes, and lock-screen and media-key controls. To keep it on your home screen, use **Settings → Install Shidur** in Chrome or Edge, or **Share → Add to Home Screen** on an iPhone.
+
+The Android app does more: it skips the opening ads and jingles that some stations play, shows song titles, and has the wake-up alarm, Instant start, Android Auto, Cast and the widget. Those need access to the stream's data that a browser only gets through a server, and the web version is static files on GitHub Pages, with no server.
+
 ## Privacy
 
 No accounts, ads, analytics or trackers. Your favorites, history and settings stay on your phone and aren't backed up to the cloud.
@@ -67,6 +73,8 @@ The app connects only to:
 - Google Play services, only if you use Google Cast.
 
 If the app crashes, the details are saved on your phone. On the next launch you can copy them or open a pre-filled report on GitHub. Nothing is sent automatically. The full [privacy policy](PRIVACY.md) has the details.
+
+The web version keeps your favorites and settings in your browser only. It connects to the same stations and logo addresses, and to GitHub Pages, which hosts it.
 
 <details>
 <summary>Permissions, and what they're for</summary>
@@ -88,6 +96,8 @@ If the app crashes, the details are saved on your phone. On the next launch you 
 
 להתקנה מורידים את קובץ ה-APK העדכני מדף ה-[Releases](https://github.com/EyalShimshi/shidur/releases) ופותחים אותו בטלפון (נדרש Android 12 ומעלה). כדי לקבל עדכונים אוטומטית אפשר להשתמש ב-[Obtainium][obtainium].
 
+אפשר גם להאזין בדפדפן, בלי להתקין כלום: [www.shimshii.com/shidur](https://www.shimshii.com/shidur/).
+
 שידור היא אפליקציה עצמאית שאינה קשורה לגופי השידור. שמות התחנות והלוגואים שייכים לבעליהם.
 
 </div>
@@ -107,6 +117,16 @@ Every push to `main` is built by [GitHub Actions](.github/workflows/build.yml), 
 
 **Layout:** a single `app` module with the packages `model` (stations), `data` (station list, library, settings, alarm), `playback` (service, streams, logos, Instant start), `ui` (screens, components, theme) and `widget`. The [specification](SPEC.md) covers the product, design and architecture in detail.
 
+**Web version:** [`web/`](web) has no build step. It's plain JavaScript modules, with [Preact](https://preactjs.com), [htm](https://github.com/developit/htm) and [hls.js](https://github.com/video-dev/hls.js) copied into [`web/vendor`](web/vendor). With Node.js 22 or newer:
+
+```sh
+node web/scripts/serve.mjs       # then open http://localhost:8080/shidur/
+cd web && node --test test/      # unit tests
+node web/scripts/smoke.mjs       # plays stations in a headless Chrome or Edge, with screenshots
+```
+
+Pushes to `main` that change `web/` or the station list publish it to GitHub Pages ([workflow](.github/workflows/web.yml)).
+
 ## Contributing
 
 Bug reports, station fixes and pull requests are welcome.
@@ -120,6 +140,7 @@ Bug reports, station fixes and pull requests are welcome.
 - The look and feel is inspired by [Echo](https://github.com/brahmkshatriya/echo).
 - [Material Icons](https://github.com/google/material-design-icons) by Google (Apache License 2.0). The icons Shidur uses are included in [`AppIcons.kt`](app/src/main/java/io/github/eyalshimshi/shidur/ui/components/AppIcons.kt).
 - Built on [AndroidX](https://github.com/androidx/androidx), [Media3](https://github.com/androidx/media) and [Reorderable](https://github.com/Calvin-LL/Reorderable) (all Apache License 2.0).
+- The web version uses [Preact](https://preactjs.com) (MIT License), and [htm](https://github.com/developit/htm) and [hls.js](https://github.com/video-dev/hls.js) (both Apache License 2.0).
 - Station logos are trademarks of their owners, shown only to identify the stations. They aren't included in the app; it downloads them from public sources, mostly [Wikimedia Commons](https://commons.wikimedia.org/) and Hebrew Wikipedia. If you own a logo and want it removed, please open an issue.
 
 ## License

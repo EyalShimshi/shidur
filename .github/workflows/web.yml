@@ -1,0 +1,98 @@
+name: Web app
+
+# Publishes the web version (web/) to GitHub Pages, at https://www.shimshii.com/shidur/, whenever it
+# or the station list changes. First the unit tests run, then a headless Chrome checks that the
+# site loads without errors and that stations play; its screenshots are kept with each run.
+# Run it from the Actions tab to try every station instead of one of each kind.
+
+on:
+  push:
+    branches: [main]
+    paths:
+      - "web/**"
+      - "app/src/main/assets/catalog.json"
+      - ".github/workflows/web.yml"
+  pull_request:
+    paths:
+      - "web/**"
+      - "app/src/main/assets/catalog.json"
+      - ".github/workflows/web.yml"
+  workflow_dispatch:
+    inputs:
+      all-stations:
+        description: "Try every station"
+        type: boolean
+        default: false
+
+permissions:
+  contents: read
+
+concurrency:
+  group: web-${{ github.ref }}
+  cancel-in-progress: true
+
+jobs:
+  build:
+    runs-on: ubuntu-latest
+    timeout-minutes: 20
+    steps:
+      - name: Check out the code
+        uses: actions/checkout@v4
+
+      - name: Set up Node.js
+        uses: actions/setup-node@v4
+        with:
+          node-version: 24
+
+      - name: Run the unit tests
+        working-directory: web
+        run: node --test test/
+
+      # The site is web/ without its tests and tools, plus the app's station list.
+      - name: Put the site together
+        run: |
+          cp -r web _site
+          rm -rf _site/test _site/scripts _site/package.json
+          cp app/src/main/assets/catalog.json _site/catalog.json
+          build="$(date -u +%Y-%m-%d) · ${GITHUB_SHA::7}"
+          sed -i "s|<meta name=\"shidur-build\" content=\"dev\" />|<meta name=\"shidur-build\" content=\"$build\" />|" _site/index.html
+          grep -q "content=\"$build\"" _site/index.html
+
+      # Chrome comes with GitHub's Ubuntu machines (Chromium alone can't play AAC streams).
+      - name: Try the site in Chrome
+        env:
+          BROWSER_ARGS: --no-sandbox
+          ALL_STATIONS: ${{ inputs.all-stations && '--all' || '' }}
+        run: node web/scripts/smoke.mjs _site --shots=screenshots $ALL_STATIONS
+
+      - name: Keep the screenshots
+        if: always()
+        uses: actions/upload-artifact@v4
+        with:
+          name: web-screenshots
+          path: screenshots/
+          if-no-files-found: ignore
+
+      - name: Upload the site
+        if: github.event_name != 'pull_request'
+        uses: actions/upload-pages-artifact@v3
+        with:
+          path: _site
+
+  deploy:
+    needs: build
+    if: github.event_name != 'pull_request' && github.ref == 'refs/heads/main'
+    runs-on: ubuntu-latest
+    permissions:
+      pages: write
+      id-token: write
+    environment:
+      name: github-pages
+      url: ${{ steps.deployment.outputs.page_url }}
+    concurrency:
+      group: pages
+      cancel-in-progress: false
+    steps:
+      - name: Publish to GitHub Pages
+        id: deployment
+        uses: actions/deploy-pages@v4

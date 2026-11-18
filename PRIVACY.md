@@ -1,6 +1,6 @@
 # Shidur privacy policy
 
-*Effective November 10, 2026. Applies to the Shidur app for Android (`io.github.eyalshimshi.shidur`). [עברית](#מדיניות-פרטיות)*
+*Effective November 18, 2026. Applies to the Shidur app for Android (`io.github.eyalshimshi.shidur`) and to its web version at <https://www.shimshii.com/shidur/>. [עברית](#מדיניות-פרטיות)*
 
 Shidur doesn't collect, sell or share personal information. It has no accounts, no ads, no analytics and no trackers.
 
@@ -29,6 +29,13 @@ Shidur sends these services nothing about you beyond what any app needs to downl
 
 Nothing is sent automatically. After a crash, Shidur offers to copy the crash description or to open a pre-filled report on GitHub in your browser. You can read and edit it, and it's only sent if you choose to submit it. The same goes for "Report a problem" and "Suggest a station". Reports on GitHub are public, and [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement) applies to them.
 
+## The web version
+
+The web version at <https://www.shimshii.com/shidur/> works the same way:
+- Your favorite stations, recently played stations and settings are saved in your browser's storage on your device, and station logos in its cache. Clearing the site's data in your browser deletes them. It uses no cookies.
+- It connects to the same stations and logo addresses as the app, and to GitHub Pages, which hosts the site and sees your IP address like any website. [GitHub's privacy statement](https://docs.github.com/site-policy/privacy-policies/github-general-privacy-statement) applies to it.
+- Sharing a station uses your browser's share menu or copies a link, and "Report a problem" opens GitHub, as in the app.
+
 ## Permissions
 
 | Permission | Used for |
@@ -52,7 +59,7 @@ Changes to this policy are published in this file, and its history is public on 
 
 ## מדיניות פרטיות
 
-*בתוקף מ-10 בנובמבר 2026. חלה על אפליקציית שידור לאנדרואיד.*
+*בתוקף מ-18 בנובמבר 2026. חלה על אפליקציית שידור לאנדרואיד ועל גרסת הדפדפן שלה.*
 
 שידור לא אוספת, לא מוכרת ולא משתפת מידע אישי. אין בה חשבונות, פרסומות, ניתוח נתונים או מעקב.
 
@@ -61,6 +68,8 @@ Changes to this policy are published in this file, and its history is public on 
 **למי האפליקציה מתחברת:** לשרתי השידור של התחנות כדי לנגן אותן, וכשהאפליקציה נפתחת גם כדי להכין את התחנות שסביר שתבחרו (הפעלה מיידית; חיסכון בנתונים מכבה אותה); ל-GitHub כדי לעדכן את רשימת התחנות; לכתובות הסמלילים (בעיקר ויקימדיה) כדי להציג אותם, פעם אחת לכל סמליל (אפשר לכבות בהגדרות); ולשירותי Google Play רק כשמשדרים ל-Chromecast. השירותים האלה רואים את כתובת ה-IP של המכשיר, כמו כל אתר שגולשים אליו.
 
 **דיווחי קריסה ובעיות:** שום דבר לא נשלח אוטומטית. אחרי קריסה אפשר להעתיק את התיאור או לפתוח בדפדפן דיווח ממולא מראש ב-GitHub, לקרוא ולערוך אותו, והוא נשלח רק אם בוחרים לשלוח. דיווחים ב-GitHub פומביים.
+
+**גרסת הדפדפן:** ב-<https://www.shimshii.com/shidur/> המועדפים, התחנות האחרונות וההגדרות נשמרים באחסון של הדפדפן במכשיר שלכם, והסמלילים במטמון שלו. ניקוי נתוני האתר בדפדפן מוחק אותם, ואין עוגיות. האתר מתחבר לאותן תחנות וכתובות סמלילים כמו האפליקציה, ומתארח ב-GitHub Pages, שרואה את כתובת ה-IP כמו כל אתר.
 
 **ילדים:** האפליקציה לא מיועדת לילדים ולא אוספת מידע מאף אחד.
 

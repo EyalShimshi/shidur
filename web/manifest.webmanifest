@@ -1,0 +1,19 @@
+{
+  "id": "./",
+  "name": "שידור · Shidur",
+  "short_name": "שידור",
+  "description": "Live Israeli radio: Kan, Galei Tzahal, Galgalatz and regional stations. רדיו ישראלי חי.",
+  "lang": "he",
+  "dir": "rtl",
+  "start_url": "./",
+  "scope": "./",
+  "display": "standalone",
+  "background_color": "#FBF8FF",
+  "theme_color": "#6750A4",
+  "categories": ["music", "entertainment"],
+  "icons": [
+    { "src": "icon.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "any" },
+    { "src": "icon-512.png", "sizes": "512x512", "type": "image/png", "purpose": "any" },
+    { "src": "icon-maskable.svg", "sizes": "any", "type": "image/svg+xml", "purpose": "maskable" }
+  ]
+}

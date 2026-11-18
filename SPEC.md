@@ -131,6 +131,17 @@ Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on 
 | Catalog health checks ([04 §6](SPEC-04-catalog.md#6-automation-github-actions)) | A weekly *Station check* workflow tests every stream and logo address and opens or closes one issue; the build fails when `catalog.json` changes without a higher `catalogVersion`; issue forms for station problems and suggestions | Station data goes stale on its own; fixes are a browser edit |
 | Release builds: R8 full mode with resource shrinking ([03](SPEC-03-architecture.md)) | R8 shrinks, optimizes and obfuscates release builds (the APK went from 39 MB to 7.7 MB). Each build's mapping file (`mapping-N.zip`) is attached to its release, and a workflow comments decoded stack traces on crash issues. An emulator smoke test (open, first-launch screens, play from a `shidur://` link, background) runs before anything is published | Google Play flagged 1.0.1's unoptimized code (1% obfuscated; the minimum is 25%) |
 
+## Implementation notes — web version (2026-11-18)
+
+| Spec says | The web version does | Why / next step |
+|---|---|---|
+| Share landing pages on GitHub Pages ([D-17](#decision-log)) | **A full web version** at <https://www.shimshii.com/shidur/>. Static files in `web/`: JavaScript modules with Preact and htm copied in, no build step. The *Web app* workflow publishes them to this repository's GitHub Pages site, which appears under the maintainer's own domain | The maintainer asked for a serverless web version on his site |
+| Design ([02](SPEC-02-design.md)) | The app's design rules (DESIGN-PHILOSOPHY §12): a bottom bar on phones, a rail from 600 px, a player pane from 1000 px, a player sheet that drags closed, and the station-colored player. The seed-color scheme, logo layout and search are ports of the Kotlin code, with unit tests | One design on both platforms |
+| Playback ([03 §5](SPEC-03-architecture.md)) | One `<audio>` element. Kan's HLS plays natively where the browser can (Safari, current Chrome) and through hls.js elsewhere. Streams fall back in order, and the one that worked is remembered. The Media Session API drives the lock screen and media keys | Without a server, a browser can't read song titles or skip opening clips, so the web version doesn't; Settings → About says so |
+| Share links ([01](SPEC-01-product.md)) | `#/station/<id>` opens that station in the player, ready to play | Works without a server. Next: the Android app could share these links |
+| Testing ([05 §1](SPEC-05-quality-release.md#1-test-strategy)) | `node --test` unit tests, and a smoke test that drives a headless Chrome over the DevTools protocol with no packages (Node's built-in WebSocket). Before each publish it plays one station per kind of stream and takes screenshots | No tools on the maintainer's computer; the same script runs there and in CI |
+| Catalog | Eco99's `https` address redirects to plain `http`, which a secure page can't load. Its direct `https` address became the second stream (`catalogVersion` 2026111801) | Found by the smoke test; also spares the Android app a cleartext hop |
+
 ## Glossary
 
 | Term | Meaning |

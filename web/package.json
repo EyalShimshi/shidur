@@ -1,0 +1,9 @@
+{
+  "name": "shidur-web",
+  "private": true,
+  "description": "Shidur in the browser. No build step: these files are published as they are. This file only tells Node (for the tests) that .js files are ES modules.",
+  "type": "module",
+  "scripts": {
+    "test": "node --test test/"
+  }
+}

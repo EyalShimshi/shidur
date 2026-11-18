@@ -1,6 +1,6 @@
 {
   "schemaVersion": 1,
-  "catalogVersion": 2026111001,
+  "catalogVersion": 2026111801,
   "collections": [
     { "id": "kan", "nameHe": "כאן", "nameEn": "Kan", "order": 10 },
     { "id": "idf", "nameHe": "גלי צה״ל", "nameEn": "Galei Tzahal", "order": 20 },
@@ -93,6 +93,7 @@
       "logo": "https://upload.wikimedia.org/wikipedia/he/thumb/0/0a/Eco_99_fm.svg/960px-Eco_99_fm.svg.png",
       "streams": [
         { "url": "https://eco-live.mediacast.co.il/99fm_aac", "format": "aac", "bitrate": 64 },
+        { "url": "https://eco01.livecdn.biz/ecolive/99fm_aac/icecast.audio", "format": "aac", "bitrate": 64 },
         { "url": "http://eco-live.mediacast.co.il/99fm_aac", "format": "aac", "bitrate": 64 }
       ]
     },

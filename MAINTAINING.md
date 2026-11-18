@@ -86,6 +86,29 @@ Release builds are shrunk and obfuscated by R8, which makes them smaller and fas
 
   Behind a proxy, plain-http addresses can time out and filtered hosts return the proxy's 403 page, so confirm failures from another network before removing an address.
 
+## Web version
+
+The web version lives in [`web/`](web) and is published at <https://www.shimshii.com/shidur/>.
+
+- **Publishing is automatic.** Every push to `main` that changes `web/` or `catalog.json` runs **Actions → Web app**:
+  - the unit tests run;
+  - a headless Chrome opens the site, plays one station of each kind (Kan's HLS, then MP3 and AAC from each streaming company) and takes screenshots;
+  - only then is the site published to GitHub Pages.
+
+  The run's Summary page shows what played, and the screenshots are attached to the run. Run it by hand with **Try every station** to check the whole list from GitHub's servers.
+- **It uses the app's station list.** The workflow copies `app/src/main/assets/catalog.json` into the site, so a station fix reaches the web within minutes.
+  - The web plays only `https` addresses.
+  - An `https` address that redirects to plain `http` fails there, because browsers block it on a secure page. That's why Eco99 also has a direct `https` address.
+- **Try it on your computer** (Node.js 22 or newer, nothing to install):
+  - `node web/scripts/serve.mjs`, then open <http://localhost:8080/shidur/>;
+  - `node web/scripts/smoke.mjs` runs the workflow's check in your Chrome or Edge and saves the screenshots in your temp folder. Add `--all` for every station.
+- **Same rules as the app:** `seed-scheme.js` (colors), `logo-layout.js` (square logos) and `search.js` are ports of `SeedScheme`, `LogoLayout` and `SearchEngine`. Change both sides together; `web/test/` checks the ports.
+- **Libraries** are copied files in `web/vendor`, with no npm install or build step. [`web/vendor/README.md`](web/vendor/README.md) lists their versions and how to update one.
+- **Logos** are downloaded by each browser, as in the app, then made square and kept in the browser's cache.
+  - Wikimedia turns away bursts of requests (HTTP 429), so the web version downloads two at a time and backs off.
+  - Hosts that don't let other sites read their images (no CORS: 90FM, Kol Chai Music) show their logo as it is.
+- **No server**, so the web version can't skip opening ads, show song titles, ring alarms, cast or work in the car. Settings → About says so and points to the app.
+
 ## Google Play
 
 [PUBLISHING.md](PUBLISHING.md) walks through the developer account, the app's declarations, the store listing (texts and images in [`fastlane/metadata/android`](fastlane/metadata/android)), the closed test and production. Before uploading, check:

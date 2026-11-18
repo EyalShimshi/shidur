@@ -1,0 +1,46 @@
+<!doctype html>
+<html lang="he" dir="rtl">
+  <head>
+    <meta charset="utf-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1, viewport-fit=cover" />
+    <meta
+      http-equiv="Content-Security-Policy"
+      content="default-src 'self'; script-src 'self'; style-src 'self'; img-src 'self' https: data: blob:; media-src 'self' https: blob:; connect-src 'self' https:; worker-src 'self' blob:; manifest-src 'self'; base-uri 'self'; form-action 'none'; object-src 'none'"
+    />
+    <meta name="referrer" content="strict-origin-when-cross-origin" />
+    <title>שידור · רדיו ישראלי בשידור חי</title>
+    <meta
+      name="description"
+      content="האזנה לרדיו ישראלי חי בדפדפן: כאן, גלי צה״ל, גלגלצ ותחנות אזוריות. Live Israeli radio in your browser, free, with no account, ads or tracking."
+    />
+    <meta name="theme-color" content="#FBF8FF" />
+    <meta name="color-scheme" content="light dark" />
+    <!-- Replaced with the commit and date when the site is published. -->
+    <meta name="shidur-build" content="dev" />
+    <link rel="canonical" href="https://www.shimshii.com/shidur/" />
+    <meta property="og:type" content="website" />
+    <meta property="og:title" content="שידור · Shidur" />
+    <meta property="og:description" content="רדיו ישראלי חי בדפדפן. Live Israeli radio in your browser." />
+    <meta property="og:url" content="https://www.shimshii.com/shidur/" />
+    <meta property="og:image" content="https://www.shimshii.com/shidur/icon-512.png" />
+    <link rel="manifest" href="manifest.webmanifest" />
+    <link rel="icon" href="icon.svg" type="image/svg+xml" />
+    <link rel="apple-touch-icon" href="icon-512.png" />
+    <link rel="stylesheet" href="css/app.css" />
+    <link rel="preload" href="catalog.json" as="fetch" crossorigin />
+    <script src="js/boot.js"></script>
+    <script type="module" src="js/main.js"></script>
+  </head>
+  <body>
+    <div id="app">
+      <div class="boot">
+        <div>
+          <img class="boot__logo" src="icon.svg" alt="" width="96" height="96" />
+          <noscript>
+            <p>שידור צריכה JavaScript כדי לנגן רדיו. Shidur needs JavaScript to play radio.</p>
+          </noscript>
+        </div>
+      </div>
+    </div>
+  </body>
+</html>
