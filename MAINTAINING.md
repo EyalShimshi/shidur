@@ -98,7 +98,7 @@ The web version lives in [`web/`](web) and is published at <https://www.shimshii
   The run's Summary page shows what played, and the screenshots are attached to the run. Run it by hand with **Try every station** to check the whole list from GitHub's servers.
 - **It uses the app's station list.** The workflow copies `app/src/main/assets/catalog.json` into the site, so a station fix reaches the web within minutes.
   - The web plays only `https` addresses.
-  - An `https` address that redirects to plain `http` fails there, because browsers block it on a secure page. That's why Eco99 also has a direct `https` address.
+  - An `https` address that redirects to plain `http` plays only if the browser upgrades the redirect back to `https`. Current Chrome does, when the server has `https`; the local test, on plain `http`, never does. That's why Eco99 also has a direct `https` address.
 - **Try it on your computer** (Node.js 22 or newer, nothing to install):
   - `node web/scripts/serve.mjs`, then open <http://localhost:8080/shidur/>;
   - `node web/scripts/smoke.mjs` runs the workflow's check in your Chrome or Edge and saves the screenshots in your temp folder. Add `--all` for every station.

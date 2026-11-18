@@ -291,7 +291,7 @@ Commit messages say why, not just what. One round is one commit, or a few.
 | Smoke-test the shrunk build, not the debug build | The first R8 build compiled cleanly but crashed at start: AGP 9's stricter keep rules dropped a constructor that an older library (Room, via Glance and WorkManager) creates by reflection. The emulator test caught it before anything was published |
 | A browser test needs no test framework | Node 22+ has WebSocket built in, so about 200 lines drive a headless Chrome over the DevTools protocol. The web smoke test runs on the owner's computer and in CI with nothing installed |
 | Read the error page before blaming your code | Logos failed locally with HTTP 429. Wikimedia's error page named the office's shared IP address, so the fault was the network, not the app; the loader still learned to back off |
-| An `https` address can redirect to `http` | Eco99's `https` stream redirected to plain `http`, which a secure web page blocks. The web smoke test caught it, and the station list got a direct `https` address |
+| An `https` address can redirect to `http` | Eco99's `https` stream redirected to plain `http`. The live site played it only because Chrome upgraded the redirect back to `https`; the local smoke test, on plain `http`, failed, and the station list got a direct `https` address |
 | A project site inherits the owner's domain | A repository's GitHub Pages site appears at `<custom domain>/<repo>/` once the owner's user site has a custom domain, with no DNS changes |
 
 ## Appendix A: Round summary

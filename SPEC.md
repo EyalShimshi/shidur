@@ -140,7 +140,7 @@ Polish inspired by [Echo](https://github.com/brahmkshatriya/echo), plus work on 
 | Playback ([03 §5](SPEC-03-architecture.md)) | One `<audio>` element. Kan's HLS plays natively where the browser can (Safari, current Chrome) and through hls.js elsewhere. Streams fall back in order, and the one that worked is remembered. The Media Session API drives the lock screen and media keys | Without a server, a browser can't read song titles or skip opening clips, so the web version doesn't; Settings → About says so |
 | Share links ([01](SPEC-01-product.md)) | `#/station/<id>` opens that station in the player, ready to play | Works without a server. Next: the Android app could share these links |
 | Testing ([05 §1](SPEC-05-quality-release.md#1-test-strategy)) | `node --test` unit tests, and a smoke test that drives a headless Chrome over the DevTools protocol with no packages (Node's built-in WebSocket). Before each publish it plays one station per kind of stream and takes screenshots | No tools on the maintainer's computer; the same script runs there and in CI |
-| Catalog | Eco99's `https` address redirects to plain `http`, which a secure page can't load. Its direct `https` address became the second stream (`catalogVersion` 2026111801) | Found by the smoke test; also spares the Android app a cleartext hop |
+| Catalog | Eco99's `https` address redirects to plain `http`. On the live site Chrome upgrades that redirect back to `https`, but not every browser does, and the local test can't. Its direct `https` address became the second stream (`catalogVersion` 2026111801) | Found by the smoke test; also spares the Android app a cleartext hop |
 
 ## Glossary
 
